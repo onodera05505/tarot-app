@@ -4,6 +4,7 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { CardReveal } from '../components/animations/CardReveal'
 import { PageTransition } from '../components/animations/PageTransition'
+import { generateShareImage, shareOrDownload } from '../lib/shareImage'
 import { useReadingStore } from '../store/useReadingStore'
 
 function calcWidths() {
@@ -17,6 +18,7 @@ export function ResultPage() {
   const navigate = useNavigate()
   const [cardSettled, setCardSettled] = useState(false)
   const [enlarged, setEnlarged] = useState(false)
+  const [sharing, setSharing] = useState(false)
   const widths = useMemo(calcWidths, [])
 
   const { drawn, status, error, reset } = useReadingStore(
@@ -58,6 +60,20 @@ export function ResultPage() {
     navigate('/')
   }
 
+  const handleShare = async () => {
+    if (sharing) return
+    setSharing(true)
+    try {
+      const blob = await generateShareImage(drawn)
+      const text = `${card.nameJa}（${orientation === 'upright' ? '正位置' : '逆位置'}）`
+      await shareOrDownload(blob, `tarot-${card.id}.png`, text)
+    } catch (e) {
+      console.error('Share failed:', e)
+    } finally {
+      setSharing(false)
+    }
+  }
+
   return (
     <PageTransition className="page page-result">
       <button
@@ -95,7 +111,15 @@ export function ResultPage() {
           <p className="result-description">{description}</p>
         )}
         <div className="result-actions">
-          <button type="button" className="btn-primary" onClick={handleHome}>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={handleShare}
+            disabled={sharing}
+          >
+            {sharing ? '画像を作成中...' : 'この結果をシェア'}
+          </button>
+          <button type="button" className="btn-ghost" onClick={handleHome}>
             トップへ戻る
           </button>
         </div>
