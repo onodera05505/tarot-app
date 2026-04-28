@@ -1,5 +1,6 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
+import { playFlip } from '../../lib/audio'
 
 const CARD_BACK = '/cards/major/000.webp'
 
@@ -24,6 +25,12 @@ export function CardReveal({
   const doneRef = useRef(false)
   const flipDuration = 0.9
   const height = Math.round(width * 1.5)
+
+  // めくり開始のタイミングで効果音を鳴らす
+  useEffect(() => {
+    const t = window.setTimeout(() => playFlip(), delayMs)
+    return () => window.clearTimeout(t)
+  }, [delayMs])
 
   const handleFlipDone = () => {
     if (doneRef.current) return

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { playPreview, playSelect } from '../../lib/audio'
 import './CardSelector.css'
 
 const CARD_BACK = '/cards/major/000.webp'
@@ -70,10 +71,12 @@ export function CardSelector({ count = 9, onSelect, onSelectStart }: Props) {
   const handleClick = (index: number) => {
     if (selected !== null) return
     if (previewed === index) {
+      playSelect()
       setSelected(index)
       onSelectStart?.()
       window.setTimeout(() => onSelect(index), 1400)
     } else {
+      playPreview()
       setPreviewed(index)
     }
   }
