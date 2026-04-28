@@ -263,6 +263,103 @@
   }
 }
 
+/* === 本日の一枚（TopPage 内のショウケース） === */
+.todays-card {
+  appearance: none;
+  background: rgba(245, 215, 110, 0.05);
+  border: 1px solid rgba(245, 215, 110, 0.25);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  max-width: 320px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+  color: inherit;
+  font-family: inherit;
+  min-height: 110px;
+}
+
+@media (hover: hover) {
+  .todays-card:not(:disabled):hover {
+    border-color: rgba(245, 215, 110, 0.55);
+    background: rgba(245, 215, 110, 0.1);
+    transform: translateY(-1px);
+  }
+}
+
+.todays-card:disabled {
+  cursor: default;
+}
+
+.todays-card-back,
+.todays-card-image {
+  width: 80px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(245, 215, 110, 0.4);
+  flex-shrink: 0;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* めくり中のカード画像も他状態と同じ角丸/枠線に揃える */
+.todays-card--flipping .card-frame {
+  border-radius: 8px;
+}
+
+.todays-card--flipping .card-frame .card-img {
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.todays-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.todays-card-label {
+  color: var(--accent);
+  letter-spacing: 0.28em;
+  font-size: 0.7rem;
+}
+
+.todays-card-name {
+  font-size: clamp(1.05rem, 3vw, 1.25rem);
+  letter-spacing: 0.12em;
+}
+
+.todays-card-orientation {
+  color: var(--text-dim);
+  letter-spacing: 0.22em;
+  font-size: 0.78rem;
+}
+
+.todays-card-hint {
+  color: var(--text-dim);
+  letter-spacing: 0.18em;
+  font-size: 0.85rem;
+}
+
+.todays-card-error {
+  color: var(--danger);
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+/* めくり中はコンテナ内で左寄せキープ、操作不能 */
+.todays-card--flipping {
+  justify-content: flex-start;
+  pointer-events: none;
+}
+
 /* === Top actions（スタートとカード解説の縦積み） === */
 .top-actions {
   display: flex;

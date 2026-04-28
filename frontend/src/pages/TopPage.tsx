@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { ParticleBackground } from '../components/animations/ParticleBackground'
 import { PageTransition } from '../components/animations/PageTransition'
+import { TodaysCard } from '../components/TodaysCard'
 import { useReadingStore } from '../store/useReadingStore'
 
 export function TopPage() {
@@ -17,6 +18,7 @@ export function TopPage() {
       <ParticleBackground />
       <h1 className="title">Tarot</h1>
       <p className="subtitle">あなたの「いま」を1枚に映す。</p>
+      <TodaysCard />
       <div className="top-actions">
         <button type="button" className="btn-primary" onClick={handleStart}>
           スタート
