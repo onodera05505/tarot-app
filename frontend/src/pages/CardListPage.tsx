@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { PageTransition } from '../components/animations/PageTransition'
 import { fetchAllCards } from '../lib/api'
 import type { TarotCard } from '../lib/types'
 
@@ -21,7 +22,7 @@ export function CardListPage() {
   }, [])
 
   return (
-    <main className="page page-cards">
+    <PageTransition className="page page-cards">
       <header className="cards-header">
         <h1 className="cards-title">大アルカナ 22枚</h1>
         <button type="button" className="btn-ghost" onClick={() => navigate('/')}>
@@ -62,6 +63,6 @@ export function CardListPage() {
           )
         })}
       </ul>
-    </main>
+    </PageTransition>
   )
 }

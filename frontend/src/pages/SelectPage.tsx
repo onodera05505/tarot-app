@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { CardSelector } from '../components/animations/CardSelector'
+import { PageTransition } from '../components/animations/PageTransition'
 import { useReadingStore } from '../store/useReadingStore'
 
 export function SelectPage() {
@@ -15,7 +16,7 @@ export function SelectPage() {
   }
 
   return (
-    <main className="page page-select">
+    <PageTransition className="page page-select">
       <motion.p
         className="prompt"
         animate={{ opacity: confirmed ? 0 : 1 }}
@@ -28,6 +29,6 @@ export function SelectPage() {
         onSelect={handleSelect}
         onSelectStart={() => setConfirmed(true)}
       />
-    </main>
+    </PageTransition>
   )
 }

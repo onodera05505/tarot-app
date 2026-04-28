@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { CardReveal } from '../components/animations/CardReveal'
+import { PageTransition } from '../components/animations/PageTransition'
 import { useReadingStore } from '../store/useReadingStore'
 
 function calcWidths() {
@@ -31,20 +32,20 @@ export function ResultPage() {
 
   if (status === 'drawing') {
     return (
-      <main className="page page-result">
+      <PageTransition className="page page-result">
         <p className="step-label">カードを引いています...</p>
-      </main>
+      </PageTransition>
     )
   }
 
   if (status === 'error' || !drawn) {
     return (
-      <main className="page page-result">
+      <PageTransition className="page page-result">
         <p className="error">エラー: {error ?? 'カードを取得できませんでした'}</p>
         <button type="button" className="btn-primary" onClick={() => navigate('/')}>
           トップへ戻る
         </button>
-      </main>
+      </PageTransition>
     )
   }
 
@@ -58,7 +59,7 @@ export function ResultPage() {
   }
 
   return (
-    <main className="page page-result">
+    <PageTransition className="page page-result">
       <button
         type="button"
         className="card-tap-button"
@@ -130,6 +131,6 @@ export function ResultPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </main>
+    </PageTransition>
   )
 }

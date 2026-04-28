@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { PageTransition } from '../components/animations/PageTransition'
 import { fetchCard } from '../lib/api'
 import type { Orientation, TarotCard } from '../lib/types'
 
@@ -38,31 +39,31 @@ export function CardDetailPage() {
 
   if (isInvalidId) {
     return (
-      <main className="page page-card-detail">
+      <PageTransition className="page page-card-detail">
         <p className="error">カードIDが不正です</p>
         <button type="button" className="btn-primary" onClick={() => navigate('/cards')}>
           一覧へ戻る
         </button>
-      </main>
+      </PageTransition>
     )
   }
 
   if (loading) {
     return (
-      <main className="page page-card-detail">
+      <PageTransition className="page page-card-detail">
         <p className="step-label">読み込み中...</p>
-      </main>
+      </PageTransition>
     )
   }
 
   if (error || !card) {
     return (
-      <main className="page page-card-detail">
+      <PageTransition className="page page-card-detail">
         <p className="error">{error ?? 'カードが見つかりませんでした'}</p>
         <button type="button" className="btn-primary" onClick={() => navigate('/cards')}>
           一覧へ戻る
         </button>
-      </main>
+      </PageTransition>
     )
   }
 
@@ -79,7 +80,7 @@ export function CardDetailPage() {
   const showReversed = onlyOrientation === null || onlyOrientation === 'reversed'
 
   return (
-    <main className="page page-card-detail">
+    <PageTransition className="page page-card-detail">
       <header className="detail-header">
         <button type="button" className="btn-ghost" onClick={() => navigate(-1)}>
           ← 戻る
@@ -129,6 +130,6 @@ export function CardDetailPage() {
       <button type="button" className="btn-ghost" onClick={() => navigate('/')}>
         トップへ戻る
       </button>
-    </main>
+    </PageTransition>
   )
 }
