@@ -12,17 +12,29 @@ function getCtx(): AudioContext {
     const Ctor = window.AudioContext ?? w.webkitAudioContext
     ctx = new Ctor()
     masterGain = ctx.createGain()
-    masterGain.gain.value = 0.6
+    masterGain.gain.value = 1.0
     masterGain.connect(ctx.destination)
   }
   return ctx
 }
 
-// ブラウザの autoplay policy 対策: ユーザー操作時に呼ぶと AudioContext が起動する
-function unlock(): AudioContext {
+// ブラウザの autoplay policy 対策。
+// 初回ユーザー操作時に呼ぶことで AudioContext を起動状態にする。
+// 同期的に resume() を呼ぶ + 無音バッファを再生して iOS Safari 対策も入れる。
+export function unlockAudio(): void {
   const c = getCtx()
   if (c.state === 'suspended') void c.resume()
-  return c
+  // iOS Safari は無音バッファを1回再生しないと永遠に suspended 扱いになる場合がある
+  const buf = c.createBuffer(1, 1, 22050)
+  const src = c.createBufferSource()
+  src.buffer = buf
+  src.connect(c.destination)
+  src.start(0)
+}
+
+function unlock(): AudioContext {
+  unlockAudio()
+  return getCtx()
 }
 
 type ToneOpts = {
@@ -58,8 +70,8 @@ export function playPreview(): void {
   unlock()
   const c = getCtx()
   const now = c.currentTime
-  tone(1320, 0.22, { startTime: now, gain: 0.18, attack: 0.003, release: 0.18 }) // E6
-  tone(1980, 0.18, { startTime: now, gain: 0.06, attack: 0.003 }) // B6 (倍音で煌めき)
+  tone(1320, 0.24, { startTime: now, gain: 0.45, attack: 0.003, release: 0.2 }) // E6
+  tone(1980, 0.2, { startTime: now, gain: 0.18, attack: 0.003 }) // B6 (倍音で煌めき)
 }
 
 // 確定（2回目タップ）: クリスタルチャイム風、2音連なり
@@ -68,12 +80,12 @@ export function playSelect(): void {
   const c = getCtx()
   const now = c.currentTime
   // 1音目: E5 と倍音
-  tone(659.25, 1.4, { startTime: now, gain: 0.16, attack: 0.005 })
-  tone(1318.5, 1.0, { startTime: now, gain: 0.06, attack: 0.005 })
-  tone(1977.75, 0.7, { startTime: now, gain: 0.025, attack: 0.005 })
+  tone(659.25, 1.4, { startTime: now, gain: 0.4, attack: 0.005 })
+  tone(1318.5, 1.0, { startTime: now, gain: 0.16, attack: 0.005 })
+  tone(1977.75, 0.7, { startTime: now, gain: 0.07, attack: 0.005 })
   // 2音目（少し遅れて B5 = 完全5度上）
-  tone(987.77, 1.2, { startTime: now + 0.18, gain: 0.13, attack: 0.005 })
-  tone(1975.54, 0.9, { startTime: now + 0.18, gain: 0.045, attack: 0.005 })
+  tone(987.77, 1.2, { startTime: now + 0.18, gain: 0.32, attack: 0.005 })
+  tone(1975.54, 0.9, { startTime: now + 0.18, gain: 0.12, attack: 0.005 })
 }
 
 // めくれ: 短いノイズに band-pass フィルター掃引で「フワッ」とした空気感
@@ -101,7 +113,7 @@ export function playFlip(): void {
 
   const env = c.createGain()
   env.gain.setValueAtTime(0.0001, now)
-  env.gain.exponentialRampToValueAtTime(0.12, now + 0.04)
+  env.gain.exponentialRampToValueAtTime(0.32, now + 0.04)
   env.gain.exponentialRampToValueAtTime(0.0001, now + dur)
 
   src.connect(filter).connect(env).connect(masterGain ?? c.destination)
