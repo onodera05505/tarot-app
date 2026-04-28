@@ -1,0 +1,70 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  # 手動トリガーも有効化（Actions タブから "Run workflow" できる）
+  workflow_dispatch:
+
+jobs:
+  deploy-backend:
+    name: Deploy backend (Cloudflare Workers)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: backend/pnpm-lock.yaml
+      - name: Install dependencies
+        working-directory: backend
+        run: pnpm install --frozen-lockfile
+      - name: Generate Prisma Client
+        working-directory: backend
+        run: pnpm exec prisma generate
+      - name: Deploy
+        working-directory: backend
+        run: pnpm exec wrangler deploy --minify
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  deploy-frontend:
+    name: Deploy frontend (Cloudflare Pages)
+    runs-on: ubuntu-latest
+    # backend が先にデプロイされてから frontend をデプロイすることで、
+    # frontend が新しい backend を呼び出せる状態を確実にする
+    needs: deploy-backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+      - name: Build frontend
+        working-directory: frontend
+        run: pnpm build
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+      # wrangler は backend にしか入っていないので、backend 側から相対パスで叩く
+      - name: Install backend dependencies (for wrangler)
+        working-directory: backend
+        run: pnpm install --frozen-lockfile
+      - name: Deploy to Cloudflare Pages
+        working-directory: backend
+        run: pnpm exec wrangler pages deploy ../frontend/dist --project-name tarot-oracle
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
