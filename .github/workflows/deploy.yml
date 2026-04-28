@@ -26,6 +26,11 @@ jobs:
       - name: Generate Prisma Client
         working-directory: backend
         run: pnpm exec prisma generate
+        # prisma generate は DB に接続しない（schema からクライアントコードを生成するだけ）が、
+        # prisma.config.ts が env() を評価するため値の存在自体は必要。ダミーで OK。
+        env:
+          DATABASE_URL: postgres://dummy
+          DIRECT_URL: postgres://dummy
       - name: Deploy
         working-directory: backend
         run: pnpm exec wrangler deploy --minify
