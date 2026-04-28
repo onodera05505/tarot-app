@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { drawCards } from '../lib/api'
+import { addToHistory } from '../lib/history'
 import type { DrawnCard } from '../lib/types'
 
 export type ReadingStatus = 'idle' | 'drawing' | 'drawn' | 'error'
@@ -27,7 +28,11 @@ export const useReadingStore = create<ReadingState>((set) => ({
     set({ status: 'drawing', error: null })
     try {
       const cards = await drawCards(1)
-      set({ drawn: cards[0] ?? null, status: 'drawn' })
+      const drawn = cards[0] ?? null
+      if (drawn) {
+        addToHistory(drawn)
+      }
+      set({ drawn, status: 'drawn' })
     } catch (e) {
       set({
         status: 'error',

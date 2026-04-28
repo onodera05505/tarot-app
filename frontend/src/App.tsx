@@ -7,6 +7,7 @@ import { SelectPage } from './pages/SelectPage'
 import { ResultPage } from './pages/ResultPage'
 import { CardListPage } from './pages/CardListPage'
 import { CardDetailPage } from './pages/CardDetailPage'
+import { HistoryPage } from './pages/HistoryPage'
 import { unlockAudio } from './lib/audio'
 import './App.css'
 
@@ -38,6 +39,7 @@ function App() {
         <Route path="/result" element={<ResultPage />} />
         <Route path="/cards" element={<CardListPage />} />
         <Route path="/cards/:id" element={<CardDetailPage />} />
+        <Route path="/history" element={<HistoryPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

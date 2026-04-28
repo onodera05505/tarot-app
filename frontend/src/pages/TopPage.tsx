@@ -26,6 +26,9 @@ export function TopPage() {
         <button type="button" className="btn-ghost" onClick={() => navigate('/cards')}>
           カード解説を見る
         </button>
+        <button type="button" className="btn-ghost" onClick={() => navigate('/history')}>
+          占い履歴を見る
+        </button>
       </div>
     </PageTransition>
   )
