@@ -1,0 +1,32 @@
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 215, 110, 0.95), rgba(245, 215, 110, 0));
+  animation-name: particle-float;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  filter: blur(0.4px);
+}
+
+@keyframes particle-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  25% {
+    transform: translate3d(8px, -14px, 0) scale(1.2);
+  }
+  50% {
+    transform: translate3d(-6px, -22px, 0) scale(0.85);
+  }
+  75% {
+    transform: translate3d(-12px, -8px, 0) scale(1.1);
+  }
+}

@@ -1,0 +1,27 @@
+// 1. クライアントの生成設定（HonoなどのEdge環境用）
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"] // Cloudflareで動かすための魔法のスイッチ
+}
+
+// 2. データベースの接続設定（Supabase用）
+datasource db {
+  provider  = "postgresql"
+}
+
+// 3. タロットカードの設計図（テーブル定義）
+model TarotCard {
+  id                  Int      @id @default(autoincrement()) // 自動で振られる連番のID
+  nameEn              String   // 英語名 (例: The Fool)
+  nameJa              String   // 日本語名 (例: 愚者)
+  number              Int      // カード番号 (例: 0)
+  arcanaType          String   // 大アルカナか小アルカナか (例: Major)
+  meaningUpright      String   // 正位置のキーワード（カンマ区切り 2〜3 個）
+  meaningReversed     String   // 逆位置のキーワード（同左）
+  descriptionUpright  String   @default("") // 正位置の解説本文（3 文構成）
+  descriptionReversed String   @default("") // 逆位置の解説本文（同左）
+  imageUrl            String   // 画像のパス (例: /images/the-fool.jpg)
+  createdAt           DateTime @default(now()) // データが作られた日時
+
+  @@map("tarot_cards") // DB上での実際のテーブル名は小文字アンダースコアにする（実務の定番ルール）
+}

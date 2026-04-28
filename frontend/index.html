@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <title>タロットカード - 手軽に本格占い</title>
+    <meta name="description" content="22枚の大アルカナで「いま」の自分を映し出す、ワンオラクルのタロット占いアプリ。" />
+    <meta name="theme-color" content="#0b0820" />
+
+    <!-- favicon / app icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/pwa-64x64.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
+
+    <!-- iOS standalone (ホーム画面追加でアプリのように起動) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="タロットカード" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- OGP（リンク共有時のプレビュー） -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="タロットカード - 手軽に本格占い" />
+    <meta property="og:description" content="22枚の大アルカナで「いま」の自分を映し出す、ワンオラクルのタロット占いアプリ。" />
+    <meta property="og:image" content="/pwa-512x512.png" />
+    <meta name="twitter:card" content="summary" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

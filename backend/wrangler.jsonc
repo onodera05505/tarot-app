@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "backend",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-15",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  // DATABASE_URL / DIRECT_URL は秘密情報のため、ここ（vars）には書かない。
+  // ローカル開発: backend/.dev.vars から読み込まれる
+  // 本番:        wrangler secret put DATABASE_URL / DIRECT_URL で登録
+
+  // Cloudflare 標準のレート制限バインディング（Durable Objects 利用、強整合性）。
+  // /api/* に対し IP 単位で 60 秒間に 60 リクエストまで。
+  "ratelimits": [
+    {
+      "name": "RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 30,
+        "period": 60
+      }
+    }
+  ]
+}

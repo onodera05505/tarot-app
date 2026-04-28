@@ -1,0 +1,485 @@
+/* 共通ページレイアウト */
+.page {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  padding: clamp(1rem, 4vw, 2rem) clamp(0.75rem, 4vw, 1.5rem);
+  text-align: center;
+  z-index: 1;
+}
+
+.page > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* 共通プライマリボタン */
+.btn-primary {
+  appearance: none;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-soft);
+  color: var(--accent);
+  /* 44px 以上のタッチターゲットを確保 */
+  min-height: 48px;
+  padding: 0.85em clamp(1.4em, 6vw, 2.4em);
+  font-size: clamp(0.9rem, 2.4vw, 1rem);
+  letter-spacing: 0.3em;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  box-shadow: 0 0 0 0 rgba(245, 215, 110, 0);
+}
+
+@media (hover: hover) {
+  .btn-primary:hover {
+    background: rgba(245, 215, 110, 0.28);
+    box-shadow: 0 0 24px 0 rgba(245, 215, 110, 0.35);
+    transform: translateY(-1px);
+  }
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  appearance: none;
+  border: 1px solid rgba(230, 225, 255, 0.3);
+  background: transparent;
+  color: var(--text-dim);
+  min-height: 44px;
+  padding: 0.6em 1.6em;
+  font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+  letter-spacing: 0.2em;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .btn-ghost:hover {
+    border-color: rgba(230, 225, 255, 0.6);
+    color: var(--text);
+  }
+}
+
+/* 共通テキスト */
+.prompt {
+  color: var(--accent);
+  font-size: clamp(0.95rem, 2.4vw, 1.25rem);
+  letter-spacing: 0.24em;
+  text-shadow: 0 0 14px rgba(245, 215, 110, 0.25);
+  padding: 0 0.5rem;
+}
+
+.step-label {
+  color: var(--text-dim);
+  letter-spacing: 0.24em;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+}
+
+/* === Top === */
+.page-top .title {
+  font-size: clamp(2.2rem, 8vw, 4.5rem);
+  letter-spacing: 0.32em;
+  text-shadow: 0 0 24px rgba(245, 215, 110, 0.35);
+}
+
+.page-top .subtitle {
+  color: var(--text-dim);
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+  font-size: clamp(0.85rem, 2.2vw, 1rem);
+}
+
+/* === Shuffle === */
+.page-shuffle {
+  overflow: hidden;
+}
+
+.shuffle-stage {
+  position: relative;
+  width: min(560px, 92vw);
+  height: clamp(220px, 38vh, 290px);
+  margin: 1rem auto;
+}
+
+/* === Select === */
+.page-select {
+  overflow: hidden;
+}
+
+/* === Result === */
+/* card-frame の幅・高さは CardReveal コンポーネント側で Framer Motion が管理する */
+.page-result .card-frame {
+  margin: 0 auto;
+  border-radius: 14px;
+}
+
+/* タップで拡大できる小さい状態のカード用ボタン */
+.card-tap-button {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: zoom-in;
+  display: block;
+}
+
+.card-tap-button:disabled {
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .card-tap-button:not(:disabled):hover .card-frame {
+    filter: drop-shadow(0 0 16px rgba(245, 215, 110, 0.45));
+  }
+}
+
+/* 拡大表示オーバーレイ */
+.card-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 8, 32, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+  border: none;
+  cursor: zoom-out;
+}
+
+.card-zoom-content {
+  display: block;
+}
+
+.card-zoom-image {
+  display: block;
+  width: min(82vw, 420px);
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid rgba(245, 215, 110, 0.45);
+  box-shadow: 0 24px 60px -10px rgba(0, 0, 0, 0.7);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.card-frame .card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid rgba(245, 215, 110, 0.4);
+  box-shadow: var(--shadow-card);
+}
+
+/* カード縮小後に一括フェードインするコンテナ */
+.result-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 0.8rem);
+  width: 100%;
+  max-width: 400px;
+}
+
+.result-name {
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  letter-spacing: 0.14em;
+  margin: 0;
+}
+
+.result-orientation {
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  margin: 0;
+}
+
+.result-keywords {
+  display: flex;
+  gap: clamp(0.3rem, 1.2vw, 0.5rem);
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  padding: 0 0.5rem;
+  margin: 0;
+}
+
+.result-keywords li {
+  border: 1px solid rgba(245, 215, 110, 0.4);
+  border-radius: 999px;
+  padding: 0.3em clamp(0.7em, 2.5vw, 1em);
+  font-size: clamp(0.78rem, 2vw, 0.88rem);
+  letter-spacing: 0.16em;
+  color: var(--text);
+  background: rgba(245, 215, 110, 0.08);
+}
+
+.result-description {
+  font-size: clamp(0.82rem, 2.1vw, 0.92rem);
+  line-height: 1.75;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  text-align: left;
+  padding: 0 0.25rem;
+  margin: 0;
+  max-width: 380px;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+}
+
+.result-actions .btn-primary,
+.result-actions .btn-ghost {
+  width: 100%;
+}
+
+.error {
+  color: var(--danger);
+  padding: 0 1rem;
+}
+
+/* モバイルでは上寄せ + ギャップを詰める。
+   padding-top は固定 24px に揃え、選択画面で確定したカードの最終位置と
+   ピクセル単位で一致させる（CardSelector 側でも safe-area + 24px を target に計算）。 */
+@media (max-width: 640px) {
+  .page-result {
+    justify-content: flex-start;
+    padding-top: 24px;
+    gap: clamp(0.6rem, 1.8vw, 1rem);
+  }
+}
+
+/* === Top actions（スタートとカード解説の縦積み） === */
+.top-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+}
+
+.top-actions .btn-primary,
+.top-actions .btn-ghost {
+  width: 100%;
+}
+
+/* === Cards List === */
+.page-cards {
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 1rem;
+  text-align: left;
+}
+
+.cards-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.cards-title {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  letter-spacing: 0.18em;
+  margin: 0;
+  flex: 1;
+}
+
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+  max-width: 720px;
+}
+
+.card-list-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(245, 215, 110, 0.06);
+  border: 1px solid rgba(245, 215, 110, 0.25);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+@media (hover: hover) {
+  .card-list-item:hover {
+    border-color: rgba(245, 215, 110, 0.6);
+    background: rgba(245, 215, 110, 0.12);
+    transform: translateY(-1px);
+  }
+}
+
+.card-list-image {
+  width: clamp(60px, 18vw, 88px);
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(245, 215, 110, 0.3);
+  flex-shrink: 0;
+}
+
+.card-list-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.card-list-number {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+
+.card-list-name {
+  font-size: clamp(1.05rem, 3vw, 1.3rem);
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+.card-list-name-en {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+}
+
+.card-list-keywords {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0.3rem 0 0;
+}
+
+.card-list-keywords li {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 0.15em 0.7em;
+  border-radius: 999px;
+  background: rgba(230, 225, 255, 0.08);
+  border: 1px solid rgba(230, 225, 255, 0.18);
+  color: var(--text-dim);
+}
+
+/* === Card Detail === */
+.page-card-detail {
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 1.2rem;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+  text-align: left;
+}
+
+.detail-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.detail-header .btn-ghost {
+  align-self: start;
+}
+
+.detail-title h1 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  letter-spacing: 0.16em;
+  margin: 0;
+}
+
+.detail-number {
+  display: inline-block;
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  margin-bottom: 0.2rem;
+}
+
+.detail-title .name-en {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+}
+
+.detail-image {
+  width: clamp(220px, 60vw, 320px);
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  margin: 0 auto;
+  border-radius: 14px;
+  border: 1px solid rgba(245, 215, 110, 0.4);
+  box-shadow: var(--shadow-card);
+  display: block;
+}
+
+.detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: rgba(245, 215, 110, 0.04);
+  border: 1px solid rgba(245, 215, 110, 0.15);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+}
+
+.detail-section-title {
+  font-size: 0.95rem;
+  letter-spacing: 0.3em;
+  margin: 0 0 0.4rem;
+}
+
+.detail-section-title-upright {
+  color: var(--accent);
+}
+
+.detail-section-title-reversed {
+  color: #c8b5e0;
+}
+
+.detail-section .result-keywords {
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.detail-description {
+  line-height: 1.85;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  font-size: clamp(0.9rem, 2.3vw, 1rem);
+  margin: 0;
+}
+
+.page-card-detail .btn-ghost {
+  align-self: center;
+}

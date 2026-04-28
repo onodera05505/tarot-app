@@ -1,0 +1,77 @@
+.card-fan {
+  position: relative;
+  width: min(92vw, 640px);
+  height: clamp(260px, 40vh, 360px);
+  margin: 1rem auto 0;
+}
+
+/* fan-card の中心合わせは margin-left の負値で行う。
+   Framer Motion の x/y は CSS の transform を上書きするため、
+   translateX(-50%) を CSS で当てるとアニメーション時に効かなくなる。 */
+.fan-card {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 96px;
+  height: 144px;
+  margin-left: -48px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 16px 28px -10px rgba(0, 0, 0, 0.55);
+  transition: filter 180ms ease;
+  will-change: transform;
+  touch-action: manipulation;
+}
+
+@media (max-width: 480px) {
+  .card-fan {
+    height: clamp(360px, 54vh, 480px);
+  }
+
+  .fan-card {
+    width: 126px;
+    height: 189px;
+    margin-left: -63px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card-fan {
+    height: clamp(310px, 48vh, 420px);
+  }
+
+  .fan-card {
+    width: 104px;
+    height: 156px;
+    margin-left: -52px;
+  }
+}
+
+.fan-card:disabled {
+  cursor: default;
+}
+
+.fan-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  border: 1px solid rgba(245, 215, 110, 0.4);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .fan-card:not(:disabled):hover {
+    filter: drop-shadow(0 0 14px rgba(245, 215, 110, 0.45));
+  }
+}
+
+@media (hover: none) {
+  .fan-card:not(:disabled):active {
+    filter: drop-shadow(0 0 18px rgba(245, 215, 110, 0.65));
+  }
+}

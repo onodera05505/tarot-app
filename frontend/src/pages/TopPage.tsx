@@ -1,0 +1,29 @@
+import { useNavigate } from 'react-router-dom'
+import { ParticleBackground } from '../components/animations/ParticleBackground'
+import { useReadingStore } from '../store/useReadingStore'
+
+export function TopPage() {
+  const navigate = useNavigate()
+  const reset = useReadingStore((s) => s.reset)
+
+  const handleStart = () => {
+    reset()
+    navigate('/shuffle')
+  }
+
+  return (
+    <main className="page page-top">
+      <ParticleBackground />
+      <h1 className="title">Tarot</h1>
+      <p className="subtitle">あなたの「いま」を1枚に映す。</p>
+      <div className="top-actions">
+        <button type="button" className="btn-primary" onClick={handleStart}>
+          スタート
+        </button>
+        <button type="button" className="btn-ghost" onClick={() => navigate('/cards')}>
+          カード解説を見る
+        </button>
+      </div>
+    </main>
+  )
+}
