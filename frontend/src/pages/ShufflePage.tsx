@@ -34,12 +34,15 @@ const SHUFFLE_SEQ: { sub: ShuffleSub; ms: number }[] = [
   { sub: 'sub-merge3', ms: 420 },
 ]
 
-const PX3 = [-130, 0, 130]
+// 3山の中心座標（小型端末でもはみ出さないよう±100）
+const PX3 = [-100, 0, 100]
+// 2山の中心座標
+const PX2 = [-80, 80]
 const P4 = [
-  { x: -100, y: -55 },
-  { x: 100, y: -55 },
-  { x: -100, y: 55 },
-  { x: 100, y: 55 },
+  { x: -90, y: -50 },
+  { x: 90, y: -50 },
+  { x: -90, y: 50 },
+  { x: 90, y: 50 },
 ]
 
 function posShuffleSub(i: number, sub: ShuffleSub): Pos {
@@ -67,8 +70,9 @@ function posShuffleSub(i: number, sub: ShuffleSub): Pos {
 // === 各 phase のカード位置（rank ベース） ===
 
 // rank: 0 = 一番下、N-1 = 一番上
-function posCenter(rank: number): Pos {
-  return { x: (rank - (N - 1) / 2) * 0.55, y: -rank * 1.5, rotate: 0 }
+// tightness: スタックの上下方向の見せ方。回転状態では小さくする（180°回転しても自然に見える）
+function posCenter(rank: number, tightness = 1.4): Pos {
+  return { x: 0, y: -rank * tightness, rotate: 0 }
 }
 
 // 3山分割: カードの初期所属（i 基準）に従う。rank はまだ確定していない。
@@ -76,8 +80,8 @@ function pos3Initial(i: number): Pos {
   const pile = Math.floor(i / 4)
   const inPile = i % 4
   return {
-    x: PX3[pile] + (inPile - 1.5) * 1.2,
-    y: -inPile * 2,
+    x: PX3[pile] + (inPile - 1.5) * 0.8,
+    y: -inPile * 1.6,
     rotate: 0,
   }
 }
@@ -86,12 +90,20 @@ function pos3Initial(i: number): Pos {
 function pos2ByRank(rank: number): Pos {
   const isTopHalf = rank >= N / 2
   const inPile = rank % (N / 2)
-  const pileX = isTopHalf ? -85 : 85
+  const pileX = isTopHalf ? PX2[0] : PX2[1]
   return {
-    x: pileX + (inPile - 2.5) * 1.2,
-    y: -inPile * 2,
+    x: pileX + (inPile - 2.5) * 0.8,
+    y: -inPile * 1.6,
     rotate: 0,
   }
+}
+
+// 回転状態などタイトに見せたい場合のオフセット係数
+function getStackTightness(phase: Phase): number {
+  if (phase === 'rotating' || phase === 'orienting' || phase === 'transitioning') {
+    return 0.5
+  }
+  return 1.4
 }
 
 // === rank の更新ロジック ===
@@ -127,12 +139,26 @@ function ranksAfterStack2(currentRanks: number[], chosenPile2: 0 | 1): number[] 
 
 // === 積み上げ時の遅延 ===
 
-// stacking3: rank3 → 即時、rank2 → 0.45s、rank1 → 0.9s（rank1 が最後 = 一番上）
+// 中央（pile=1）を据え置き、両側の山が「中央に乗る or 下に潜る」順序を case 分けで決める。
+// ユーザー仕様:
+//   - 中央=2: まず 1 を上に → 次に 3 を下に
+//   - 中央=1: まず 2 を下に → 次に 3 をさらに下に
+//   - 中央=3: まず 2 を上に → 次に 1 をさらに上に
 function stackDelay3(i: number, pile3Order: Record<number, number>): number {
   const pile = Math.floor(i / 4)
-  const order = pile3Order[pile] ?? 0
-  if (order === 0) return 0
-  return (3 - order) * 0.45
+  // 中央の山は据え置き（即座にアニメ完了 = 動かない）
+  if (pile === 1) return 0
+
+  const centerRank = pile3Order[1]
+  const myRank = pile3Order[pile]
+
+  // どの rank が「最初に動く側」か
+  let firstRank: number
+  if (centerRank === 1) firstRank = 2
+  else if (centerRank === 3) firstRank = 2
+  else firstRank = 1 // centerRank === 2
+
+  return myRank === firstRank ? 0.4 : 0.95
 }
 
 // stacking2: 選ばれた山（上に乗せる側）に遅延を付ける
@@ -140,7 +166,7 @@ function stackDelay2(currentRanks: number[], i: number, chosenPile2: 0 | 1 | nul
   if (chosenPile2 === null) return 0
   const isTopHalf = currentRanks[i] >= N / 2
   const inSelected = (chosenPile2 === 0 && isTopHalf) || (chosenPile2 === 1 && !isTopHalf)
-  return inSelected ? 0.5 : 0
+  return inSelected ? 0.55 : 0
 }
 
 const PROMPTS: Record<Phase, string> = {
@@ -197,9 +223,10 @@ export function ShufflePage() {
     if (phase === 'merging') {
       timer = window.setTimeout(() => setPhase('split3'), 900)
     } else if (phase === 'stacking3') {
-      timer = window.setTimeout(() => setPhase('split2'), 1700)
+      // 最大遅延 0.95s + spring 余韻 ≈ 2.0s
+      timer = window.setTimeout(() => setPhase('split2'), 2000)
     } else if (phase === 'stacking2') {
-      timer = window.setTimeout(() => setPhase('rotating'), 1100)
+      timer = window.setTimeout(() => setPhase('rotating'), 1200)
     } else if (phase === 'rotating') {
       timer = window.setTimeout(() => setPhase('orienting'), 850)
     } else if (phase === 'transitioning') {
@@ -286,7 +313,7 @@ export function ShufflePage() {
     }
     if (phase === 'split3') return pos3Initial(i)
     if (phase === 'split2') return pos2ByRank(cardRanks[i])
-    return posCenter(cardRanks[i])
+    return posCenter(cardRanks[i], getStackTightness(phase))
   }
 
   const getDelay = (i: number): number => {
@@ -344,7 +371,7 @@ export function ShufflePage() {
                   type="button"
                   className={`pile-selector ${rank ? 'pile-selector--active' : ''}`}
                   onClick={() => togglePile3(idx)}
-                  style={{ left: `calc(50% + ${(idx - 1) * 130}px)` }}
+                  style={{ left: `calc(50% + ${(idx - 1) * PX3[2]}px)` }}
                   aria-label={`山 ${idx + 1}`}
                 >
                   {rank && <span className="pile-badge">{rank}</span>}
@@ -364,7 +391,7 @@ export function ShufflePage() {
                   type="button"
                   className={`pile-selector ${active ? 'pile-selector--active' : ''}`}
                   onClick={() => togglePile2(idx as 0 | 1)}
-                  style={{ left: `calc(50% + ${idx === 0 ? -85 : 85}px)` }}
+                  style={{ left: `calc(50% + ${PX2[idx]}px)` }}
                   aria-label={`山 ${idx + 1}`}
                 >
                   {active && <span className="pile-badge">✓</span>}
