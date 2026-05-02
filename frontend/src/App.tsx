@@ -3,7 +3,6 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { TopPage } from './pages/TopPage'
 import { ShufflePage } from './pages/ShufflePage'
-import { SelectPage } from './pages/SelectPage'
 import { ResultPage } from './pages/ResultPage'
 import { CardListPage } from './pages/CardListPage'
 import { CardDetailPage } from './pages/CardDetailPage'
@@ -35,7 +34,6 @@ function App() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<TopPage />} />
         <Route path="/shuffle" element={<ShufflePage />} />
-        <Route path="/select" element={<SelectPage />} />
         <Route path="/result" element={<ResultPage />} />
         <Route path="/cards" element={<CardListPage />} />
         <Route path="/cards/:id" element={<CardDetailPage />} />

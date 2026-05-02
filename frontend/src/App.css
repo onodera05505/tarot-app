@@ -98,18 +98,103 @@
 /* === Shuffle === */
 .page-shuffle {
   overflow: hidden;
+  gap: clamp(1rem, 3vh, 1.8rem);
 }
 
 .shuffle-stage {
   position: relative;
   width: min(560px, 92vw);
-  height: clamp(220px, 38vh, 290px);
-  margin: 1rem auto;
+  height: clamp(260px, 42vh, 330px);
+  margin: 0.5rem auto;
 }
 
-/* === Select === */
-.page-select {
-  overflow: hidden;
+/* 新シャッフル: 12 枚のカードを中心基準で絶対配置するためのコンテナ */
+.shuffle-pile {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  /* rotate / scale を motion 側で当てるためのトランスフォームベース */
+}
+
+.shuffle-pile-card {
+  position: absolute;
+  left: -36px; /* width/2 */
+  top: -54px;  /* height/2 */
+  width: 72px;
+  height: 108px;
+  border-radius: 6px;
+  border: 1px solid rgba(245, 215, 110, 0.35);
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.55);
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* 山の選択ボタン（透明な当たり判定 + 中央のバッジ） */
+.pile-selectors {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pile-selector {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 110px;
+  height: 150px;
+  background: transparent;
+  border: 1px dashed rgba(245, 215, 110, 0.0);
+  border-radius: 10px;
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+@media (hover: hover) {
+  .pile-selector:hover {
+    border-color: rgba(245, 215, 110, 0.5);
+    background: rgba(245, 215, 110, 0.04);
+  }
+}
+
+.pile-selector--active {
+  border-color: rgba(245, 215, 110, 0.7);
+  background: rgba(245, 215, 110, 0.08);
+}
+
+.pile-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg-deep);
+  font-weight: 600;
+  font-size: 1.4rem;
+  letter-spacing: 0;
+  box-shadow: 0 0 18px rgba(245, 215, 110, 0.6);
+}
+
+/* 「右」「左」ボタンを横並びに */
+.orient-actions {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 320px;
+  justify-content: center;
+}
+
+.orient-actions .btn-primary {
+  flex: 1;
 }
 
 /* === Result === */

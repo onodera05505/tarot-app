@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { drawCards } from '../lib/api'
 import { addToHistory } from '../lib/history'
-import type { DrawnCard } from '../lib/types'
+import type { DrawnCard, Orientation } from '../lib/types'
 
 export type ReadingStatus = 'idle' | 'drawing' | 'drawn' | 'error'
 
@@ -13,6 +13,8 @@ type ReadingState = {
   status: ReadingStatus
   error: string | null
   drawOne: () => Promise<void>
+  /** ユーザー操作（カード選択画面で「上にする側」を選ぶ等）で向きを上書きする */
+  setOrientation: (orientation: Orientation) => void
   reset: () => void
 }
 
@@ -40,5 +42,21 @@ export const useReadingStore = create<ReadingState>((set) => ({
       })
     }
   },
+  setOrientation: (orientation) =>
+    set((state) => {
+      if (!state.drawn) return state
+      // 向きが変わるとキーワードも入れ替わる
+      const meaning =
+        orientation === 'upright'
+          ? state.drawn.card.meaningUpright
+          : state.drawn.card.meaningReversed
+      const keywords = meaning
+        .split(',')
+        .map((k) => k.trim())
+        .filter((k) => k.length > 0)
+      const next: DrawnCard = { ...state.drawn, orientation, keywords }
+      // 履歴は既に追加済みのため、ここでの上書きは drawn のみに留める
+      return { drawn: next }
+    }),
   reset: () => set({ ...initial }),
 }))
