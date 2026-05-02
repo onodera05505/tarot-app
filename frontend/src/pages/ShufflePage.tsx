@@ -21,23 +21,72 @@ type Phase =
 
 type Pos = { x: number; y: number; rotate: number }
 
-// 3山分割時の位置（カード i がどの山のどの位置か）
-function pos3(i: number): Pos {
-  const pileIdx = Math.floor(i / 4) // 0, 1, 2
+// === シャッフル中の sub-phase（カードが本当に混ざる動き） ===
+type ShuffleSub = 'sub-center' | 'sub-split3' | 'sub-split4' | 'sub-merge1' | 'sub-merge2' | 'sub-merge3'
+
+const SHUFFLE_SEQ: { sub: ShuffleSub; ms: number }[] = [
+  { sub: 'sub-center', ms: 700 },
+  { sub: 'sub-split3', ms: 1500 },
+  { sub: 'sub-center', ms: 800 },
+  { sub: 'sub-split4', ms: 1300 },
+  { sub: 'sub-merge1', ms: 420 },
+  { sub: 'sub-merge2', ms: 420 },
+  { sub: 'sub-merge3', ms: 420 },
+]
+
+const PX3 = [-130, 0, 130]
+const P4 = [
+  { x: -100, y: -55 },
+  { x: 100, y: -55 },
+  { x: -100, y: 55 },
+  { x: 100, y: 55 },
+]
+
+function posShuffleSub(i: number, sub: ShuffleSub): Pos {
+  const p3 = Math.floor(i / 4)
+  const r3 = i % 4
+  const p4 = Math.floor(i / 3)
+  const r4 = i % 3
+
+  switch (sub) {
+    case 'sub-center':
+      return { x: ((i % 4) - 1.5) * 2, y: Math.floor(i / 4) * 1.4, rotate: (i - 5.5) * 1.6 }
+    case 'sub-split3':
+      return { x: PX3[p3] + (r3 - 1.5) * 3, y: r3 * 2.5, rotate: (r3 - 1.5) * 8 }
+    case 'sub-split4':
+      return { x: P4[p4].x + (r4 - 1) * 3, y: P4[p4].y + r4 * 2.5, rotate: (r4 - 1) * 8 }
+    case 'sub-merge1':
+      return p4 === 0 ? posShuffleSub(i, 'sub-center') : posShuffleSub(i, 'sub-split4')
+    case 'sub-merge2':
+      return p4 <= 1 ? posShuffleSub(i, 'sub-center') : posShuffleSub(i, 'sub-split4')
+    case 'sub-merge3':
+      return p4 <= 2 ? posShuffleSub(i, 'sub-center') : posShuffleSub(i, 'sub-split4')
+  }
+}
+
+// === 各 phase のカード位置（rank ベース） ===
+
+// rank: 0 = 一番下、N-1 = 一番上
+function posCenter(rank: number): Pos {
+  return { x: (rank - (N - 1) / 2) * 0.55, y: -rank * 1.5, rotate: 0 }
+}
+
+// 3山分割: カードの初期所属（i 基準）に従う。rank はまだ確定していない。
+function pos3Initial(i: number): Pos {
+  const pile = Math.floor(i / 4)
   const inPile = i % 4
-  const pileX = (pileIdx - 1) * 130
   return {
-    x: pileX + (inPile - 1.5) * 1.2,
+    x: PX3[pile] + (inPile - 1.5) * 1.2,
     y: -inPile * 2,
     rotate: 0,
   }
 }
 
-// 2山分割時の位置
-function pos2(i: number): Pos {
-  const pileIdx = i < 6 ? 0 : 1
-  const inPile = i % 6
-  const pileX = pileIdx === 0 ? -85 : 85
+// 2山分割: rank に従って上半分(rank>=6)を左、下半分を右に
+function pos2ByRank(rank: number): Pos {
+  const isTopHalf = rank >= N / 2
+  const inPile = rank % (N / 2)
+  const pileX = isTopHalf ? -85 : 85
   return {
     x: pileX + (inPile - 2.5) * 1.2,
     y: -inPile * 2,
@@ -45,59 +94,53 @@ function pos2(i: number): Pos {
   }
 }
 
-// 中央集約時の位置（一つの山）
-function posCenter(i: number): Pos {
-  return {
-    x: (i - 5.5) * 0.6,
-    y: -i * 1.5,
-    rotate: 0,
+// === rank の更新ロジック ===
+
+function ranksAfterStack3(pile3Order: Record<number, number>): number[] {
+  // pile3Order: pileIdx -> 1|2|3（ユーザーが選んだ順位）
+  // rank=1 のカードが上に来るよう (3-rank)*4 + inPile で位置を割り当て
+  const out = new Array<number>(N)
+  for (let i = 0; i < N; i++) {
+    const pile = Math.floor(i / 4)
+    const inPile = i % 4
+    const order = pile3Order[pile] // 1, 2, or 3
+    out[i] = (3 - order) * 4 + inPile // rank3→0..3、rank2→4..7、rank1→8..11
   }
+  return out
 }
 
-// シャッフル中のカード散らかり位置（時刻 t に応じて変化）。
-// 円軌道 + 微回転で「混ぜている」感じを出す。
-function posShuffle(i: number, t: number): Pos {
-  const angle = (i / N) * Math.PI * 2 + t * 0.7
-  const radius = 56 + Math.sin(t * 1.2 + i) * 14
-  return {
-    x: Math.cos(angle) * radius,
-    y: Math.sin(angle) * radius * 0.45,
-    rotate: Math.sin(t * 1.6 + i * 0.7) * 22,
+function ranksAfterStack2(currentRanks: number[], chosenPile2: 0 | 1): number[] {
+  // chosenPile2 0 = 左（現在の上半分）、1 = 右（現在の下半分）
+  // 選ばれた側の rank が 6-11、選ばれなかった側が 0-5 になるよう振り直し
+  const out = [...currentRanks]
+  for (let i = 0; i < N; i++) {
+    const isTopHalf = currentRanks[i] >= N / 2
+    const inSelected = (chosenPile2 === 0 && isTopHalf) || (chosenPile2 === 1 && !isTopHalf)
+    if (inSelected) {
+      out[i] = isTopHalf ? currentRanks[i] : currentRanks[i] + N / 2
+    } else {
+      out[i] = isTopHalf ? currentRanks[i] - N / 2 : currentRanks[i]
+    }
   }
+  return out
 }
 
-function targetFor(i: number, phase: Phase): Pos {
-  switch (phase) {
-    case 'merging':
-    case 'stacking3':
-    case 'stacking2':
-    case 'rotating':
-    case 'orienting':
-    case 'transitioning':
-      return posCenter(i)
-    case 'split3':
-      return pos3(i)
-    case 'split2':
-      return pos2(i)
-    case 'shuffling':
-      return posCenter(i) // 初期 fallback（実際は posShuffle が使われる）
-  }
-}
+// === 積み上げ時の遅延 ===
 
-// 3山積み上げ用、カードの遅延（3番目→0、2番目→0.45s、1番目→0.9s）
-// pile3Order: pileIdx -> rank (1=1st picked, 2=2nd, 3=3rd)
+// stacking3: rank3 → 即時、rank2 → 0.45s、rank1 → 0.9s（rank1 が最後 = 一番上）
 function stackDelay3(i: number, pile3Order: Record<number, number>): number {
   const pile = Math.floor(i / 4)
-  const rank = pile3Order[pile] ?? 0
-  if (rank === 0) return 0
-  return (3 - rank) * 0.45
+  const order = pile3Order[pile] ?? 0
+  if (order === 0) return 0
+  return (3 - order) * 0.45
 }
 
-// 2山積み上げ用、選ばれた山が後（上）になるよう遅延
-function stackDelay2(i: number, chosen: 0 | 1 | null): number {
-  if (chosen === null) return 0
-  const pile = i < 6 ? 0 : 1
-  return pile === chosen ? 0.5 : 0
+// stacking2: 選ばれた山（上に乗せる側）に遅延を付ける
+function stackDelay2(currentRanks: number[], i: number, chosenPile2: 0 | 1 | null): number {
+  if (chosenPile2 === null) return 0
+  const isTopHalf = currentRanks[i] >= N / 2
+  const inSelected = (chosenPile2 === 0 && isTopHalf) || (chosenPile2 === 1 && !isTopHalf)
+  return inSelected ? 0.5 : 0
 }
 
 const PROMPTS: Record<Phase, string> = {
@@ -114,16 +157,29 @@ const PROMPTS: Record<Phase, string> = {
 
 export function ShufflePage() {
   const navigate = useNavigate()
-  const { drawn, drawOne, setOrientation, reset } = useReadingStore(
+  const { drawn, drawOne, reset } = useReadingStore(
     useShallow((s) => ({
       drawn: s.drawn,
       drawOne: s.drawOne,
-      setOrientation: s.setOrientation,
       reset: s.reset,
     })),
   )
 
   const [phase, setPhase] = useState<Phase>('shuffling')
+
+  // シャッフル sub-phase 進行
+  const [subIdx, setSubIdx] = useState(0)
+  useEffect(() => {
+    if (phase !== 'shuffling') return
+    const cur = SHUFFLE_SEQ[subIdx % SHUFFLE_SEQ.length]
+    const t = window.setTimeout(() => setSubIdx((n) => n + 1), cur.ms)
+    return () => window.clearTimeout(t)
+  }, [phase, subIdx])
+
+  // カードのスタック内 rank（0=底, N-1=最上段）
+  const [cardRanks, setCardRanks] = useState<number[]>(() =>
+    Array.from({ length: N }, (_, i) => i),
+  )
 
   // 3山選択（pileIdx -> rank 1|2|3）
   const [pile3Order, setPile3Order] = useState<Record<number, number>>({})
@@ -132,22 +188,8 @@ export function ShufflePage() {
   // 2山選択
   const [chosenPile2, setChosenPile2] = useState<0 | 1 | null>(null)
 
-  // 選ぶ「上の側」
+  // 「上の側」（演出のみ、向きはバックエンドのランダム値を使う）
   const [chosenSide, setChosenSide] = useState<'left' | 'right' | null>(null)
-
-  // シャッフル中の動的位置のために 60fps で時刻更新
-  const [t, setT] = useState(0)
-  useEffect(() => {
-    if (phase !== 'shuffling') return
-    let raf = 0
-    let start = performance.now()
-    const loop = (now: number) => {
-      setT((now - start) / 1000)
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
-    return () => cancelAnimationFrame(raf)
-  }, [phase])
 
   // 自動進行する phase のタイマー
   useEffect(() => {
@@ -155,8 +197,7 @@ export function ShufflePage() {
     if (phase === 'merging') {
       timer = window.setTimeout(() => setPhase('split3'), 900)
     } else if (phase === 'stacking3') {
-      // 0.45s × 2 + 余韻 → 約 1.4s
-      timer = window.setTimeout(() => setPhase('split2'), 1500)
+      timer = window.setTimeout(() => setPhase('split2'), 1700)
     } else if (phase === 'stacking2') {
       timer = window.setTimeout(() => setPhase('rotating'), 1100)
     } else if (phase === 'rotating') {
@@ -167,21 +208,18 @@ export function ShufflePage() {
     return () => window.clearTimeout(timer)
   }, [phase, navigate])
 
-  // STOP 押下: シャッフル停止 + バックエンド draw を先行発射
   const handleStop = () => {
     if (phase !== 'shuffling') return
-    reset() // 過去の drawn をクリア
-    drawOne() // 非同期。完了は orienting までに間に合わせる
+    reset()
+    drawOne()
     setPhase('merging')
   }
 
-  // 3山選択トグル
   const togglePile3 = (pileIdx: number) => {
     if (phase !== 'split3') return
     setPile3Order((current) => {
       const next = { ...current }
       if (next[pileIdx]) {
-        // 解除: その rank を消す + より大きい rank を詰める
         const removed = next[pileIdx]
         delete next[pileIdx]
         for (const k of Object.keys(next)) {
@@ -189,11 +227,10 @@ export function ShufflePage() {
           if (next[idx] > removed) next[idx] -= 1
         }
       } else {
-        // 新規: 次の rank を割り当て
         const used = new Set(Object.values(next))
-        let rank = 1
-        while (used.has(rank)) rank += 1
-        if (rank <= 3) next[pileIdx] = rank
+        let r = 1
+        while (used.has(r)) r += 1
+        if (r <= 3) next[pileIdx] = r
       }
       return next
     })
@@ -206,34 +243,23 @@ export function ShufflePage() {
 
   const handleStack3 = () => {
     if (!pile3Complete) return
+    // ranks を更新してからアニメーション開始
+    setCardRanks(ranksAfterStack3(pile3Order))
     setPhase('stacking3')
   }
 
   const handleStack2 = () => {
     if (chosenPile2 === null) return
+    setCardRanks((curr) => ranksAfterStack2(curr, chosenPile2))
     setPhase('stacking2')
   }
 
   const handleOrient = (side: 'left' | 'right') => {
     if (phase !== 'orienting') return
     setChosenSide(side)
-    // 反時計回り 90° で寝かせた状態だと:
-    //   横向きの「左」端 = カード本来の頭 → 「左」を上にすれば 正位置
-    //   横向きの「右」端 = カード本来の足 → 「右」を上にすれば 逆位置
-    const orientation = side === 'left' ? 'upright' : 'reversed'
-    if (drawn) {
-      setOrientation(orientation)
-    }
+    // 向きはバックエンドのランダム値をそのまま使う（左右選択は儀式の演出のみ）
     setPhase('transitioning')
   }
-
-  // drawn がまだの場合: orienting 後に到着したら orientation を反映
-  useEffect(() => {
-    if (chosenSide && drawn) {
-      const orientation = chosenSide === 'left' ? 'upright' : 'reversed'
-      setOrientation(orientation)
-    }
-  }, [chosenSide, drawn, setOrientation])
 
   // コンテナの rotate / scale
   const containerAnim = useMemo(() => {
@@ -242,9 +268,7 @@ export function ShufflePage() {
       case 'orienting':
         return { rotate: -90, scale: 1.15 }
       case 'transitioning':
-        // -90° から
-        //   左ボタン: 0° (CW 90°、左端が上に来る → 正位置)
-        //   右ボタン: -180° (CCW 90°、右端が上に来る → 逆位置)
+        // 左 → CW 90° → 0° / 右 → CCW 90° → -180°
         return {
           rotate: chosenSide === 'left' ? 0 : -180,
           scale: 1.15,
@@ -254,9 +278,31 @@ export function ShufflePage() {
     }
   }, [phase, chosenSide])
 
+  // 各カードのターゲット位置を計算
+  const getTarget = (i: number): Pos => {
+    if (phase === 'shuffling') {
+      const sub = SHUFFLE_SEQ[subIdx % SHUFFLE_SEQ.length].sub
+      return posShuffleSub(i, sub)
+    }
+    if (phase === 'split3') return pos3Initial(i)
+    if (phase === 'split2') return pos2ByRank(cardRanks[i])
+    return posCenter(cardRanks[i])
+  }
+
+  const getDelay = (i: number): number => {
+    if (phase === 'stacking3') return stackDelay3(i, pile3Order)
+    if (phase === 'stacking2') {
+      // stacking2 開始時には ranks は既に更新済み。delay 判定用に元の所属を計算する
+      // → ranks 更新前のロジックに沿うため、現在 ranks の上半分/下半分判定で OK
+      // （update 後も chosenPile2 が指す側のカードは新 rank が 6-11 になっており、判定は同じ）
+      return stackDelay2(cardRanks, i, chosenPile2)
+    }
+    return 0
+  }
+
   return (
     <PageTransition className="page page-shuffle">
-      <p className="prompt">{PROMPTS[phase] || ' '}</p>
+      <p className="prompt">{PROMPTS[phase] || ' '}</p>
 
       <div className="shuffle-stage shuffle-stage--new">
         <motion.div
@@ -268,38 +314,28 @@ export function ShufflePage() {
           }}
         >
           {Array.from({ length: N }, (_, i) => {
-            const target =
-              phase === 'shuffling' ? posShuffle(i, t) : targetFor(i, phase)
-            const delay =
-              phase === 'stacking3'
-                ? stackDelay3(i, pile3Order)
-                : phase === 'stacking2'
-                  ? stackDelay2(i, chosenPile2)
-                  : 0
+            const target = getTarget(i)
+            const delay = getDelay(i)
             return (
               <motion.img
                 key={i}
                 src={CARD_BACK}
                 alt=""
                 className="shuffle-pile-card"
-                animate={{
-                  x: target.x,
-                  y: target.y,
-                  rotate: target.rotate,
+                animate={{ x: target.x, y: target.y, rotate: target.rotate }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 160,
+                  damping: 20,
+                  delay,
                 }}
-                transition={
-                  phase === 'shuffling'
-                    ? { type: 'tween', duration: 0.05, ease: 'linear' }
-                    : { type: 'spring', stiffness: 160, damping: 20, delay }
-                }
               />
             )
           })}
         </motion.div>
 
-        {/* 3山選択ボタン */}
         {phase === 'split3' && (
-          <div className="pile-selectors pile-selectors--3">
+          <div className="pile-selectors">
             {[0, 1, 2].map((idx) => {
               const rank = pile3Order[idx]
               return (
@@ -318,9 +354,8 @@ export function ShufflePage() {
           </div>
         )}
 
-        {/* 2山選択ボタン */}
         {phase === 'split2' && (
-          <div className="pile-selectors pile-selectors--2">
+          <div className="pile-selectors">
             {[0, 1].map((idx) => {
               const active = chosenPile2 === idx
               return (
@@ -329,7 +364,7 @@ export function ShufflePage() {
                   type="button"
                   className={`pile-selector ${active ? 'pile-selector--active' : ''}`}
                   onClick={() => togglePile2(idx as 0 | 1)}
-                  style={{ left: `calc(50% + ${(idx === 0 ? -85 : 85)}px)` }}
+                  style={{ left: `calc(50% + ${idx === 0 ? -85 : 85}px)` }}
                   aria-label={`山 ${idx + 1}`}
                 >
                   {active && <span className="pile-badge">✓</span>}
@@ -340,7 +375,6 @@ export function ShufflePage() {
         )}
       </div>
 
-      {/* phase ごとのアクション */}
       {phase === 'shuffling' && (
         <button type="button" className="btn-primary" onClick={handleStop}>
           ストップ
@@ -383,6 +417,14 @@ export function ShufflePage() {
             右
           </button>
         </div>
+      )}
+
+      {/* drawn を取り敢えず参照しておかないと TS の unused 警告が出るので、
+          API エラー時に保険メッセージを出す */}
+      {drawn === null && phase === 'orienting' && (
+        <p className="step-label" style={{ opacity: 0.5 }}>
+          カードを引いています…
+        </p>
       )}
     </PageTransition>
   )
