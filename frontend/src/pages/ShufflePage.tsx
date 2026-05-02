@@ -217,9 +217,10 @@ export function ShufflePage() {
   const handleOrient = (side: 'left' | 'right') => {
     if (phase !== 'orienting') return
     setChosenSide(side)
-    // 右 = 正位置、左 = 逆位置
-    const orientation = side === 'right' ? 'upright' : 'reversed'
-    // drawn が間に合っていれば即座に上書き、まだなら drawOne の完了を待ってからは別途 effect で
+    // 反時計回り 90° で寝かせた状態だと:
+    //   横向きの「左」端 = カード本来の頭 → 「左」を上にすれば 正位置
+    //   横向きの「右」端 = カード本来の足 → 「右」を上にすれば 逆位置
+    const orientation = side === 'left' ? 'upright' : 'reversed'
     if (drawn) {
       setOrientation(orientation)
     }
@@ -229,7 +230,7 @@ export function ShufflePage() {
   // drawn がまだの場合: orienting 後に到着したら orientation を反映
   useEffect(() => {
     if (chosenSide && drawn) {
-      const orientation = chosenSide === 'right' ? 'upright' : 'reversed'
+      const orientation = chosenSide === 'left' ? 'upright' : 'reversed'
       setOrientation(orientation)
     }
   }, [chosenSide, drawn, setOrientation])
@@ -241,9 +242,11 @@ export function ShufflePage() {
       case 'orienting':
         return { rotate: -90, scale: 1.15 }
       case 'transitioning':
-        // 右 = 時計回りで 0°、左 = 反時計回りで -180°（= +180°）
+        // -90° から
+        //   左ボタン: 0° (CW 90°、左端が上に来る → 正位置)
+        //   右ボタン: -180° (CCW 90°、右端が上に来る → 逆位置)
         return {
-          rotate: chosenSide === 'right' ? 0 : -180,
+          rotate: chosenSide === 'left' ? 0 : -180,
           scale: 1.15,
         }
       default:
