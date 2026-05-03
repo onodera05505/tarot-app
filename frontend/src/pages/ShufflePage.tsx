@@ -64,16 +64,19 @@ const SHUFFLE_SEQ: { sub: ShuffleSub; ms: number }[] = [
   { sub: 'sub-merge3', ms: 420 },
 ]
 
-// 3山中心の x 座標
+// 3山中心の x 座標（ユーザー操作の split3 / 山選択用）
 const PX3 = [-100, 0, 100]
 // 2山中心の x 座標
 const PX2 = [-78, 78]
-// 4山中心の xy（シャッフル中のみ使用）
-const P4 = [
-  { x: -90, y: -45 },
-  { x: 90, y: -45 },
-  { x: -90, y: 45 },
-  { x: 90, y: 45 },
+
+// シャッフル中のみ使う山中心。22 枚分の厚みと回転を吸収するため、
+// ユーザー操作 split3 より広めに取る。
+const SHUFFLE_PX3 = [-118, 0, 118]
+const SHUFFLE_P4 = [
+  { x: -108, y: -68 },
+  { x: 108, y: -68 },
+  { x: -108, y: 68 },
+  { x: 108, y: 68 },
 ]
 
 // 1 枚あたりの厚み（z 軸オフセット）
@@ -95,25 +98,26 @@ function posShuffleSub(i: number, sub: ShuffleSub): Pos {
         x: (col - 2) * 1.4,
         y: row * 0.8,
         z: i * CARD_DEPTH,
-        rotate: ((i - (N - 1) / 2) * 1.4),
+        rotate: (i - (N - 1) / 2) * 0.8,
       }
     }
     case 'sub-split3': {
       const center = (PILE3_SIZES[p3] - 1) / 2
+      // 各カードの横ずれ・回転を控えめにし、山同士が触れないようにする
       return {
-        x: PX3[p3] + (r3 - center) * 1.5,
-        y: r3 * 1.4,
+        x: SHUFFLE_PX3[p3] + (r3 - center) * 0.5,
+        y: r3 * 0.7,
         z: r3 * CARD_DEPTH,
-        rotate: (r3 - center) * 5,
+        rotate: (r3 - center) * 2,
       }
     }
     case 'sub-split4': {
       const center = (PILE4_SIZES[p4] - 1) / 2
       return {
-        x: P4[p4].x + (r4 - center) * 1.5,
-        y: P4[p4].y + r4 * 1.4,
+        x: SHUFFLE_P4[p4].x + (r4 - center) * 0.5,
+        y: SHUFFLE_P4[p4].y + r4 * 0.7,
         z: r4 * CARD_DEPTH,
-        rotate: (r4 - center) * 6,
+        rotate: (r4 - center) * 2.5,
       }
     }
     case 'sub-merge1':
