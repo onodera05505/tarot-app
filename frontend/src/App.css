@@ -101,6 +101,68 @@
   gap: clamp(1rem, 3vh, 1.8rem);
 }
 
+/* === 占うことを思い浮かべる画面 === */
+.intent-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: clamp(2rem, 6vh, 3.5rem);
+  text-align: center;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.intent-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: clamp(280px, 70vw, 380px);
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(245, 215, 110, 0.18) 0%, rgba(170, 100, 255, 0.08) 38%, transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+  animation: intent-glow-pulse 4s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes intent-glow-pulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
+}
+
+.intent-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.intent-divider {
+  color: var(--accent);
+  font-size: 1.1rem;
+  letter-spacing: 0.4em;
+  text-shadow: 0 0 14px rgba(245, 215, 110, 0.55);
+  opacity: 0.75;
+}
+
+.intent-text {
+  font-size: clamp(1.15rem, 4vw, 1.6rem);
+  letter-spacing: 0.2em;
+  line-height: 2.1;
+  color: var(--text);
+  margin: 0;
+  text-shadow: 0 0 24px rgba(245, 215, 110, 0.25);
+}
+
 .shuffle-stage {
   position: relative;
   width: min(560px, 92vw);

@@ -9,6 +9,7 @@ const CARD_BACK = '/cards/major/000.webp'
 const N = 12
 
 type Phase =
+  | 'intent'
   | 'shuffling'
   | 'merging'
   | 'split3'
@@ -170,7 +171,8 @@ function stackDelay2(currentRanks: number[], i: number, chosenPile2: 0 | 1 | nul
 }
 
 const PROMPTS: Record<Phase, string> = {
-  shuffling: '占ってもらう事柄を思い浮かべてください。',
+  intent: '',
+  shuffling: 'シャッフルを止めてください',
   merging: '',
   split3: '積み上げる順番を指定してください',
   stacking3: '',
@@ -191,7 +193,7 @@ export function ShufflePage() {
     })),
   )
 
-  const [phase, setPhase] = useState<Phase>('shuffling')
+  const [phase, setPhase] = useState<Phase>('intent')
 
   // シャッフル sub-phase 進行
   const [subIdx, setSubIdx] = useState(0)
@@ -327,6 +329,39 @@ export function ShufflePage() {
     return 0
   }
 
+  // 占うことを思い浮かべる画面
+  if (phase === 'intent') {
+    return (
+      <PageTransition className="page page-shuffle">
+        <div className="intent-screen">
+          <div className="intent-glow" aria-hidden />
+          <motion.div
+            className="intent-content"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+          >
+            <span className="intent-divider" aria-hidden>✦</span>
+            <p className="intent-text">
+              占うことを<br />思い浮かべてください
+            </p>
+            <span className="intent-divider" aria-hidden>✦</span>
+          </motion.div>
+          <motion.button
+            type="button"
+            className="btn-primary"
+            onClick={() => setPhase('shuffling')}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
+            シャッフルへ
+          </motion.button>
+        </div>
+      </PageTransition>
+    )
+  }
+
   return (
     <PageTransition className="page page-shuffle">
       <p className="prompt">{PROMPTS[phase] || ' '}</p>
@@ -356,6 +391,7 @@ export function ShufflePage() {
                   damping: 20,
                   delay,
                 }}
+                style={{ zIndex: cardRanks[i] }}
               />
             )
           })}
