@@ -1,6 +1,6 @@
 // 大アルカナ 22 枚のデータ。
-// 旧バックエンド (/api/cards) のレスポンスをローカル化したもの。
-// 編集する場合はこのファイルを直接編集 → 再ビルドで反映。
+// このファイルは自動生成です。直接編集しないでください。
+// 編集元: data/cards.md  /  再生成: pnpm gen:cards
 
 import type { TarotCard } from '../lib/types'
 
