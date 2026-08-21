@@ -37,57 +37,6 @@ function unlock(): AudioContext {
   return getCtx()
 }
 
-type ToneOpts = {
-  type?: OscillatorType
-  startTime?: number
-  attack?: number
-  release?: number
-  gain?: number
-}
-
-function tone(freq: number, duration: number, opts: ToneOpts = {}): void {
-  const c = getCtx()
-  const start = opts.startTime ?? c.currentTime
-  const attack = opts.attack ?? 0.005
-  const peak = opts.gain ?? 0.2
-
-  const osc = c.createOscillator()
-  osc.type = opts.type ?? 'sine'
-  osc.frequency.value = freq
-
-  const env = c.createGain()
-  env.gain.setValueAtTime(0.0001, start)
-  env.gain.exponentialRampToValueAtTime(peak, start + attack)
-  env.gain.exponentialRampToValueAtTime(0.0001, start + duration)
-
-  osc.connect(env).connect(masterGain ?? c.destination)
-  osc.start(start)
-  osc.stop(start + duration + 0.05)
-}
-
-// プレビュー（1回目タップ）: 短く軽いベル音
-export function playPreview(): void {
-  unlock()
-  const c = getCtx()
-  const now = c.currentTime
-  tone(1320, 0.24, { startTime: now, gain: 0.45, attack: 0.003, release: 0.2 }) // E6
-  tone(1980, 0.2, { startTime: now, gain: 0.18, attack: 0.003 }) // B6 (倍音で煌めき)
-}
-
-// 確定（2回目タップ）: クリスタルチャイム風、2音連なり
-export function playSelect(): void {
-  unlock()
-  const c = getCtx()
-  const now = c.currentTime
-  // 1音目: E5 と倍音
-  tone(659.25, 1.4, { startTime: now, gain: 0.4, attack: 0.005 })
-  tone(1318.5, 1.0, { startTime: now, gain: 0.16, attack: 0.005 })
-  tone(1977.75, 0.7, { startTime: now, gain: 0.07, attack: 0.005 })
-  // 2音目（少し遅れて B5 = 完全5度上）
-  tone(987.77, 1.2, { startTime: now + 0.18, gain: 0.32, attack: 0.005 })
-  tone(1975.54, 0.9, { startTime: now + 0.18, gain: 0.12, attack: 0.005 })
-}
-
 // めくれ: 短いノイズに band-pass フィルター掃引で「フワッ」とした空気感
 export function playFlip(): void {
   const c = unlock()

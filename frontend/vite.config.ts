@@ -51,17 +51,6 @@ export default defineConfig({
               },
             },
           },
-          {
-            urlPattern: /^https?:\/\/.*\/api\/cards.*$/,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'cards-api',
-              expiration: {
-                maxEntries: 30,
-                maxAgeSeconds: 60 * 60 * 24, // 1日
-              },
-            },
-          },
         ],
       },
     }),

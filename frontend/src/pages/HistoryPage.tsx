@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PageTransition } from '../components/animations/PageTransition'
 import { clearHistory, loadHistory } from '../lib/history'
@@ -15,11 +15,8 @@ function formatDate(epochMs: number): string {
 
 export function HistoryPage() {
   const navigate = useNavigate()
-  const [entries, setEntries] = useState<HistoryEntry[]>([])
-
-  useEffect(() => {
-    setEntries(loadHistory())
-  }, [])
+  // 遅延初期化でマウント時に一度だけ読む（effect 内 setState だと余計な再レンダーが走る）
+  const [entries, setEntries] = useState<HistoryEntry[]>(() => loadHistory())
 
   const handleClear = () => {
     if (!window.confirm('占いの履歴をすべて削除します。よろしいですか？')) return

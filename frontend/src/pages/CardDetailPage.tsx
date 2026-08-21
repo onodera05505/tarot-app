@@ -27,14 +27,12 @@ export function CardDetailPage() {
 
   useEffect(() => {
     if (isInvalidId) return
-    const controller = new AbortController()
-    fetchCard(numericId, controller.signal)
+    fetchCard(numericId)
       .then(setCard)
       .catch((e: unknown) => {
-        if (e instanceof Error && e.name !== 'AbortError') setError(e.message)
+        if (e instanceof Error) setError(e.message)
       })
       .finally(() => setLoading(false))
-    return () => controller.abort()
   }, [numericId, isInvalidId])
 
   if (isInvalidId) {

@@ -440,9 +440,9 @@
   padding: 0 1rem;
 }
 
-/* モバイルでは上寄せ + ギャップを詰める。
-   padding-top は固定 24px に揃え、選択画面で確定したカードの最終位置と
-   ピクセル単位で一致させる（CardSelector 側でも safe-area + 24px を target に計算）。 */
+/* モバイルでは上寄せ + ギャップを詰める。padding-top は固定 24px。
+   （旧選択画面 CardSelector とのピクセル一致制約は選択画面の廃止で消滅。
+   現在は単なるレイアウト値なので、必要なら自由に調整してよい） */
 @media (max-width: 640px) {
   .page-result {
     justify-content: flex-start;

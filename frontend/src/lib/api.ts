@@ -2,19 +2,19 @@ import { tarotCards } from '../data/cards'
 import type { DrawnCard, Orientation, TarotCard } from './types'
 
 // バックエンドを廃して、22 枚のデータをアプリ内に同梱したローカル実装。
-// 関数のシグネチャは旧 API 版と同じなので、呼び出し側のコードは変更不要。
+// Promise を返すのは旧 API 版と呼び出し側の形を揃えるため（AbortSignal は廃止済み）。
 
 function delay<T>(value: T, ms = 0): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms))
 }
 
-export function fetchAllCards(_signal?: AbortSignal): Promise<TarotCard[]> {
+export function fetchAllCards(): Promise<TarotCard[]> {
   // ソートは旧バックエンドと同じ「カード番号昇順」を保つ
   const sorted = [...tarotCards].sort((a, b) => a.number - b.number)
   return delay(sorted)
 }
 
-export function fetchCard(id: number, _signal?: AbortSignal): Promise<TarotCard> {
+export function fetchCard(id: number): Promise<TarotCard> {
   const card = tarotCards.find((c) => c.id === id)
   if (!card) {
     return Promise.reject(new Error('Card not found'))
@@ -31,7 +31,7 @@ function fisherYatesPick(count: number): TarotCard[] {
   return arr.slice(0, count)
 }
 
-export async function drawCards(count = 1, _signal?: AbortSignal): Promise<DrawnCard[]> {
+export async function drawCards(count = 1): Promise<DrawnCard[]> {
   if (!Number.isInteger(count) || count < 1) {
     throw new Error('count must be a positive integer')
   }

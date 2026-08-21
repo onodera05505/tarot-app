@@ -11,14 +11,12 @@ export function CardListPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const controller = new AbortController()
-    fetchAllCards(controller.signal)
+    fetchAllCards()
       .then(setCards)
       .catch((e: unknown) => {
-        if (e instanceof Error && e.name !== 'AbortError') setError(e.message)
+        if (e instanceof Error) setError(e.message)
       })
       .finally(() => setLoading(false))
-    return () => controller.abort()
   }, [])
 
   return (
