@@ -97,10 +97,10 @@ README・画面内の説明文・env やスキーマのコメントなど**従�
   zustand / framer-motion / react-router / Sentry）と `backend/`
   （Hono on Cloudflare Workers + Prisma 7 + pg）。カードデータは
   現在フロントにバンドル（local-only。2026 年頭のコミット参照）
-- **一次資料（仕様書駆動の起点）:** `backend/docs/タロットアプリ_要件定義書_v2.md`。
-  ただし**作りかけのまま止まっていた期間があるため、実装との同期状態は未検証**。
-  挙動を変える作業を始める前に、まず仕様書と実装の突き合わせ（監査）から
-  入ること。同ディレクトリの PDF（20260427）は原資料の記録で、更新しない
+- **一次資料（仕様書駆動の起点）:** `docs/タロットアプリ_要件定義書_v3.md`
+  （2026-08-21 全面改訂・実装と突き合わせ済み。実装との既知差分は同書 §6 に
+  列挙してあり、挙動を変える作業はこの差分を消す方向で行う）。
+  `backend/docs/` の v2 と PDF（20260427）は過去版の記録で、更新しない
 - **コマンド:** frontend は `pnpm dev` / `pnpm build`（tsc -b 込み）/
   `pnpm lint`。backend は `pnpm dev`（wrangler）/ `pnpm deploy` /
   `pnpm cf-typegen`（Workers の型生成。バインディングを変えたら回す）
