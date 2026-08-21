@@ -60,6 +60,12 @@ export function ResultPage() {
     navigate('/')
   }
 
+  // TopPage の「スタート」と同じ手順（reset → /shuffle）で揃える
+  const handleRetry = () => {
+    reset()
+    navigate('/shuffle')
+  }
+
   const handleShare = async () => {
     if (sharing) return
     setSharing(true)
@@ -118,6 +124,9 @@ export function ResultPage() {
             disabled={sharing}
           >
             {sharing ? '画像を作成中...' : 'この結果をシェア'}
+          </button>
+          <button type="button" className="btn-ghost" onClick={handleRetry}>
+            もう一度占う
           </button>
           <button type="button" className="btn-ghost" onClick={handleHome}>
             トップへ戻る
