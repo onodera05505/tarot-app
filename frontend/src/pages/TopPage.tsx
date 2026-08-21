@@ -40,6 +40,7 @@ export function TopPage() {
           占い履歴を見る
         </button>
       </div>
+      <p className="app-version">v{__APP_VERSION__}</p>
     </PageTransition>
   )
 }
