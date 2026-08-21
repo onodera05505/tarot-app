@@ -104,7 +104,8 @@ README・画面内の説明文・env やスキーマのコメントなど**従�
 - **コマンド:** frontend は `pnpm dev` / `pnpm build`（tsc -b 込み）/
   `pnpm lint`。backend は `pnpm dev`（wrangler）/ `pnpm deploy` /
   `pnpm cf-typegen`（Workers の型生成。バインディングを変えたら回す）
-- **テスト基盤は未整備**（両パッケージとも test スクリプトなし）。
-  共通ルール 2 の②・③が受け皿を持たないため、挙動を変える最初の作業の
-  前にテストランナーの導入から始めること（未解決課題）
+- **テスト:** frontend に vitest 導入済み（2026-08-21）。`pnpm test` /
+  `pnpm test:watch`。テストは `frontend/tests/`（専用 tsconfig.test.json。
+  `src/` は vite/client 型のため Node API を使うテストと分離してある）。
+  CI でもビルド前に実行。backend は参照用残骸のためテスト無し
 - **デプロイ:** `.github/workflows/deploy.yml` を参照
