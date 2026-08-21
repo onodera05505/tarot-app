@@ -22,7 +22,10 @@ jobs:
           version: 10
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # jsdom 30（テスト環境）が Node 20 に無い API を使うため、
+          # ローカル開発と同じ Node 24 に揃えている。下げると CI のテストが
+          # 「webidl.util.markAsUncloneable is not a function」で落ちる
+          node-version: 24
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Install frontend dependencies
