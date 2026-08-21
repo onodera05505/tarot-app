@@ -86,6 +86,28 @@ describe('儀式フロー（仕様書 v3 §5.3 のフェーズ遷移順）', () 
     expect(useReadingStore.getState().drawn!.orientation).toBe(before)
   })
 
+  it('詳しく占うの文脈（deep）はストップを押しても消えない（v3.1 §5.7 の回帰テスト）', async () => {
+    // 2026-08-21 の不具合: handleStop の reset() が deep を消し、
+    // 結果画面が通常表示に落ちていた
+    useReadingStore.getState().setDeepContext({
+      categoryId: 'work',
+      categoryLabel: '仕事',
+      answers: ['q1a', 'q2b', 'q3c'],
+    })
+    mount()
+    fireEvent.click(screen.getByRole('button', { name: 'シャッフルへ' }))
+    fireEvent.click(screen.getByRole('button', { name: 'ストップ' }))
+    await advance(50)
+
+    const state = useReadingStore.getState()
+    expect(state.drawn).not.toBeNull()
+    expect(state.deep).toEqual({
+      categoryId: 'work',
+      categoryLabel: '仕事',
+      answers: ['q1a', 'q2b', 'q3c'],
+    })
+  })
+
   it('決定は 3 山すべての順番を指定するまで押せない', async () => {
     mount()
     fireEvent.click(screen.getByRole('button', { name: 'シャッフルへ' }))

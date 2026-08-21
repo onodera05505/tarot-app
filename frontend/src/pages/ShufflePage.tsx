@@ -262,11 +262,10 @@ const PROMPTS: Record<Phase, string> = {
 
 export function ShufflePage() {
   const navigate = useNavigate()
-  const { drawn, drawOne, reset } = useReadingStore(
+  const { drawn, drawOne } = useReadingStore(
     useShallow((s) => ({
       drawn: s.drawn,
       drawOne: s.drawOne,
-      reset: s.reset,
     })),
   )
 
@@ -308,7 +307,9 @@ export function ShufflePage() {
 
   const handleStop = () => {
     if (phase !== 'shuffling') return
-    reset()
+    // ここで reset() を呼んではいけない: 詳しく占うの文脈（deep）が消え、
+    // 結果画面が通常表示に落ちる（2026-08-21 の不具合）。前回の drawn/status は
+    // drawOne() が上書きするので個別のクリアも不要
     drawOne()
     setPhase('merging')
   }
