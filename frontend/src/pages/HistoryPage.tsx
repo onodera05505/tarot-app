@@ -65,7 +65,12 @@ export function HistoryPage() {
                     }
                   />
                   <div className="card-list-meta">
-                    <span className="card-list-number">{formatDate(entry.drawnAt)}</span>
+                    <span className="card-list-number">
+                      {formatDate(entry.drawnAt)}
+                      {entry.categoryLabel && (
+                        <span className="history-category">{entry.categoryLabel}</span>
+                      )}
+                    </span>
                     <h2 className="card-list-name">{entry.card.nameJa}</h2>
                     <p className="card-list-name-en">
                       {entry.orientation === 'upright' ? '正位置' : '逆位置'}

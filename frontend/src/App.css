@@ -791,3 +791,115 @@
 .page-card-detail .btn-ghost {
   align-self: center;
 }
+
+/* ===== 詳しく占う（/deep, v3.1 §5.7） ===== */
+
+.deep-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.9rem, 2.5vw, 1.3rem);
+  width: min(100%, 420px);
+}
+
+.deep-title {
+  font-size: clamp(1.3rem, 4.5vw, 1.7rem);
+  letter-spacing: 0.25em;
+  color: var(--accent);
+  margin: 0;
+}
+
+.deep-progress {
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+}
+
+.deep-question {
+  font-size: clamp(1rem, 3vw, 1.15rem);
+  color: var(--text);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.deep-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  width: 100%;
+}
+
+.deep-option {
+  appearance: none;
+  border: 1px solid rgba(230, 225, 255, 0.3);
+  background: rgba(230, 225, 255, 0.05);
+  color: var(--text);
+  min-height: 52px;
+  padding: 0.8em 1.2em;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
+  letter-spacing: 0.1em;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+@media (hover: hover) {
+  .deep-option:hover {
+    background: rgba(230, 225, 255, 0.12);
+    transform: translateY(-1px);
+  }
+}
+
+.deep-option--active {
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* 結果画面のカテゴリ表示と回答別補足 */
+.result-deep {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.result-category {
+  display: inline-block;
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  padding: 0.25em 1.1em;
+  border-radius: 999px;
+}
+
+.result-deep-advice {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: left;
+}
+
+.result-deep-advice li {
+  font-size: clamp(0.82rem, 2.3vw, 0.92rem);
+  color: var(--text-dim);
+  line-height: 1.8;
+  border-left: 2px solid var(--accent-border);
+  padding-left: 0.9em;
+}
+
+/* 履歴のカテゴリラベル */
+.history-category {
+  display: inline-block;
+  margin-left: 0.6em;
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  padding: 0.1em 0.7em;
+  border-radius: 999px;
+}

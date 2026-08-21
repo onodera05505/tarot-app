@@ -9,6 +9,8 @@ export type HistoryEntry = {
   card: TarotCard
   orientation: Orientation
   keywords: string[]
+  /** 詳しく占うの場合のカテゴリ名（通常占いでは undefined） */
+  categoryLabel?: string
 }
 
 function makeId(): string {
@@ -27,13 +29,17 @@ export function loadHistory(): HistoryEntry[] {
   }
 }
 
-export function addToHistory(drawn: DrawnCard): HistoryEntry {
+export function addToHistory(
+  drawn: DrawnCard,
+  categoryLabel?: string,
+): HistoryEntry {
   const entry: HistoryEntry = {
     id: makeId(),
     drawnAt: Date.now(),
     card: drawn.card,
     orientation: drawn.orientation,
     keywords: drawn.keywords,
+    ...(categoryLabel ? { categoryLabel } : {}),
   }
   const list = loadHistory()
   const next = [entry, ...list].slice(0, MAX_ENTRIES)

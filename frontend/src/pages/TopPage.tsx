@@ -23,6 +23,16 @@ export function TopPage() {
         <button type="button" className="btn-primary" onClick={handleStart}>
           スタート
         </button>
+        <button
+          type="button"
+          className="btn-ghost"
+          onClick={() => {
+            reset()
+            navigate('/deep')
+          }}
+        >
+          詳しく占う
+        </button>
         <button type="button" className="btn-ghost" onClick={() => navigate('/cards')}>
           カード解説を見る
         </button>
