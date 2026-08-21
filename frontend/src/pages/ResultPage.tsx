@@ -83,11 +83,14 @@ export function ResultPage() {
   // 詳しく占うの合成（v3.1 §4.5）: ベース解釈 + 回答別補足 3 本
   const deepBase =
     deep && deepData ? (deepData.base[card.number]?.[orientation] ?? null) : null
+  // 新構造(v3.2)はカード連動アドバイス、旧構造(v3.1)は選択肢の fragment に
+  // フォールバック（§4.5）
   const deepFragments =
     deep && deepData
       ? deep.answers
           .map(
             (answerId, i) =>
+              deepData.base[card.number]?.advice?.[answerId] ??
               deepData.questions[i]?.choices.find((c) => c.id === answerId)
                 ?.fragment,
           )

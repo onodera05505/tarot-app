@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// 詳しく占うフロー（要件定義書 v3.1 §5.7）のコンポーネントテスト。
+// 詳しく占うフロー（要件定義書 v3.2 §5.7）のコンポーネントテスト。
 // 仕様文面と公開契約のみを根拠に設計している（実装コードは参照していない）。
 // 期待値は公開データ API（loadDeepCategory('work') / tarotCards）から実行時に導出する。
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DeepPage } from '../../src/pages/DeepPage'
 import { ResultPage } from '../../src/pages/ResultPage'
 import { useReadingStore } from '../../src/store/useReadingStore'
-import { loadDeepCategory } from '../../src/data/deep/index'
+import { deepCategories, loadDeepCategory } from '../../src/data/deep/index'
 import { tarotCards } from '../../src/data/cards'
 
 // jsdom に Web Audio が無いため効果音はモック
@@ -62,9 +62,14 @@ afterEach(() => {
 })
 
 describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）', () => {
-  it('初期表示でカテゴリ一覧が出る（work の label「仕事」がボタン表示される）', async () => {
+  it('初期表示でカテゴリ一覧が出る（「仕事」「友達・恋愛」がボタン表示される）', async () => {
     mountDeep()
     expect(await screen.findByRole('button', { name: '仕事' })).toBeTruthy()
+    expect(await screen.findByRole('button', { name: '友達・恋愛' })).toBeTruthy()
+    // deepCategories に載るカテゴリはすべてボタンとして表示される（v3.2 で 2 件）
+    for (const category of deepCategories) {
+      expect(await screen.findByRole('button', { name: category.label })).toBeTruthy()
+    }
   })
 
   it('カテゴリ選択で 1 問目の質問文（work の実データ）が表示される', async () => {
@@ -147,7 +152,7 @@ describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）',
 })
 
 describe('詳しく占う: 結果画面（§5.7 4）', () => {
-  it('deep と drawn がある場合、カテゴリ名・ベース解釈・回答別補足 3 本を表示し、通常の解説文は出さない', async () => {
+  it('旧構造カテゴリ（work）: カテゴリ名・ベース解釈・choice.fragment による補足 3 本を表示し、通常の解説文は出さない', async () => {
     const work = await loadDeepCategory('work')
     const card = tarotCards.find((c) => work.base[c.number] !== undefined)
     if (!card) throw new Error('work の base に対応するカードが見つからない（データ不整合）')
@@ -157,6 +162,12 @@ describe('詳しく占う: 結果画面（§5.7 4）', () => {
       work.questions[1].choices[1],
       work.questions[2].choices[2],
     ]
+    // v3.2 で fragment は optional になった。work は旧構造カテゴリなので
+    // 全選択肢が fragment を持つこと自体を検証してから期待値に使う
+    const fragments = picked
+      .map((c) => c.fragment)
+      .filter((f): f is string => typeof f === 'string')
+    expect(fragments).toHaveLength(3)
 
     useReadingStore.setState({
       // §5.4: status が idle のままだと ResultPage は / へリダイレクトする
@@ -178,13 +189,62 @@ describe('詳しく占う: 結果画面（§5.7 4）', () => {
     await expectBodyToContain(work.label)
     // ベース解釈: 引いたカード × 正逆（ここでは逆位置）× カテゴリ
     await expectBodyToContain(work.base[card.number].reversed)
-    // 回答別補足 3 本（選んだ選択肢それぞれの fragment）
-    for (const choice of picked) {
-      await expectBodyToContain(choice.fragment)
+    // 回答別補足 3 本（advice が無い旧構造では choice.fragment にフォールバック）
+    for (const fragment of fragments) {
+      await expectBodyToContain(fragment)
     }
     // 通常の解説文の「代わり」なので、従来の解説文は表示しない
     expect(document.body.textContent).not.toContain(card.descriptionReversed)
     expect(document.body.textContent).not.toContain(card.descriptionUpright)
+  })
+
+  it('新構造カテゴリ（love）: 回答別アドバイスは base[card.number].advice[選択肢id] の 3 本が表示される', async () => {
+    const love = await loadDeepCategory('love')
+    // advice を持つ base エントリに対応するカードを選ぶ（カード別に文章が変わる新構造）
+    const card = tarotCards.find((c) => love.base[c.number]?.advice !== undefined)
+    if (!card) throw new Error('love の base に advice 付きエントリが見つからない（データ不整合）')
+
+    const picked = [
+      love.questions[0].choices[0],
+      love.questions[1].choices[1],
+      love.questions[2].choices[2],
+    ]
+    // advice は 9 エントリ（3 問 × 3 択）で、選んだ 3 選択肢の id をすべて含むこと
+    const advice = love.base[card.number].advice
+    expect(advice).toBeTruthy()
+    expect(Object.keys(advice ?? {})).toHaveLength(9)
+    const adviceTexts = picked
+      .map((c) => advice?.[c.id])
+      .filter((t): t is string => typeof t === 'string')
+    expect(adviceTexts).toHaveLength(3)
+
+    useReadingStore.setState({
+      // §5.4: status が idle のままだと ResultPage は / へリダイレクトする
+      status: 'drawn',
+      drawn: {
+        card,
+        orientation: 'upright',
+        keywords: ['キーワードA', 'キーワードB'],
+      },
+      deep: {
+        categoryId: 'love',
+        categoryLabel: love.label,
+        answers: picked.map((c) => c.id),
+      },
+    })
+    mountResult()
+
+    // カテゴリ名（「友達・恋愛」）
+    await expectBodyToContain(love.label)
+    // ベース解釈: 引いたカード × 正位置 × カテゴリ
+    await expectBodyToContain(love.base[card.number].upright)
+    // 回答別アドバイス: fragment ではなく、このカードの advice[選択肢id] が優先表示される
+    for (const text of adviceTexts) {
+      await expectBodyToContain(text)
+    }
+    // 通常の解説文は表示しない
+    expect(document.body.textContent).not.toContain(card.descriptionUpright)
+    expect(document.body.textContent).not.toContain(card.descriptionReversed)
   })
 
   it('deep が null なら従来通りの解説文（descriptionUpright）を表示する', async () => {

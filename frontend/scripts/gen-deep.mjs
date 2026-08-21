@@ -4,12 +4,14 @@
 //
 // パース仕様（詳細は data/deep/README を兼ねる各 md の冒頭コメント参照）:
 //   - 冒頭に `**id**: work` / `**label**: 仕事` の 2 行
-//   - `## 質問` セクション:
-//       `### Q1 <質問文>` 見出しの下に選択肢を
-//       `- <ラベル> :: <回答別補足>` 形式で 3 行
-//   - `## カード` セクション:
-//       `### NN - <名前>` 見出しの下に
+//   - `## 質問` セクション: `### Q1 <質問文>` 見出しの下に選択肢 3 行。
+//     形式は 2 種類（カテゴリ内で統一すること）:
+//       旧構造(v3.1): `- <ラベル> :: <回答別補足>`（カード非連動）
+//       新構造(v3.2): `- <ラベル>`（アドバイスはカード側に書く）
+//   - `## カード` セクション: `### NN - <名前>` 見出しの下に
 //       `**正位置**: <本文>` / `**逆位置**: <本文>` の各 1 行（1 段落 1 行）
+//     新構造ではさらに `**Q1a**: <本文>` 〜 `**Q3c**: <本文>` の 9 行
+//     （Q<問番号><選択肢 a/b/c> = カード × 選択肢のアドバイス）
 //   - 質問 id / 選択肢 id は出現順から自動採番（q1, q1a, q1b, ...）。
 //     並べ替えると id が変わるため、既存カテゴリの並べ替えはしない
 
@@ -46,6 +48,8 @@ function parseCategory(file, raw) {
   const qBlocks = qSection.split(/^### /m).slice(1)
   if (qBlocks.length !== 3) fail(file, `質問は 3 問必要です（現在 ${qBlocks.length} 問）`)
 
+  let legacyCount = 0
+  let plainCount = 0
   const questions = qBlocks.map((block, qi) => {
     const [head, ...rest] = block.split('\n')
     const text = head.replace(/^Q\d+\s*/, '').trim()
@@ -54,16 +58,22 @@ function parseCategory(file, raw) {
       .filter((l) => l.trim().startsWith('- '))
       .map((l, ci) => {
         const m = l.trim().replace(/^- /, '').split('::')
-        if (m.length !== 2) fail(file, `Q${qi + 1} 選択肢 ${ci + 1}: 「ラベル :: 補足」形式ではありません`)
-        return {
-          id: `q${qi + 1}${'abc'[ci]}`,
-          label: m[0].trim(),
-          fragment: m[1].trim(),
+        const id = `q${qi + 1}${'abc'[ci]}`
+        if (m.length === 2) {
+          legacyCount++
+          return { id, label: m[0].trim(), fragment: m[1].trim() }
         }
+        plainCount++
+        return { id, label: m[0].trim() }
       })
     if (choices.length !== 3) fail(file, `Q${qi + 1} の選択肢は 3 択必要です（現在 ${choices.length}）`)
     return { id: `q${qi + 1}`, text, choices }
   })
+  if (legacyCount > 0 && plainCount > 0) {
+    fail(file, '旧構造（:: 付き）と新構造（ラベルのみ）の選択肢が混在しています')
+  }
+  const isLegacy = legacyCount > 0
+  const choiceIds = questions.flatMap((q) => q.choices.map((c) => c.id))
 
   // ---- カード ----
   const cSection = raw.split(/^## カード$/m)[1]
@@ -80,7 +90,23 @@ function parseCategory(file, raw) {
     if (!up) fail(file, `カード ${num}: **正位置**: 行がありません`)
     if (!rev) fail(file, `カード ${num}: **逆位置**: 行がありません`)
     if (base[num]) fail(file, `カード ${num} が重複しています`)
-    base[num] = { upright: up[1].trim(), reversed: rev[1].trim() }
+    const entry = { upright: up[1].trim(), reversed: rev[1].trim() }
+
+    if (!isLegacy) {
+      // 新構造: カードごとに Q1a〜Q3c の 9 行が必須
+      const advice = {}
+      for (const m of block.matchAll(/^\*\*Q([1-3])([a-c])\*\*:\s*(.+)$/gm)) {
+        advice[`q${m[1]}${m[2]}`] = m[3].trim()
+      }
+      for (const cid of choiceIds) {
+        const key = cid.replace(/^q(\d)([a-c])$/, 'Q$1$2')
+        if (!advice[cid]) fail(file, `カード ${num}: **${key}**: 行がありません`)
+      }
+      const extra = Object.keys(advice).filter((k) => !choiceIds.includes(k))
+      if (extra.length > 0) fail(file, `カード ${num}: 未定義の選択肢 ${extra.join(',')}`)
+      entry.advice = advice
+    }
+    base[num] = entry
   }
   for (let n = 0; n <= 21; n++) {
     if (!base[n]) fail(file, `カード ${n} がありません`)

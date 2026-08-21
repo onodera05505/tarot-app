@@ -1,13 +1,17 @@
 /**
- * 詳しく占うデータの仕様検証テスト（要件定義書 v3.1 §4.4 / §4.5 に基づく）
+ * 詳しく占うデータの仕様検証テスト（要件定義書 v3.2 §4.4 / §4.5 に基づく）
  *
  * 設計方針:
  * - 実装コードは参照せず、仕様書の文面と公開インターフェース契約のみを根拠に設計している
  * - `deepCategories` に載っている全カテゴリをループして検証するため、
- *   段階リリースで 5 カテゴリ揃った時点で自動的に全カテゴリへ適用される
+ *   段階リリースでカテゴリが増えた時点で自動的に全カテゴリへ適用される
+ * - v3.2 の段階導入: 各カテゴリは「完全に新構造（カード × 選択肢のアドバイス
+ *   22 × 9 = 198 本）」か「完全に旧構造（選択肢ごとに 1 本の fragment）」の
+ *   どちらか一方であることを検証する。love が載っている場合は新構造必須
  * - 字数レンジはデータ執筆の揺れを考慮し、仕様値に ±30 字の許容を持たせている
  *   （ベース解釈: 仕様 150〜250 字 → 検証 120〜280 字 /
- *     フラグメント: 仕様 60〜120 字 → 検証 30〜150 字）。コメントで明記の上で緩和
+ *     新構造アドバイス: 仕様 60〜140 字 → 検証 30〜170 字 /
+ *     旧構造フラグメント: 仕様 60〜120 字 → 検証 30〜150 字）。コメントで明記の上で緩和
  */
 import { describe, it, expect } from 'vitest'
 import {
@@ -32,8 +36,25 @@ const CARD_NUMBERS = Array.from({ length: 22 }, (_, i) => i)
 // 字数許容（仕様値 ±30 字。理由はファイル冒頭コメント参照）
 const BASE_MIN = 150 - 30 // 120
 const BASE_MAX = 250 + 30 // 280
-const FRAGMENT_MIN = 60 - 30 // 30
+const ADVICE_MIN = 60 - 30 // 30（新構造アドバイス: 仕様 60〜140 字）
+const ADVICE_MAX = 140 + 30 // 170
+const FRAGMENT_MIN = 60 - 30 // 30（旧構造フラグメント: 仕様 60〜120 字）
 const FRAGMENT_MAX = 120 + 30 // 150
+
+// カテゴリ内の全選択肢（3 問 × 3 択 = 9 個）
+const allChoices = (data: DeepCategoryData) =>
+  data.questions.flatMap((q) =>
+    q.choices.map((c) => ({ questionId: q.id, choice: c })),
+  )
+
+// 構造判定（v3.2 段階導入）:
+// - 新構造 = 全 22 カードに advice が存在する
+// - 旧構造 = 全選択肢に fragment が存在する
+// どちらにも完全一致しない（歯抜け・混在）状態は仕様違反
+const isFullyNew = (data: DeepCategoryData) =>
+  CARD_NUMBERS.every((n) => data.base[n]?.advice !== undefined)
+const isFullyOld = (data: DeepCategoryData) =>
+  allChoices(data).every(({ choice }) => choice.fragment !== undefined)
 
 describe('deepCategories（カテゴリ一覧）', () => {
   it('1 つ以上のカテゴリが載っている', () => {
@@ -64,6 +85,17 @@ describe('deepCategories（カテゴリ一覧）', () => {
       expect(typeof cat.label).toBe('string')
       expect(cat.label.length).toBeGreaterThan(0)
     }
+  })
+})
+
+// v3.2 のサンプル要件: love が一覧に載っている場合、love は新構造でなければならない。
+// work は旧構造でも新構造でも可（暫定カテゴリとして併存を許す）
+describe('段階導入の固定要件（v3.2）', () => {
+  const loveListed = deepCategories.some((c) => c.id === 'love')
+
+  it.runIf(loveListed)('love（友達・恋愛）は新構造である', async () => {
+    const data = await loadDeepCategory('love')
+    expect(isFullyNew(data), 'love の全 22 カードに advice が必要').toBe(true)
   })
 })
 
@@ -117,13 +149,14 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
         expect(new Set(ids).size).toBe(ids.length)
       })
 
-      it('選択肢 id がカテゴリ内で重複せず、空でない', async () => {
+      it('選択肢 id がカテゴリ内で重複せず、空でない（計 9 個）', async () => {
         const data = await load()
-        const ids = data.questions.flatMap((q) => q.choices.map((c) => c.id))
+        const ids = allChoices(data).map(({ choice }) => choice.id)
         for (const id of ids) {
           expect(id.length).toBeGreaterThan(0)
         }
         expect(new Set(ids).size).toBe(ids.length)
+        expect(ids).toHaveLength(9) // 3 問 × 3 択
       })
 
       it('質問文・選択肢ラベルが空でない', async () => {
@@ -132,23 +165,6 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
           expect(q.text.length).toBeGreaterThan(0)
           for (const c of q.choices) {
             expect(c.label.length).toBeGreaterThan(0)
-          }
-        }
-      })
-
-      it('回答別補足（フラグメント）が選択肢ごとに 1 本あり、各 60〜120 字（±30 字許容: 30〜150 字）', async () => {
-        const data = await load()
-        for (const q of data.questions) {
-          for (const c of q.choices) {
-            const len = c.fragment.length
-            expect(
-              len,
-              `質問 ${q.id} / 選択肢 ${c.id} のフラグメント字数 ${len} が範囲外`,
-            ).toBeGreaterThanOrEqual(FRAGMENT_MIN)
-            expect(
-              len,
-              `質問 ${q.id} / 選択肢 ${c.id} のフラグメント字数 ${len} が範囲外`,
-            ).toBeLessThanOrEqual(FRAGMENT_MAX)
           }
         }
       })
@@ -197,9 +213,84 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
         }
       })
     })
+
+    describe('回答別アドバイス（仕様 v3.2 §4.4: 新旧いずれか一方の構造に完全統一）', () => {
+      it('「完全に新構造」か「完全に旧構造」のどちらか一方である（歯抜け・混在は不可）', async () => {
+        const data = await load()
+        const fullyNew = isFullyNew(data)
+        const fullyOld = isFullyOld(data)
+        // 部分的に advice / fragment がある（どちらの every も満たさない）状態と、
+        // 両構造のデータが同居する状態のどちらも仕様違反
+        expect(
+          fullyNew !== fullyOld,
+          `新構造判定=${fullyNew} / 旧構造判定=${fullyOld}（どちらか一方だけが真であること）`,
+        ).toBe(true)
+        if (fullyNew) {
+          // 新構造カテゴリに fragment は存在しない（契約: fragment は旧構造のみ）
+          for (const { questionId, choice } of allChoices(data)) {
+            expect(
+              choice.fragment,
+              `新構造カテゴリに fragment が混在（質問 ${questionId} / 選択肢 ${choice.id}）`,
+            ).toBeUndefined()
+          }
+        } else {
+          // 旧構造カテゴリに advice は存在しない（契約: advice は新構造のみ）
+          for (const n of CARD_NUMBERS) {
+            expect(
+              data.base[n].advice,
+              `旧構造カテゴリに advice が混在（カード ${n}）`,
+            ).toBeUndefined()
+          }
+        }
+      })
+
+      it('新構造: advice 22 × 9 = 198 本、キー集合は選択肢 id と完全一致、各 60〜140 字（±30 字許容: 30〜170 字）／旧構造: fragment 各 60〜120 字（±30 字許容: 30〜150 字）', async () => {
+        const data = await load()
+        if (isFullyNew(data)) {
+          const choiceIds = allChoices(data).map(({ choice }) => choice.id)
+          let count = 0
+          for (const n of CARD_NUMBERS) {
+            const advice = data.base[n].advice
+            expect(advice, `カード ${n} の advice が無い`).toBeDefined()
+            // キー集合がそのカテゴリの選択肢 id 9 個と完全一致（過不足なし）
+            expect(
+              Object.keys(advice!).sort(),
+              `カード ${n} の advice キー集合が選択肢 id と不一致`,
+            ).toEqual([...choiceIds].sort())
+            for (const id of choiceIds) {
+              const text = advice![id]
+              const len = text.length
+              expect(len, `カード ${n} / 選択肢 ${id} のアドバイスが空`).toBeGreaterThan(0)
+              expect(
+                len,
+                `カード ${n} / 選択肢 ${id} のアドバイス字数 ${len} が範囲外`,
+              ).toBeGreaterThanOrEqual(ADVICE_MIN)
+              expect(
+                len,
+                `カード ${n} / 選択肢 ${id} のアドバイス字数 ${len} が範囲外`,
+              ).toBeLessThanOrEqual(ADVICE_MAX)
+              count += 1
+            }
+          }
+          expect(count).toBe(198) // 22 カード × 9 選択肢
+        } else {
+          // 旧構造（v3.1 暫定カテゴリ）: 選択肢ごとに 1 本の fragment
+          for (const { questionId, choice } of allChoices(data)) {
+            const len = choice.fragment!.length
+            expect(
+              len,
+              `質問 ${questionId} / 選択肢 ${choice.id} のフラグメント字数 ${len} が範囲外`,
+            ).toBeGreaterThanOrEqual(FRAGMENT_MIN)
+            expect(
+              len,
+              `質問 ${questionId} / 選択肢 ${choice.id} のフラグメント字数 ${len} が範囲外`,
+            ).toBeLessThanOrEqual(FRAGMENT_MAX)
+          }
+        }
+      })
+    })
   },
 )
 
 // 仕様 §4.5: 回答は抽選に影響しない（抽選ロジック自体は通常占いと同一のため
-// 本ファイルの対象外だが、データ側の前提として「フラグメントは選択肢にのみ
-// 紐づき、カード・正逆に依存する構造を持たない」ことは上の型検証で担保される）
+// 本ファイルの対象外。データ側の構造検証は上記で担保する）

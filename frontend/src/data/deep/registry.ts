@@ -6,9 +6,14 @@ export const deepCategories: ReadonlyArray<{ id: DeepCategoryId; label: string }
   {
     "id": "work",
     "label": "仕事"
+  },
+  {
+    "id": "love",
+    "label": "友達・恋愛"
   }
 ]
 
 export const deepCategoryLoaders: Partial<Record<DeepCategoryId, () => Promise<{ deepCategory: DeepCategoryData }>>> = {
   work: () => import('./work'),
+  love: () => import('./love'),
 }
