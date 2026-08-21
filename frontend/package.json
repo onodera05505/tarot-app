@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/icon.svg",
-    "gen:cards": "node scripts/gen-cards.mjs"
+    "gen:cards": "node scripts/gen-cards.mjs",
+    "gen:deep": "node scripts/gen-deep.mjs"
   },
   "dependencies": {
     "@sentry/react": "^10.50.0",
