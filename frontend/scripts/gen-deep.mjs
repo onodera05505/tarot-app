@@ -40,6 +40,11 @@ function parseCategory(file, raw) {
   if (!labelMatch) fail(file, '**label**: 行がありません')
   const id = idMatch[1].trim()
   const label = labelMatch[1].trim()
+  // ベース解釈の第一文に必ずジャンル語を含める（v3.2 §4.4、2026-08-22 追加）。
+  // 判定語は md 側で宣言する。冒頭だけ読むと汎用解説に見える文が混ざる退行を防ぐ
+  const kwMatch = raw.match(/^\*\*冒頭判定語\*\*:\s*(.+)$/m)
+  if (!kwMatch) fail(file, '**冒頭判定語**: 行がありません（第一文チェック用）')
+  const genreKeywords = kwMatch[1].split(',').map((k) => k.trim()).filter(Boolean)
   if (!VALID_IDS.includes(id)) fail(file, `id "${id}" は未定義です (${VALID_IDS.join('/')})`)
 
   // ---- 質問 ----
@@ -90,6 +95,12 @@ function parseCategory(file, raw) {
     if (!up) fail(file, `カード ${num}: **正位置**: 行がありません`)
     if (!rev) fail(file, `カード ${num}: **逆位置**: 行がありません`)
     if (base[num]) fail(file, `カード ${num} が重複しています`)
+    for (const [name, text] of [['正位置', up[1]], ['逆位置', rev[1]]]) {
+      const firstSentence = text.trim().split('。')[0]
+      if (!genreKeywords.some((k) => firstSentence.includes(k))) {
+        fail(file, `カード ${num} ${name}: 第一文にジャンル語がありません: 「${firstSentence.slice(0, 30)}…」`)
+      }
+    }
     const entry = { upright: up[1].trim(), reversed: rev[1].trim() }
 
     if (!isLegacy) {
