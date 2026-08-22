@@ -152,22 +152,27 @@ describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）',
 })
 
 describe('詳しく占う: 結果画面（§5.7 4）', () => {
-  it('旧構造カテゴリ（work）: カテゴリ名・ベース解釈・choice.fragment による補足 3 本を表示し、通常の解説文は出さない', async () => {
+  it('work（逆位置）: カテゴリ名・ベース解釈・advice[選択肢id] の 3 本を表示し、通常の解説文は出さない', async () => {
+    // v3.2 §4.5: fragment フォールバックは「旧構造カテゴリが存在する場合」の
+    // 防御的挙動として仕様に残るが、現在は全カテゴリ新構造で実データが無いため
+    // コンポーネントテストの検証対象外とする（work も advice で検証する）
     const work = await loadDeepCategory('work')
-    const card = tarotCards.find((c) => work.base[c.number] !== undefined)
-    if (!card) throw new Error('work の base に対応するカードが見つからない（データ不整合）')
+    const card = tarotCards.find((c) => work.base[c.number]?.advice !== undefined)
+    if (!card) throw new Error('work の base に advice 付きエントリが見つからない（データ不整合）')
 
     const picked = [
       work.questions[0].choices[0],
       work.questions[1].choices[1],
       work.questions[2].choices[2],
     ]
-    // v3.2 で fragment は optional になった。work は旧構造カテゴリなので
-    // 全選択肢が fragment を持つこと自体を検証してから期待値に使う
-    const fragments = picked
-      .map((c) => c.fragment)
-      .filter((f): f is string => typeof f === 'string')
-    expect(fragments).toHaveLength(3)
+    // advice は 9 エントリ（3 問 × 3 択）で、選んだ 3 選択肢の id をすべて含むこと
+    const advice = work.base[card.number].advice
+    expect(advice).toBeTruthy()
+    expect(Object.keys(advice ?? {})).toHaveLength(9)
+    const adviceTexts = picked
+      .map((c) => advice?.[c.id])
+      .filter((t): t is string => typeof t === 'string')
+    expect(adviceTexts).toHaveLength(3)
 
     useReadingStore.setState({
       // §5.4: status が idle のままだと ResultPage は / へリダイレクトする
@@ -189,9 +194,9 @@ describe('詳しく占う: 結果画面（§5.7 4）', () => {
     await expectBodyToContain(work.label)
     // ベース解釈: 引いたカード × 正逆（ここでは逆位置）× カテゴリ
     await expectBodyToContain(work.base[card.number].reversed)
-    // 回答別補足 3 本（advice が無い旧構造では choice.fragment にフォールバック）
-    for (const fragment of fragments) {
-      await expectBodyToContain(fragment)
+    // 回答別アドバイス: このカードの advice[選択肢id] が 3 本表示される
+    for (const text of adviceTexts) {
+      await expectBodyToContain(text)
     }
     // 通常の解説文の「代わり」なので、従来の解説文は表示しない
     expect(document.body.textContent).not.toContain(card.descriptionReversed)
