@@ -14,6 +14,14 @@ export const deepCategories: ReadonlyArray<{ id: DeepCategoryId; label: string }
   {
     "id": "study",
     "label": "勉強"
+  },
+  {
+    "id": "money",
+    "label": "お金"
+  },
+  {
+    "id": "health",
+    "label": "健康"
   }
 ]
 
@@ -21,4 +29,6 @@ export const deepCategoryLoaders: Partial<Record<DeepCategoryId, () => Promise<{
   work: () => import('./work'),
   love: () => import('./love'),
   study: () => import('./study'),
+  money: () => import('./money'),
+  health: () => import('./health'),
 }
