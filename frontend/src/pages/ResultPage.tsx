@@ -5,6 +5,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { CardReveal } from '../components/animations/CardReveal'
 import { PageTransition } from '../components/animations/PageTransition'
 import { loadDeepCategory } from '../data/deep'
+import { DEEP_READING_ENABLED } from '../lib/features'
 import type { DeepCategoryData } from '../data/deep'
 import { generateShareImage, shareOrDownload } from '../lib/shareImage'
 import { useReadingStore } from '../store/useReadingStore'
@@ -28,7 +29,8 @@ export function ResultPage() {
       drawn: s.drawn,
       status: s.status,
       error: s.error,
-      deep: s.deep,
+      // 無料版では deep 文脈が残っていても通常表示にする（v3.3 §3.3「常に通常占いの表示」）
+      deep: DEEP_READING_ENABLED ? s.deep : null,
       reset: s.reset,
     })),
   )

@@ -9,9 +9,11 @@ import { CardListPage } from './pages/CardListPage'
 import { CardDetailPage } from './pages/CardDetailPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { unlockAudio } from './lib/audio'
+import { DEEP_READING_ENABLED } from './lib/features'
 import './App.css'
 
-function App() {
+// named export はテストからの参照用。main.tsx は default を使う
+export function App() {
   const location = useLocation()
 
   // 初回ユーザー操作で AudioContext を起動状態にする（autoplay policy 対策）。
@@ -34,7 +36,11 @@ function App() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<TopPage />} />
-        <Route path="/deep" element={<DeepPage />} />
+        {/* 無料版では /deep をトップへ戻す（v3.3 §3.3）。DeepPage 自体は温存 */}
+        <Route
+          path="/deep"
+          element={DEEP_READING_ENABLED ? <DeepPage /> : <Navigate to="/" replace />}
+        />
         <Route path="/shuffle" element={<ShufflePage />} />
         <Route path="/result" element={<ResultPage />} />
         <Route path="/cards" element={<CardListPage />} />

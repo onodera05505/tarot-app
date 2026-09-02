@@ -11,6 +11,10 @@ import { useReadingStore } from '../../src/store/useReadingStore'
 import { deepCategories, loadDeepCategory } from '../../src/data/deep/index'
 import { tarotCards } from '../../src/data/cards'
 
+// このファイルは「フラグ有効時の仕様（§5.7）」のテスト。無料版の既定値は false なので
+// 機能フラグを有効化する（要件定義書 v3.3 §3.3。vi.mock は import より前に巻き上げられる）
+vi.mock('../../src/lib/features', () => ({ DEEP_READING_ENABLED: true }))
+
 // jsdom に Web Audio が無いため効果音はモック
 vi.mock('../../src/lib/audio', () => ({
   unlockAudio: vi.fn(),

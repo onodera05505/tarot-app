@@ -3,6 +3,7 @@ import { ParticleBackground } from '../components/animations/ParticleBackground'
 import { PageTransition } from '../components/animations/PageTransition'
 import { TodaysCard } from '../components/TodaysCard'
 import { useReadingStore } from '../store/useReadingStore'
+import { DEEP_READING_ENABLED } from '../lib/features'
 
 export function TopPage() {
   const navigate = useNavigate()
@@ -23,16 +24,18 @@ export function TopPage() {
         <button type="button" className="btn-primary" onClick={handleStart}>
           スタート
         </button>
-        <button
-          type="button"
-          className="btn-ghost"
-          onClick={() => {
-            reset()
-            navigate('/deep')
-          }}
-        >
-          詳しく占う
-        </button>
+        {DEEP_READING_ENABLED && (
+          <button
+            type="button"
+            className="btn-ghost"
+            onClick={() => {
+              reset()
+              navigate('/deep')
+            }}
+          >
+            詳しく占う
+          </button>
+        )}
         <button type="button" className="btn-ghost" onClick={() => navigate('/cards')}>
           カード解説を見る
         </button>

@@ -1,10 +1,12 @@
 {
+  // テストは App や TopPage も描画するため、src 側の CSS 副作用 import（vite/client）と
+  // __APP_VERSION__（src/app-env.d.ts）の型も解決できるようにしてある（2026-09-02）
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
     "target": "es2023",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "module": "esnext",
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     "skipLibCheck": true,
 
     /* Bundler mode */
@@ -21,5 +23,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["tests"]
+  "include": ["tests", "src/app-env.d.ts"]
 }
