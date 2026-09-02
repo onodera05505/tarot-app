@@ -9,7 +9,7 @@ on:
 # バックエンド (Cloudflare Workers) のデプロイは廃止。
 # 22 枚のカードデータをフロントエンド内に同梱するローカル完結構成に移行。
 # backend/ ディレクトリは過去のリファレンスとしてリポジトリに残しているが、
-# CI ではビルド・デプロイしない。
+# CI ではインストールもビルドもデプロイもしない（2026-09-02 に完全分離）。
 
 jobs:
   deploy-frontend:
@@ -39,13 +39,11 @@ jobs:
         run: pnpm build
         env:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
-      # wrangler は backend にしか入っていないので、backend 側から相対パスで叩く
-      - name: Install backend dependencies (for wrangler CLI)
-        working-directory: backend
-        run: pnpm install --frozen-lockfile
       - name: Deploy to Cloudflare Pages
-        working-directory: backend
-        run: pnpm exec wrangler pages deploy ../frontend/dist --project-name tarot-oracle
+        working-directory: frontend
+        # wrangler は frontend の devDependencies に入れてある（backend/ は
+        # 参照用残骸で、CI からは一切触らない）
+        run: pnpm exec wrangler pages deploy dist --project-name tarot-oracle
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

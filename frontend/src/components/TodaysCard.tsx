@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CardReveal } from './animations/CardReveal'
-import { drawCards } from '../lib/api'
+import { CARD_BACK_URL, drawCards } from '../lib/api'
 import type { DrawnCard } from '../lib/types'
 
-const CARD_BACK = '/cards/major/000.webp'
 const STORAGE_KEY = 'tarot:todaysCard'
 const CARD_WIDTH = 80
 
@@ -63,7 +62,7 @@ export function TodaysCard() {
         onClick={handleOpen}
         disabled={flipping}
       >
-        <img src={CARD_BACK} alt="" className="todays-card-back" aria-hidden />
+        <img src={CARD_BACK_URL} alt="" className="todays-card-back" aria-hidden />
         <div className="todays-card-meta">
           <span className="todays-card-label">本日の一枚</span>
           <span className="todays-card-hint">

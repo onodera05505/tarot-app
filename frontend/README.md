@@ -1,73 +1,29 @@
-# React + TypeScript + Vite
+# frontend — タロットカード（手軽に本格占い）
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19 + Vite + PWA。カードデータと鑑定テキストをアプリ内に同梱した
+ローカル完結構成（バックエンド通信なし）。一次資料は
+`../docs/タロットアプリ_要件定義書_v3.md`、作業ルールは `../CLAUDE.md`。
 
-Currently, two official plugins are available:
+## コマンド
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| コマンド | 内容 |
+|---|---|
+| `pnpm dev` | 開発サーバー |
+| `pnpm build` | `tsc -b` + 本番ビルド（`dist/`） |
+| `pnpm test` / `pnpm test:watch` | vitest（`tests/`。専用 `tsconfig.test.json`） |
+| `pnpm lint` | eslint |
+| `pnpm gen:cards` | `data/cards.md` → `src/data/cards.ts`（解説テキストの編集元は md） |
+| `pnpm gen:deep` | `data/deep/*.md` → `src/data/deep/*.ts`（詳しく占うのテキスト） |
+| `pnpm generate-pwa-assets` | `public/icon.svg` から PWA アイコン一式を生成 |
 
-## React Compiler
+生成物（`src/data/cards.ts`・`src/data/deep/*.ts`）は手で編集しない。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## デプロイ
 
-## Expanding the ESLint configuration
+`main` への push で GitHub Actions がテスト → ビルド → Cloudflare Pages
+（`tarot-oracle`）へデプロイする（`../.github/workflows/deploy.yml`）。
+wrangler はこのパッケージの devDependencies に入っている。
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 素材の出所
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+カード画像は `public/cards/README.md` を参照。

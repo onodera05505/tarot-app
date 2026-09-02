@@ -3,9 +3,9 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { PageTransition } from '../components/animations/PageTransition'
+import { CARD_BACK_URL } from '../lib/api'
 import { useReadingStore } from '../store/useReadingStore'
 
-const CARD_BACK = '/cards/major/000.webp'
 // 大アルカナ 22 枚
 const N = 22
 
@@ -463,7 +463,7 @@ export function ShufflePage() {
               >
                 <img
                   className="shuffle-pile-card-face"
-                  src={CARD_BACK}
+                  src={CARD_BACK_URL}
                   alt=""
                   draggable={false}
                 />

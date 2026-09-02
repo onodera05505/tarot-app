@@ -4,6 +4,11 @@ import type { DrawnCard, Orientation, TarotCard } from './types'
 // バックエンドを廃して、22 枚のデータをアプリ内に同梱したローカル実装。
 // Promise を返すのは旧 API 版と呼び出し側の形を揃えるため（AbortSignal は廃止済み）。
 
+// カード裏面画像の唯一の定義。裏面を表示する箇所は必ずここを import すること
+// （以前は 3 画面に同じ文字列が直書きされていた。tests/card-back.test.ts が
+// 直書きの再発を検知する）。実体は public/cards/major/000.webp。
+export const CARD_BACK_URL = '/cards/major/000.webp'
+
 function delay<T>(value: T, ms = 0): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms))
 }

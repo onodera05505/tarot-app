@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
+import { CARD_BACK_URL } from '../../lib/api'
 import { playFlip } from '../../lib/audio'
 
-const CARD_BACK = '/cards/major/000.webp'
 
 type Props = {
   imageUrl: string
@@ -54,7 +54,7 @@ export function CardReveal({
         onAnimationComplete={handleFlipDone}
       >
         <img
-          src={CARD_BACK}
+          src={CARD_BACK_URL}
           alt=""
           aria-hidden
           className="card-img"
