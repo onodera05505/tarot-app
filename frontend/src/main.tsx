@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import * as Sentry from '@sentry/react'
 import { registerSW } from 'virtual:pwa-register'
+import { Capacitor } from '@capacitor/core'
 import './index.css'
 import App from './App.tsx'
 import { FallbackUI } from './components/FallbackUI.tsx'
@@ -10,8 +11,12 @@ import { FallbackUI } from './components/FallbackUI.tsx'
 // PWA の自動更新（v3.1 §2）。autoUpdate モードでは新しい Service Worker が
 // 有効化された瞬間にページが自動リロードされ、ユーザー操作なしで最新版になる。
 // さらに「アプリを開いた瞬間 / フォアグラウンドに戻った瞬間 / 1 時間ごと」に
-// 更新チェックを仕掛けることで、開きっぱなしの PWA でも取り残されないようにする
-registerSW({
+// 更新チェックを仕掛けることで、開きっぱなしの PWA でも取り残されないようにする。
+//
+// ネイティブ（Capacitor）内では登録しない（v3.3 §2）: アセットはアプリに同梱され
+// 更新はストア経由なので、SW の自動リロードが走ると二重更新の事故になる。
+// ネイティブ判定はこの isNativePlatform() だけに置き、他所に散らさないこと。
+if (!Capacitor.isNativePlatform()) registerSW({
   immediate: true,
   onRegisteredSW(_swUrl, registration) {
     if (!registration) return

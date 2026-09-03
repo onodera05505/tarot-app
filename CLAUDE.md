@@ -109,6 +109,11 @@ README・画面内の説明文・env やスキーマのコメントなど**従�
 - **コマンド:** frontend は `pnpm dev` / `pnpm build`（tsc -b 込み）/
   `pnpm lint`。backend は `pnpm dev`（wrangler）/ `pnpm deploy` /
   `pnpm cf-typegen`（Workers の型生成。バインディングを変えたら回す）
+- **ネイティブ（Capacitor、2026-09-03 導入）:** `frontend/capacitor.config.ts`、
+  Android プロジェクトは `frontend/android/`（生成物。手で編集するのは
+  `app/src/main/` 配下の設定のみ）。手順は `pnpm build` → `pnpm exec cap sync android`
+  → `pnpm exec cap open android`（Android Studio）。ビルドには Android Studio
+  （JDK + SDK）が必要。ネイティブ内では SW を登録しない（`main.tsx` の 1 箇所で判定）
 - **テスト:** frontend に vitest 導入済み（2026-08-21）。`pnpm test` /
   `pnpm test:watch`。テストは `frontend/tests/`（専用 tsconfig.test.json。
   `src/` は vite/client 型のため Node API を使うテストと分離してある）。
