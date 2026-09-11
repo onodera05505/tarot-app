@@ -2,6 +2,12 @@
 
 **このプロジェクトは個人。** トラブル時はまず `brain/INDEX.md`（このリポジトリ）と
 `~/.claude/brain/INDEX.md`（共通）を症状の言葉で grep する。解決したら報告書を1枚還す。
+作業の着手時は `brain/APPROACHES.md`（値つき）と `~/.claude/brain/APPROACHES.md`（型）を
+作業の言葉で grep し、`brain/PREMISES.md` を読む。過去の型を使う前に本人へ確認する
+（型はそのまま、値と判断は「これで進めますか」と示してから）。
+**締めの報告と `history/` の各日ファイル末尾に、還元行
+`ブレイン: 参照した型 X / 適用前に確認した値 Y / 追加 Z / 更新 W / 無し（理由）` を必ず入れる**
+（無記載は不可。history 側は `frontend/tests/history-return-line.test.ts` が機械で見る）。
 
 **トラブル・不具合に当たったら、調べ始める前に `brain/INDEX.md`（無ければ `~/.claude/brain/INDEX.md`）を読む。**
 
