@@ -15,6 +15,9 @@ const STRICT_SINCE = '2026-09-14' // 「参照した型」に索引を引いた�
 const LINE = /^\s*(?:[-*]\s*)?(?:\*\*)?ブレイン(?:\*\*)?\s*[:：](.*)$/gm
 const REF_SEG = /参照した型\s*[:：]?\s*(.*?)(?=\s\/\s|$)/
 const NAMED = /\.md|`[^`]+`|「[^」]+」|reports\/\d+|報告(?:書)?\s*\d+|approaches\//
+// 素の名前（例: 検査の層と門）も認める。中央は索引に実在する名前だけを認めるが、CI からは索引が見えないので
+// ここは「無し」を含まない 3 文字以上の語で代用する（中央より緩い。厳密な判定は check_brain が行う）
+const BARE_NAME = /^(?!.*無し)[^\s/]{3,}/
 const NO_HIT = /当たり無し\s*[（(]\s*grep\s*(?:語)?\s*[:：]\s*([^）)]+?)\s*[）)]/
 const HISTORY_DIR = join(__dirname, '..', '..', 'history')
 
@@ -33,7 +36,7 @@ export function judge(text: string, strict: boolean): string | null {
   const m = REF_SEG.exec(body)
   if (!m) return '「参照した型」欄が無い（索引を grep した結果: 名前か 当たり無し（grep: 語））'
   const seg = m[1].trim()
-  if (NAMED.test(seg)) return null
+  if (NAMED.test(seg) || BARE_NAME.test(seg)) return null
   const nh = NO_HIT.exec(seg)
   if (nh && nh[1].replace(/[ ,、]/g, '') !== '') return null
   return `「参照した型 ${seg || '（空）'}」では索引を引いた証拠にならない`
@@ -51,6 +54,7 @@ describe('history/ の還元行（ブレイン: …）', () => {
   it('文法: 名前か 当たり無し（grep: 語）だけを索引を引いた証拠と認める', () => {
     expect(judge('ブレイン: 参照した型 `検査の層と門.md` / 追加 無し', true)).toBeNull()
     expect(judge('ブレイン: 参照した型 当たり無し（grep: 再開, ストア） / 追加 無し', true)).toBeNull()
+    expect(judge('ブレイン: 参照した型 仕様書駆動で挙動を変える・検査の層と門 / 追加 無し', true)).toBeNull()
     expect(judge('ブレイン: 参照した型 無し / 追加 無し', true)).not.toBeNull()
     expect(judge('ブレイン: 参照した型 当たり無し（grep: ） / 追加 無し', true)).not.toBeNull()
     expect(judge('ブレイン: 追加 無し（評価のみ）', true)).not.toBeNull()
