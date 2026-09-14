@@ -113,6 +113,8 @@ README・画面内の説明文・env やスキーマのコメントなど**従�
   （2026-08-21 全面改訂・実装と突き合わせ済み。実装との既知差分は同書 §6 に
   列挙してあり、挙動を変える作業はこの差分を消す方向で行う）。
   `backend/docs/` の v2 と PDF（20260427）は過去版の記録で、更新しない
+- **検査と門:** `docs/検査と門.md`（不変条件→門、検査の層→門の表。門が無い行は「無し」と書いてある＝
+  バックログ。門を足したら状態を更新し、表が名指しするファイルの実在は `tests/docs-gates.test.ts` が見る）
 - **コマンド:** frontend は `pnpm dev` / `pnpm build`（tsc -b 込み）/
   `pnpm lint`。backend は `pnpm dev`（wrangler）/ `pnpm deploy` /
   `pnpm cf-typegen`（Workers の型生成。バインディングを変えたら回す）
