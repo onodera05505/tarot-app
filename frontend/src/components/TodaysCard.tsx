@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CardReveal } from './animations/CardReveal'
-import { CARD_BACK_URL, drawCards } from '../lib/api'
+import { CARD_BACK_THUMB_URL, drawCards, thumbUrl } from '../lib/api'
 import type { DrawnCard } from '../lib/types'
 
 const STORAGE_KEY = 'tarot:todaysCard'
@@ -62,7 +62,7 @@ export function TodaysCard() {
         onClick={handleOpen}
         disabled={flipping}
       >
-        <img src={CARD_BACK_URL} alt="" className="todays-card-back" aria-hidden />
+        <img src={CARD_BACK_THUMB_URL} alt="" className="todays-card-back" aria-hidden />
         <div className="todays-card-meta">
           <span className="todays-card-label">本日の一枚</span>
           <span className="todays-card-hint">
@@ -79,7 +79,7 @@ export function TodaysCard() {
     return (
       <div className="todays-card todays-card--flipping">
         <CardReveal
-          imageUrl={drawn.card.imageUrl}
+          imageUrl={thumbUrl(drawn.card.imageUrl)}
           alt={drawn.card.nameJa}
           reversed={drawn.orientation === 'reversed'}
           width={CARD_WIDTH}
@@ -103,7 +103,7 @@ export function TodaysCard() {
       }
     >
       <img
-        src={drawn.card.imageUrl}
+        src={thumbUrl(drawn.card.imageUrl)}
         alt={drawn.card.nameJa}
         className="todays-card-image"
         style={

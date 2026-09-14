@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PageTransition } from '../components/animations/PageTransition'
-import { fetchAllCards } from '../lib/api'
+import { fetchAllCards, thumbUrl } from '../lib/api'
 import type { TarotCard } from '../lib/types'
 
 export function CardListPage() {
@@ -41,7 +41,7 @@ export function CardListPage() {
             <li key={card.id}>
               <Link to={`/cards/${card.id}`} className="card-list-item">
                 <img
-                  src={card.imageUrl}
+                  src={thumbUrl(card.imageUrl)}
                   alt={card.nameJa}
                   loading="lazy"
                   className="card-list-image"

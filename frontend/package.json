@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/icon.svg",
     "gen:cards": "node scripts/gen-cards.mjs",
-    "gen:deep": "node scripts/gen-deep.mjs"
+    "gen:deep": "node scripts/gen-deep.mjs",
+    "gen:thumbs": "python3 scripts/gen-thumbs.py"
   },
   "dependencies": {
     "@capacitor/android": "8.5.1",

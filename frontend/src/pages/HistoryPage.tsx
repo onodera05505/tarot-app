@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PageTransition } from '../components/animations/PageTransition'
+import { thumbUrl } from '../lib/api'
 import { clearHistory, loadHistory } from '../lib/history'
 import type { HistoryEntry } from '../lib/history'
 
@@ -54,7 +55,7 @@ export function HistoryPage() {
                   className="card-list-item"
                 >
                   <img
-                    src={entry.card.imageUrl}
+                    src={thumbUrl(entry.card.imageUrl)}
                     alt={entry.card.nameJa}
                     loading="lazy"
                     className="card-list-image"

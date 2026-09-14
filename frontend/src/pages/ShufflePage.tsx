@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
 import { PageTransition } from '../components/animations/PageTransition'
-import { CARD_BACK_URL } from '../lib/api'
+import { CARD_BACK_THUMB_URL } from '../lib/api'
 import { useReadingStore } from '../store/useReadingStore'
 
 // 大アルカナ 22 枚
@@ -463,7 +463,7 @@ export function ShufflePage() {
               >
                 <img
                   className="shuffle-pile-card-face"
-                  src={CARD_BACK_URL}
+                  src={CARD_BACK_THUMB_URL}
                   alt=""
                   draggable={false}
                 />

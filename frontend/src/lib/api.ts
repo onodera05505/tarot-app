@@ -9,6 +9,14 @@ import type { DrawnCard, Orientation, TarotCard } from './types'
 // 直書きの再発を検知する）。実体は public/cards/major/000.webp。
 export const CARD_BACK_URL = '/cards/major/000.webp'
 
+// 小さく描く場所（一覧・履歴・本日の一枚・儀式の山札。CSS で 60〜88px 幅）用のサムネイル。
+// 原本 1024×1536 を 320px 幅にしたものを public/cards/thumbs/ に置く（scripts/gen-thumbs.py で生成、
+// 生成物はコミット）。URL の対応はこの関数だけが知る。結果画面・詳細・シェア画像は原本を使う。
+export function thumbUrl(imageUrl: string): string {
+  return imageUrl.replace('/cards/major/', '/cards/thumbs/')
+}
+export const CARD_BACK_THUMB_URL = thumbUrl(CARD_BACK_URL)
+
 function delay<T>(value: T, ms = 0): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms))
 }

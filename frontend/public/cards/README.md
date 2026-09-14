@@ -36,3 +36,12 @@
 
 例:
 - `/cards/major/00_theFool.webp`
+
+## サムネイル（`thumbs/`、2026-09-14）
+
+一覧・履歴・本日の一枚・儀式の山札は CSS で 60〜88px 幅にしか描かないため、原本（1024×1536）を
+320px 幅に縮小した `thumbs/<同名>.webp` を配信する（23 枚で 9.3MB → 約 1.1MB）。
+生成は `pnpm gen:thumbs`（Pillow が要る。生成物はコミットする）。原本を差し替えたら再生成する。
+URL の対応は `src/lib/api.ts` の `thumbUrl()` だけが知り、`tests/card-thumbs.test.ts` が実在と使用箇所を見る。
+結果画面・カード詳細・シェア画像は原本を使う。
+
