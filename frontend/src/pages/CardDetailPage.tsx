@@ -14,8 +14,9 @@ export function CardDetailPage() {
   const numericId = Number(id)
   const isInvalidId = !Number.isFinite(numericId)
 
-  // ?orientation=upright|reversed が付いている場合は片面のみ表示。
-  // 付いていなければ両面（一覧から開いた通常表示）。
+  // ?orientation=upright|reversed は「初期表示の正逆」の指定（v3 §5.5）。両面とも表示し、
+  // 指定された側を先に並べ、画像もその向きにする（以前は片面のみ表示だったが、仕様は
+  // 「正逆それぞれのキーワードと解説文」なので両面に直した。2026-09-14 独立テスト設計の差し戻し）。
   const orientationParam = searchParams.get('orientation')
   const onlyOrientation: Orientation | null = isOrientation(orientationParam)
     ? orientationParam
@@ -30,7 +31,9 @@ export function CardDetailPage() {
     fetchCard(numericId)
       .then(setCard)
       .catch((e: unknown) => {
-        if (e instanceof Error) setError(e.message)
+        // 利用者に英語のエラー文（'Card not found'）を見せない。詳細はコンソールへ
+        if (e instanceof Error) console.warn('fetchCard failed:', e.message)
+        setError('カードが見つかりませんでした')
       })
       .finally(() => setLoading(false))
   }, [numericId, isInvalidId])
@@ -74,8 +77,7 @@ export function CardDetailPage() {
     .map((k) => k.trim())
     .filter(Boolean)
 
-  const showUpright = onlyOrientation === null || onlyOrientation === 'upright'
-  const showReversed = onlyOrientation === null || onlyOrientation === 'reversed'
+  const reversedFirst = onlyOrientation === 'reversed'
 
   return (
     <PageTransition className="page page-card-detail">
@@ -101,28 +103,28 @@ export function CardDetailPage() {
         }
       />
 
-      {showUpright && (
-        <section className="detail-section">
-          <h2 className="detail-section-title detail-section-title-upright">正位置</h2>
-          <ul className="result-keywords">
-            {upKeywords.map((k) => (
-              <li key={k}>{k}</li>
-            ))}
-          </ul>
-          <p className="detail-description">{card.descriptionUpright || '（解説準備中）'}</p>
-        </section>
-      )}
-
-      {showReversed && (
-        <section className="detail-section">
-          <h2 className="detail-section-title detail-section-title-reversed">逆位置</h2>
-          <ul className="result-keywords">
-            {revKeywords.map((k) => (
-              <li key={k}>{k}</li>
-            ))}
-          </ul>
-          <p className="detail-description">{card.descriptionReversed || '（解説準備中）'}</p>
-        </section>
+      {(reversedFirst ? ['reversed', 'upright'] : ['upright', 'reversed']).map((o) =>
+        o === 'upright' ? (
+          <section key="upright" className="detail-section">
+            <h2 className="detail-section-title detail-section-title-upright">正位置</h2>
+            <ul className="result-keywords">
+              {upKeywords.map((k) => (
+                <li key={k}>{k}</li>
+              ))}
+            </ul>
+            <p className="detail-description">{card.descriptionUpright || '（解説準備中）'}</p>
+          </section>
+        ) : (
+          <section key="reversed" className="detail-section">
+            <h2 className="detail-section-title detail-section-title-reversed">逆位置</h2>
+            <ul className="result-keywords">
+              {revKeywords.map((k) => (
+                <li key={k}>{k}</li>
+              ))}
+            </ul>
+            <p className="detail-description">{card.descriptionReversed || '（解説準備中）'}</p>
+          </section>
+        ),
       )}
 
       <button type="button" className="btn-ghost" onClick={() => navigate('/')}>
