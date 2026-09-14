@@ -6,8 +6,9 @@
 作業の言葉で grep し、`brain/PREMISES.md` を読む。過去の型を使う前に本人へ確認する
 （型はそのまま、値と判断は「これで進めますか」と示してから）。
 **締めの報告と `history/` の各日ファイル末尾に、還元行
-`ブレイン: 参照した型 X / 適用前に確認した値 Y / 追加 Z / 更新 W / 無し（理由）` を必ず入れる**
-（無記載は不可。history 側は `frontend/tests/history-return-line.test.ts` が機械で見る）。
+`ブレイン: 参照した型 <名前 か 当たり無し（grep: 引いた語）> / 適用前に確認した値 Y / 追加 Z / 更新 W` を必ず入れる**
+（無記載は不可。「参照した型」は索引を grep した結果で、素の「無し」は落ちる。
+history 側は `frontend/tests/history-return-line.test.ts` が機械で見る）。
 
 **トラブル・不具合に当たったら、調べ始める前に `brain/INDEX.md`（無ければ `~/.claude/brain/INDEX.md`）を読む。**
 
