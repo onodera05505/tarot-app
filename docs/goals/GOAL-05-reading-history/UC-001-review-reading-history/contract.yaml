@@ -1,0 +1,75 @@
+x-uc: UC-001
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations:
+  addToHistory:
+    transport: local-store
+    direction: outbound
+    owned: true
+    auth: none
+    summary: 占い結果 1 件を占い履歴の先頭に加えて端末（localStorage キー tarot:history）へ書き、加えた項目を返す
+    request:
+      type: object
+      required: [drawn]
+      properties:
+        drawn: { $ref: "../../../_shared/components.yaml#/schemas/DrawnCard" }
+        categoryLabel: { type: string }
+    response: { $ref: "#/schemas/HistoryEntry" }
+    errors: []
+    examples:
+      ok:
+        request:
+          drawn:
+            card: { id: 1, nameEn: "The Fool", nameJa: "愚者", number: 0, arcanaType: "Major", meaningUpright: "自由,冒険,純粋", meaningReversed: "無謀,軽率,優柔不断", descriptionUpright: "愚者は、新しい旅立ちと無垢な好奇心を宿すカードです。何かを始めるか迷っているなら、完璧な準備よりも軽やかな一歩こそが運命を動かすサインかもしれません。一番ハードルの低いことから手をつけてみましょう。動き始めること自体が、すでに前進です。", descriptionReversed: "逆位置の愚者は、無計画さや軽率さによる迷走を映し出します。思いつきで動き始めて空回りしている心当たりがあるなら、いったん全体像を見直す合図です。動き出す前に立ち止まって整理する時間を持ってみてください。優先順位を見直すだけで、空回りはぐっと減らせます。", imageUrl: "/cards/major/00_theFool.webp" }
+            orientation: upright
+            keywords: ["自由", "冒険", "純粋"]
+        response:
+          id: "1790000000000-k3j9x2a"
+          drawnAt: 1790000000000
+          card: { id: 1, nameEn: "The Fool", nameJa: "愚者", number: 0, arcanaType: "Major", meaningUpright: "自由,冒険,純粋", meaningReversed: "無謀,軽率,優柔不断", descriptionUpright: "愚者は、新しい旅立ちと無垢な好奇心を宿すカードです。何かを始めるか迷っているなら、完璧な準備よりも軽やかな一歩こそが運命を動かすサインかもしれません。一番ハードルの低いことから手をつけてみましょう。動き始めること自体が、すでに前進です。", descriptionReversed: "逆位置の愚者は、無計画さや軽率さによる迷走を映し出します。思いつきで動き始めて空回りしている心当たりがあるなら、いったん全体像を見直す合図です。動き出す前に立ち止まって整理する時間を持ってみてください。優先順位を見直すだけで、空回りはぐっと減らせます。", imageUrl: "/cards/major/00_theFool.webp" }
+          orientation: upright
+          keywords: ["自由", "冒険", "純粋"]
+  loadHistory:
+    transport: local-store
+    direction: outbound
+    owned: true
+    auth: none
+    summary: 端末（localStorage キー tarot:history）から占い履歴を新しい順の配列として読む
+    response:
+      type: array
+      maxItems: 100
+      items: { $ref: "#/schemas/HistoryEntry" }
+    errors: []
+    examples:
+      ok:
+        response:
+          - id: "1790000000000-k3j9x2a"
+            drawnAt: 1790000000000
+            card: { id: 1, nameEn: "The Fool", nameJa: "愚者", number: 0, arcanaType: "Major", meaningUpright: "自由,冒険,純粋", meaningReversed: "無謀,軽率,優柔不断", descriptionUpright: "愚者は、新しい旅立ちと無垢な好奇心を宿すカードです。何かを始めるか迷っているなら、完璧な準備よりも軽やかな一歩こそが運命を動かすサインかもしれません。一番ハードルの低いことから手をつけてみましょう。動き始めること自体が、すでに前進です。", descriptionReversed: "逆位置の愚者は、無計画さや軽率さによる迷走を映し出します。思いつきで動き始めて空回りしている心当たりがあるなら、いったん全体像を見直す合図です。動き出す前に立ち止まって整理する時間を持ってみてください。優先順位を見直すだけで、空回りはぐっと減らせます。", imageUrl: "/cards/major/00_theFool.webp" }
+            orientation: upright
+            keywords: ["自由", "冒険", "純粋"]
+      empty:
+        response: []
+  clearHistory:
+    transport: local-store
+    direction: outbound
+    owned: true
+    auth: none
+    summary: 端末（localStorage キー tarot:history）から占い履歴をすべて消す
+    errors: []
+    examples:
+      ok: {}
+
+schemas:
+  HistoryEntry:
+    type: object
+    required: [id, drawnAt, card, orientation, keywords]
+    properties:
+      id: { type: string }
+      drawnAt: { type: integer, description: エポックミリ秒 }
+      card: { $ref: "../../../_shared/components.yaml#/schemas/TarotCard" }
+      orientation: { type: string, enum: [upright, reversed] }
+      keywords: { type: array, items: { type: string } }
+      categoryLabel: { type: string, minLength: 1 }

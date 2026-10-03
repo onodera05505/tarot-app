@@ -1,0 +1,81 @@
+# UC-008 の境界の形（ADR-0008）
+# 第三者の SDK（新しい版の問い合わせ・入れ替え）だけを写す。配る手順（.github/workflows/deploy.yml）と
+# PWA の設定（vite.config.ts）、ビルド識別子の注入はそれ自体が機械可読な正本なので写さない（R-1203）
+x-uc: UC-008
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations:
+  isNativePlatform:
+    transport: sdk
+    direction: outbound
+    owned: false
+    source: "@capacitor/core 8.5.1（Capacitor.isNativePlatform）"
+    auth: none
+    summary: ネイティブのアプリとして動いているかを問い合わせる
+    response:
+      type: boolean
+    errors: []
+    examples:
+      web:
+        response: false
+      native:
+        response: true
+
+  registerSW:
+    transport: sdk
+    direction: outbound
+    owned: false
+    source: "vite-plugin-pwa 1.2.0（virtual:pwa-register の registerSW。RegisterSWOptions）"
+    auth: none
+    summary: アプリの全体を端末に保持し、新しい版と入れ替える仕組みを登録する
+    request:
+      type: object
+      required: [immediate]
+      properties:
+        immediate:
+          type: boolean
+          const: true
+    errors: []
+    examples:
+      ok:
+        request: { immediate: true }
+
+  onRegisteredSW:
+    transport: sdk
+    direction: inbound
+    owned: false
+    source: "vite-plugin-pwa 1.2.0（RegisterSWOptions.onRegisteredSW(swScriptUrl, registration)）"
+    auth: none
+    summary: 仕組みの登録が済んだことと、問い合わせに使う登録を受け取る
+    request:
+      type: object
+      required: [swScriptUrl]
+      properties:
+        swScriptUrl:
+          type: string
+          minLength: 1
+        registration:
+          type: object
+    errors: []
+    examples:
+      ok:
+        request: { swScriptUrl: "/sw.js", registration: {} }
+      noRegistration:
+        request: { swScriptUrl: "/sw.js" }
+
+  registrationUpdate:
+    transport: sdk
+    direction: outbound
+    owned: false
+    source: "vite-plugin-pwa 1.2.0 が onRegisteredSW で渡す ServiceWorkerRegistration の update()（Service Workers 仕様）"
+    auth: none
+    summary: Web 配信元に新しい版の有無を問い合わせる
+    errors:
+      - code: UPSTREAM_UNREACHABLE
+        when: 問い合わせが配信元に届かない
+    examples:
+      ok: {}
+      offline:
+        error: UPSTREAM_UNREACHABLE

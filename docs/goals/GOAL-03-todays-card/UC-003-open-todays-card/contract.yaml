@@ -1,0 +1,61 @@
+x-uc: UC-003
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations:
+  loadCached:
+    transport: local-store
+    direction: outbound
+    owned: true
+    auth: none
+    summary: 端末（localStorage キー tarot:todaysCard）から本日の一枚の記録を読み、記録の日付が端末の現地日付の今日なら開封したカードを、それ以外は null を返す
+    response:
+      oneOf:
+        - { $ref: "../../../_shared/components.yaml#/schemas/DrawnCard" }
+        - { type: "null" }
+    errors: []
+    examples:
+      ok:
+        response:
+          card: { id: 1, nameEn: "The Fool", nameJa: "愚者", number: 0, arcanaType: "Major", meaningUpright: "自由,冒険,純粋", meaningReversed: "無謀,軽率,優柔不断", descriptionUpright: "愚者は、新しい旅立ちと無垢な好奇心を宿すカードです。何かを始めるか迷っているなら、完璧な準備よりも軽やかな一歩こそが運命を動かすサインかもしれません。一番ハードルの低いことから手をつけてみましょう。動き始めること自体が、すでに前進です。", descriptionReversed: "逆位置の愚者は、無計画さや軽率さによる迷走を映し出します。思いつきで動き始めて空回りしている心当たりがあるなら、いったん全体像を見直す合図です。動き出す前に立ち止まって整理する時間を持ってみてください。優先順位を見直すだけで、空回りはぐっと減らせます。", imageUrl: "/cards/major/00_theFool.webp" }
+          orientation: reversed
+          keywords: ["無謀", "軽率", "優柔不断"]
+      notOpened:
+        response: null
+  saveCached:
+    transport: local-store
+    direction: outbound
+    owned: true
+    auth: none
+    summary: 開封したカードを端末の現地日付とともに本日の一枚の記録（TodaysCardRecord）として端末（localStorage キー tarot:todaysCard）へ書く
+    request:
+      type: object
+      required: [drawn]
+      properties:
+        drawn: { $ref: "../../../_shared/components.yaml#/schemas/DrawnCard" }
+    errors:
+      - code: STORAGE_WRITE_FAILED
+        when: 端末へ書けない
+    examples:
+      ok:
+        request:
+          drawn:
+            card: { id: 1, nameEn: "The Fool", nameJa: "愚者", number: 0, arcanaType: "Major", meaningUpright: "自由,冒険,純粋", meaningReversed: "無謀,軽率,優柔不断", descriptionUpright: "愚者は、新しい旅立ちと無垢な好奇心を宿すカードです。何かを始めるか迷っているなら、完璧な準備よりも軽やかな一歩こそが運命を動かすサインかもしれません。一番ハードルの低いことから手をつけてみましょう。動き始めること自体が、すでに前進です。", descriptionReversed: "逆位置の愚者は、無計画さや軽率さによる迷走を映し出します。思いつきで動き始めて空回りしている心当たりがあるなら、いったん全体像を見直す合図です。動き出す前に立ち止まって整理する時間を持ってみてください。優先順位を見直すだけで、空回りはぐっと減らせます。", imageUrl: "/cards/major/00_theFool.webp" }
+            orientation: reversed
+            keywords: ["無謀", "軽率", "優柔不断"]
+      storageFull:
+        request:
+          drawn:
+            card: { id: 1, nameEn: "The Fool", nameJa: "愚者", number: 0, arcanaType: "Major", meaningUpright: "自由,冒険,純粋", meaningReversed: "無謀,軽率,優柔不断", descriptionUpright: "愚者は、新しい旅立ちと無垢な好奇心を宿すカードです。何かを始めるか迷っているなら、完璧な準備よりも軽やかな一歩こそが運命を動かすサインかもしれません。一番ハードルの低いことから手をつけてみましょう。動き始めること自体が、すでに前進です。", descriptionReversed: "逆位置の愚者は、無計画さや軽率さによる迷走を映し出します。思いつきで動き始めて空回りしている心当たりがあるなら、いったん全体像を見直す合図です。動き出す前に立ち止まって整理する時間を持ってみてください。優先順位を見直すだけで、空回りはぐっと減らせます。", imageUrl: "/cards/major/00_theFool.webp" }
+            orientation: reversed
+            keywords: ["無謀", "軽率", "優柔不断"]
+        error: STORAGE_WRITE_FAILED
+
+schemas:
+  TodaysCardRecord:
+    type: object
+    required: [date, drawn]
+    properties:
+      date: { type: string, pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$', description: 端末の現地日付 }
+      drawn: { $ref: "../../../_shared/components.yaml#/schemas/DrawnCard" }

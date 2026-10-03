@@ -1,0 +1,7 @@
+x-uc: UC-002
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations: {}
+x-no-boundary: "自前の境界は無い。アプリの全体を端末に保持する仕組みの登録（vite-plugin-pwa の registerSW）は、新しい版が届くことの入口でもあり、ADR-0008 に従って UC-008 の契約が操作 registerSW として持つ。ホーム画面に置くための宣言（vite.config.ts の manifest）はそれ自体が機械可読な正本なので写さない"

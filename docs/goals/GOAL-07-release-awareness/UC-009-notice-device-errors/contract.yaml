@@ -1,0 +1,62 @@
+# UC-009 の境界の形（ADR-0008）
+# 第三者の SDK（エラー監視サービス）だけを写す。報告先の値はビルド時の環境変数で渡り、CI の設定が正本（R-1203）
+x-uc: UC-009
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations:
+  init:
+    transport: sdk
+    direction: outbound
+    owned: false
+    source: "@sentry/react 10.50.0（Sentry.init(options: BrowserOptions)）"
+    auth: none
+    summary: エラー監視サービスへの報告を、報告先を渡して始める
+    request:
+      type: object
+      required: [dsn, sendDefaultPii, tracesSampleRate, replaysSessionSampleRate, replaysOnErrorSampleRate]
+      properties:
+        dsn:
+          type: string
+          minLength: 1
+        sendDefaultPii:
+          type: boolean
+          const: true
+        tracesSampleRate:
+          type: number
+          const: 0
+        replaysSessionSampleRate:
+          type: number
+          const: 0
+        replaysOnErrorSampleRate:
+          type: number
+          const: 0
+    errors: []
+    examples:
+      ok:
+        request:
+          dsn: "https://examplePublicKey@o0.ingest.sentry.io/0"
+          sendDefaultPii: true
+          tracesSampleRate: 0
+          replaysSessionSampleRate: 0
+          replaysOnErrorSampleRate: 0
+
+  errorBoundary:
+    transport: sdk
+    direction: outbound
+    owned: false
+    source: "@sentry/react 10.50.0（Sentry.ErrorBoundary。ErrorBoundaryProps）"
+    auth: none
+    summary: 描画中のエラーを捉えて報告し、代わりの表示に切り替える
+    request:
+      type: object
+      required: [fallback]
+      properties:
+        fallback:
+          type: string
+          const: FallbackUI
+    errors: []
+    examples:
+      ok:
+        request: { fallback: FallbackUI }

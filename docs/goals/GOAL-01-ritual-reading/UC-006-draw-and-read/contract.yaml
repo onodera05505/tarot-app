@@ -1,0 +1,7 @@
+x-uc: UC-006
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations: {}
+x-no-boundary: "自前の境界は無い。抽選と占い状態はアプリの中のモジュール（drawCards / useReadingStore）で、ADR-0008 では操作にしない。占い履歴への記録は UC-001 の契約が持つ。カードをめくる効果音は端末の音の出力へ一方向に鳴らすだけで、この UC の手順にも要件にも現れない"

@@ -1,0 +1,7 @@
+x-uc: UC-004
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations: {}
+x-no-boundary: "カードの内容はアプリに含まれ、一覧と 1 枚の解説はアプリの中のモジュール（fetchAllCards / fetchCard）から読むだけで、通信・端末への記録・OS の機能のどれも越えない（ADR-0008: アプリの中のモジュールの間は操作にしない）"

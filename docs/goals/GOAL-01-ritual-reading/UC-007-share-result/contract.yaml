@@ -1,0 +1,34 @@
+x-uc: UC-007
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations:
+  shareOrDownload:
+    transport: device
+    direction: outbound
+    owned: true
+    auth: none
+    summary: シェア画像を端末の共有機能へ渡し、渡せないときは端末への保存で渡す
+    request:
+      type: object
+      required: [blob, filename, text]
+      properties:
+        blob:
+          type: object
+          required: [type]
+          properties:
+            type: { type: string, const: image/png }
+        filename:
+          type: string
+          pattern: "^tarot-[0-9]+\\.png$"
+        text:
+          type: string
+          pattern: "^.+（(正位置|逆位置)）$"
+    errors: []
+    examples:
+      ok:
+        request:
+          blob: { type: image/png }
+          filename: tarot-1.png
+          text: 愚者（正位置）

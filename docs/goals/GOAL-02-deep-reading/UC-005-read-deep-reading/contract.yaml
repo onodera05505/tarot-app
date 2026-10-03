@@ -1,0 +1,7 @@
+x-uc: UC-005
+x-status: draft
+x-spec: ./UC.md
+x-updated: 2026-10-03
+
+operations: {}
+x-no-boundary: "自前の境界は無い。カテゴリの文章はアプリに含まれ、選んだときにアプリの中のモジュールとして分割読み込み（loadDeepCategory）するのみで、ADR-0008 ではアプリの中のモジュールの間として操作にしない。占い履歴への記録は UC-001 の契約が、シェア画像を渡す先は UC-007 の契約が持つ"
