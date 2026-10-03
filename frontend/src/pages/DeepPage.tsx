@@ -9,6 +9,7 @@ import { useReadingStore } from '../store/useReadingStore'
 // 詳しく占う（仕様書 v3.1 §5.7）: カテゴリ選択 → 質問 3 問 → /shuffle へ。
 // 回答はカードの抽選に影響しない（表示する解釈テキストの選択にのみ使う）。
 
+// @implements UC-005 / REQ-038
 export function DeepPage() {
   const navigate = useNavigate()
   const setDeepContext = useReadingStore((s) => s.setDeepContext)
@@ -20,6 +21,7 @@ export function DeepPage() {
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<string[]>([])
 
+  // @implements REQ-039, REQ-040, REQ-043
   const pickCategory = async (id: DeepCategoryId) => {
     if (loading) return
     setError(null)
@@ -36,6 +38,7 @@ export function DeepPage() {
     }
   }
 
+  // @implements REQ-044, REQ-045, REQ-046
   const pickChoice = (choiceId: string) => {
     if (!data) return
     const next = [...answers]
@@ -53,6 +56,7 @@ export function DeepPage() {
     navigate('/shuffle')
   }
 
+  // @implements REQ-041, REQ-046, REQ-047
   const goBack = () => {
     if (step === 0) {
       navigate('/')

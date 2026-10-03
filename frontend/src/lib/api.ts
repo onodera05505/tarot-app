@@ -21,6 +21,7 @@ function delay<T>(value: T, ms = 0): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms))
 }
 
+// @implements REQ-026
 export function fetchAllCards(): Promise<TarotCard[]> {
   // ソートは旧バックエンドと同じ「カード番号昇順」を保つ
   const sorted = [...tarotCards].sort((a, b) => a.number - b.number)
@@ -30,11 +31,13 @@ export function fetchAllCards(): Promise<TarotCard[]> {
 export function fetchCard(id: number): Promise<TarotCard> {
   const card = tarotCards.find((c) => c.id === id)
   if (!card) {
+    // @implements REQ-030
     return Promise.reject(new Error('Card not found'))
   }
   return delay(card)
 }
 
+// @implements BR-001
 function fisherYatesPick(count: number): TarotCard[] {
   const arr = [...tarotCards]
   for (let i = arr.length - 1; i > 0; i--) {
@@ -44,6 +47,7 @@ function fisherYatesPick(count: number): TarotCard[] {
   return arr.slice(0, count)
 }
 
+// @implements BR-001
 export async function drawCards(count = 1): Promise<DrawnCard[]> {
   if (!Number.isInteger(count) || count < 1) {
     throw new Error('count must be a positive integer')

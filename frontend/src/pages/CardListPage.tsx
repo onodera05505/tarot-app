@@ -4,6 +4,7 @@ import { PageTransition } from '../components/animations/PageTransition'
 import { fetchAllCards, thumbUrl } from '../lib/api'
 import type { TarotCard } from '../lib/types'
 
+// @implements UC-004 / REQ-026
 export function CardListPage() {
   const navigate = useNavigate()
   const [cards, setCards] = useState<TarotCard[]>([])
@@ -39,6 +40,7 @@ export function CardListPage() {
             .filter(Boolean)
           return (
             <li key={card.id}>
+              {/* @implements REQ-027 */}
               <Link to={`/cards/${card.id}`} className="card-list-item">
                 <img
                   src={thumbUrl(card.imageUrl)}

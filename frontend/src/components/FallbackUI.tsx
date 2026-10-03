@@ -1,5 +1,6 @@
 // Sentry.ErrorBoundary の fallback。main.tsx から分離しているのは
 // react-refresh がコンポーネント混在ファイルを許さないため。
+// @implements REQ-086, REQ-089
 export function FallbackUI() {
   return (
     <main className="page" style={{ alignItems: 'center', justifyContent: 'center' }}>

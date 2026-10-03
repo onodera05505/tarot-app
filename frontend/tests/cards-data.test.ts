@@ -6,21 +6,26 @@ import { tarotCards } from '../src/data/cards'
 // 仕様書 v3 §4.1「データ仕様 / TarotCard」に基づくカードデータの検証。
 // cards.ts は cards.md から自動生成されるため、生成パイプラインの退行検知を兼ねる。
 
+// UC-010 / UC-011（最後のテストは UC-011 の REQ-097）
 describe('カードデータ（仕様書 v3 §4.1）', () => {
+  // @covers REQ-092#card-count
   it('大アルカナ 22 枚が揃っている', () => {
     expect(tarotCards).toHaveLength(22)
   })
 
+  // @covers REQ-092#card-number
   it('number は 0〜21 の連番（重複なし）', () => {
     const numbers = [...tarotCards.map((c) => c.number)].sort((a, b) => a - b)
     expect(numbers).toEqual(Array.from({ length: 22 }, (_, i) => i))
   })
 
+  // @covers REQ-092#card-number
   it('id は 1〜22 で一意', () => {
     const ids = [...tarotCards.map((c) => c.id)].sort((a, b) => a - b)
     expect(ids).toEqual(Array.from({ length: 22 }, (_, i) => i + 1))
   })
 
+  // @covers REQ-092#card-required-text
   it('全フィールドが空でない（プレースホルダー「未設定」も残っていない）', () => {
     for (const card of tarotCards) {
       for (const [key, value] of Object.entries(card)) {
@@ -31,6 +36,7 @@ describe('カードデータ（仕様書 v3 §4.1）', () => {
     }
   })
 
+  // @covers REQ-092#keyword-word-count
   it('正逆キーワードはカンマ区切りで 2〜3 語', () => {
     for (const card of tarotCards) {
       for (const field of ['meaningUpright', 'meaningReversed'] as const) {
@@ -47,6 +53,7 @@ describe('カードデータ（仕様書 v3 §4.1）', () => {
     }
   })
 
+  // @covers REQ-097#original-missing
   it('imageUrl の画像実体が public/ 配下に存在する（裏面 000.webp も）', () => {
     const publicDir = join(import.meta.dirname, '..', 'public')
     for (const card of tarotCards) {

@@ -56,7 +56,9 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
+// UC-001
 describe('占い履歴: 空のとき（§5.6）', () => {
+  // @covers REQ-007#empty-message
   it('見出し h1「占い履歴」と「まだ占いの履歴はありません」が出て、カードの行は無い', async () => {
     mountHistory()
 
@@ -65,6 +67,7 @@ describe('占い履歴: 空のとき（§5.6）', () => {
     expect(displayedNames()).toEqual([])
   })
 
+  // @covers REQ-007#start-from-empty
   it('「占いを始める」を押すと /shuffle へ遷移する', async () => {
     mountHistory()
 
@@ -73,7 +76,9 @@ describe('占い履歴: 空のとき（§5.6）', () => {
   })
 })
 
+// UC-001
 describe('占い履歴: 一覧表示（§5.6「新しい順に一覧表示（日時・カード・正逆）」）', () => {
+  // @covers REQ-008#newest-first-order
   it('3 件入れると新しい順（最後に追加したものが先頭）でカード名が並び、画像も出る', async () => {
     const [first, second, third] = [tarotCards[0], tarotCards[5], tarotCards[10]]
     addToHistory(drawnOf(first, 'upright'))
@@ -92,6 +97,7 @@ describe('占い履歴: 一覧表示（§5.6「新しい順に一覧表示（日
     expect(screen.queryByText('まだ占いの履歴はありません')).toBeNull()
   })
 
+  // @covers REQ-008#orientation-label
   it('正位置の項目には「正位置」、逆位置の項目には「逆位置」が表示される（混在）', async () => {
     addToHistory(drawnOf(tarotCards[1], 'upright'))
     addToHistory(drawnOf(tarotCards[2], 'reversed'))
@@ -105,6 +111,7 @@ describe('占い履歴: 一覧表示（§5.6「新しい順に一覧表示（日
     expect(document.body.textContent).toContain('逆位置')
   })
 
+  // @covers REQ-008#orientation-label
   it('全件が正位置なら「逆位置」は出ない', async () => {
     addToHistory(drawnOf(tarotCards[3], 'upright'))
     addToHistory(drawnOf(tarotCards[4], 'upright'))
@@ -118,6 +125,7 @@ describe('占い履歴: 一覧表示（§5.6「新しい順に一覧表示（日
     expect(document.body.textContent).not.toContain('逆位置')
   })
 
+  // @covers REQ-008#orientation-label
   it('全件が逆位置なら「正位置」は出ない', async () => {
     addToHistory(drawnOf(tarotCards[6], 'reversed'))
     addToHistory(drawnOf(tarotCards[7], 'reversed'))
@@ -132,7 +140,9 @@ describe('占い履歴: 一覧表示（§5.6「新しい順に一覧表示（日
   })
 })
 
+// UC-001
 describe('占い履歴: カテゴリ名（§5.6「詳しく占うの結果はカテゴリ名を添えて記録・表示する（通常占いは従来通り）」）', () => {
+  // @covers REQ-008#category-for-deep
   it('カテゴリ名つきの項目にだけカテゴリ名が表示され、無い項目には出ない', async () => {
     const categoryLabel = 'テスト専用カテゴリ名'
     addToHistory(drawnOf(tarotCards[8], 'upright')) // 通常占い（カテゴリ無し）
@@ -147,6 +157,7 @@ describe('占い履歴: カテゴリ名（§5.6「詳しく占うの結果はカ
     expect(countInBody(categoryLabel)).toBe(1)
   })
 
+  // @covers REQ-008#category-for-deep
   it('カテゴリ名つきの項目が複数あれば、それぞれのカテゴリ名が表示される', async () => {
     const labelA = 'テスト専用カテゴリ甲'
     const labelB = 'テスト専用カテゴリ乙'
@@ -162,6 +173,7 @@ describe('占い履歴: カテゴリ名（§5.6「詳しく占うの結果はカ
     expect(countInBody(labelB)).toBe(1)
   })
 
+  // @covers REQ-008#no-category-for-normal
   it('カテゴリ無しの項目だけなら、記録側で付けていない語が画面に湧かない（従来通り）', async () => {
     addToHistory(drawnOf(tarotCards[15], 'upright'))
     mountHistory()
@@ -175,7 +187,9 @@ describe('占い履歴: カテゴリ名（§5.6「詳しく占うの結果はカ
   })
 })
 
+// UC-001
 describe('占い履歴: 全削除（§5.6「全削除操作を提供」）', () => {
+  // @covers REQ-011#accept-clears-all
   it('「履歴をすべて削除」で 0 件になり、空表示（「まだ占いの履歴はありません」「占いを始める」）に戻る', async () => {
     addToHistory(drawnOf(tarotCards[16], 'upright'))
     addToHistory(drawnOf(tarotCards[17], 'reversed'))
@@ -203,6 +217,7 @@ describe('占い履歴: 全削除（§5.6「全削除操作を提供」）', () 
     expect(window.confirm).toHaveBeenCalledWith('占いの履歴をすべて削除します。よろしいですか？')
   })
 
+  // @covers REQ-012#cancel-keeps-all
   it('確認ダイアログでキャンセルすると削除されず、表示も保存先も変わらない', async () => {
     vi.mocked(window.confirm).mockReturnValue(false)
     const cards = [tarotCards[19], tarotCards[20], tarotCards[21]]

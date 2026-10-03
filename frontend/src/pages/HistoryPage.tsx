@@ -5,6 +5,7 @@ import { thumbUrl } from '../lib/api'
 import { clearHistory, loadHistory } from '../lib/history'
 import type { HistoryEntry } from '../lib/history'
 
+// @implements REQ-008
 function formatDate(epochMs: number): string {
   const d = new Date(epochMs)
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -14,11 +15,14 @@ function formatDate(epochMs: number): string {
   return `${d.getFullYear()}/${m}/${day} ${hh}:${mm}`
 }
 
+// @implements UC-001
 export function HistoryPage() {
   const navigate = useNavigate()
   // 遅延初期化でマウント時に一度だけ読む（effect 内 setState だと余計な再レンダーが走る）
+  // @implements REQ-008, REQ-009
   const [entries, setEntries] = useState<HistoryEntry[]>(() => loadHistory())
 
+  // @implements REQ-011, REQ-012
   const handleClear = () => {
     if (!window.confirm('占いの履歴をすべて削除します。よろしいですか？')) return
     clearHistory()
@@ -34,6 +38,7 @@ export function HistoryPage() {
         </button>
       </header>
 
+      {/* @implements REQ-007, REQ-009, REQ-011 / REQ-008 */}
       {entries.length === 0 ? (
         <div className="history-empty">
           <p className="step-label">まだ占いの履歴はありません</p>
@@ -50,6 +55,7 @@ export function HistoryPage() {
           <ul className="card-list">
             {entries.map((entry) => (
               <li key={entry.id}>
+                {/* @implements REQ-010 / BR-003 */}
                 <Link
                   to={`/cards/${entry.card.id}?orientation=${entry.orientation}`}
                   className="card-list-item"

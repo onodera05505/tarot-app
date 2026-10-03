@@ -17,6 +17,7 @@ function makeId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
+// @implements REQ-003, REQ-009
 export function loadHistory(): HistoryEntry[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -29,6 +30,7 @@ export function loadHistory(): HistoryEntry[] {
   }
 }
 
+// @implements REQ-001, REQ-002, REQ-005 / BR-004
 export function addToHistory(
   drawn: DrawnCard,
   categoryLabel?: string,
@@ -46,11 +48,13 @@ export function addToHistory(
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
   } catch {
+    // @implements REQ-004
     // QuotaExceededError 等は静かに失敗（履歴は補助機能なので致命的ではない）
   }
   return entry
 }
 
+// @implements REQ-011
 export function clearHistory(): void {
   try {
     localStorage.removeItem(STORAGE_KEY)

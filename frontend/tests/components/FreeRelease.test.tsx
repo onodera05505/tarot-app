@@ -55,13 +55,17 @@ afterEach(() => {
   cleanup()
 })
 
+// UC-005
 describe('機能フラグ（§3.3「切り替えは 1 箇所の機能フラグで行う」）', () => {
+  // 仕様外: 出荷時の構成値（無料版で出す）の固定。無料版の振る舞いは REQ-035〜037 のテストが観測する
   it('DEEP_READING_ENABLED の既定値は false（無料版）', () => {
     expect(DEEP_READING_ENABLED).toBe(false)
   })
 })
 
+// UC-005
 describe('無料版のトップ画面（§3.3 / §5.2）', () => {
+  // @covers REQ-098#three-entries
   it('「スタート」「カード解説を見る」「占い履歴を見る」の 3 ボタンがある', async () => {
     mountTop()
     await waitFor(() => {
@@ -71,6 +75,7 @@ describe('無料版のトップ画面（§3.3 / §5.2）', () => {
     expect(queryControl('占い履歴を見る')).not.toBeNull()
   })
 
+  // @covers REQ-035#no-entry-on-top
   it('「詳しく占う」ボタンを出さない（文言自体も画面に出さない＝完全に非表示）', async () => {
     mountTop()
     await waitFor(() => {
@@ -81,6 +86,7 @@ describe('無料版のトップ画面（§3.3 / §5.2）', () => {
     expect(document.body.textContent).not.toContain('詳しく占う')
   })
 
+  // @covers REQ-035#no-teaser-on-top
   it('「準備中」等の予告表示をしない', async () => {
     mountTop()
     await waitFor(() => {
@@ -93,7 +99,9 @@ describe('無料版のトップ画面（§3.3 / §5.2）', () => {
   })
 })
 
+// UC-005
 describe('無料版のルーティング（§3.3 / §5.1）', () => {
+  // @covers REQ-036#redirect-to-top
   it('/deep に直接到達すると / へリダイレクトされ、トップ画面の内容が出る', async () => {
     mountApp('/deep')
     await waitFor(() => {
@@ -108,6 +116,7 @@ describe('無料版のルーティング（§3.3 / §5.1）', () => {
     expect(document.body.textContent).not.toContain('詳しく占う')
   })
 
+  // @covers REQ-035#no-teaser-on-top
   it('/deep へのリダイレクト先でも「準備中」等の予告表示をしない', async () => {
     mountApp('/deep')
     await waitFor(() => {
@@ -119,6 +128,7 @@ describe('無料版のルーティング（§3.3 / §5.1）', () => {
     }
   })
 
+  // @covers REQ-099#unknown-path
   it('未知のパス（*）は / へリダイレクトされる', async () => {
     mountApp('/no-such-route')
     await waitFor(() => {
@@ -126,6 +136,7 @@ describe('無料版のルーティング（§3.3 / §5.1）', () => {
     })
   })
 
+  // @covers REQ-035#no-entry-on-top
   it('/ ではトップ画面が出て「詳しく占う」ボタンが無い（App 経由でも同じ）', async () => {
     mountApp('/')
     await waitFor(() => {
@@ -135,7 +146,9 @@ describe('無料版のルーティング（§3.3 / §5.1）', () => {
   })
 })
 
+// UC-005
 describe('無料版の結果画面（§3.3「結果画面は常に通常占いの表示になる」）', () => {
+  // @covers REQ-037#normal-result-despite-deep-context
   it('store に deep の文脈が残っていても、通常の解説文を表示しカテゴリ特化の表示はしない', async () => {
     const work = await loadDeepCategory('work')
     const card = tarotCards.find((c) => work.base[c.number] !== undefined) ?? tarotCards[0]

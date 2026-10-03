@@ -74,6 +74,7 @@ export function CardReveal({
             inset: 0,
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
+            // @implements BR-003
             transform: `rotateY(180deg) rotate(${reversed ? 180 : 0}deg)`,
           }}
         />

@@ -15,11 +15,14 @@ function walk(dir: string, out: string[] = []): string[] {
   return out
 }
 
+// UC-011
 describe('カード裏面画像の集約', () => {
+  // @covers REQ-097#original-missing
   it('CARD_BACK_URL の実体が public に存在する', () => {
     expect(existsSync(join(__dirname, '..', 'public', CARD_BACK_URL))).toBe(true)
   })
 
+  // 仕様外: 裏面のパスの置き場が 1 箇所であることを見る内部の門（共通ルール 3-1）
   it('裏面パスの直書きは lib/api.ts の 1 箇所だけ', () => {
     const src = join(__dirname, '..', 'src')
     const offenders = walk(src).filter(

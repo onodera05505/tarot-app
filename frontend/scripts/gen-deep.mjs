@@ -33,6 +33,7 @@ function fail(file, msg) {
   process.exit(1)
 }
 
+// @implements REQ-093
 function parseCategory(file, raw) {
   const idMatch = raw.match(/^\*\*id\*\*:\s*(.+)$/m)
   const labelMatch = raw.match(/^\*\*label\*\*:\s*(.+)$/m)
@@ -95,6 +96,7 @@ function parseCategory(file, raw) {
     if (!up) fail(file, `カード ${num}: **正位置**: 行がありません`)
     if (!rev) fail(file, `カード ${num}: **逆位置**: 行がありません`)
     if (base[num]) fail(file, `カード ${num} が重複しています`)
+    // @implements REQ-094
     for (const [name, text] of [['正位置', up[1]], ['逆位置', rev[1]]]) {
       const firstSentence = text.trim().split('。')[0]
       if (!genreKeywords.some((k) => firstSentence.includes(k))) {
@@ -126,6 +128,7 @@ function parseCategory(file, raw) {
   return { id, label, questions, base }
 }
 
+// @implements UC-010, REQ-091
 const files = readdirSync(MD_DIR).filter((f) => f.endsWith('.md'))
 const categories = files.map((f) =>
   parseCategory(basename(f), readFileSync(join(MD_DIR, f), 'utf8')),

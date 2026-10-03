@@ -29,6 +29,7 @@ type ReadingState = {
   reset: () => void
 }
 
+// @implements BR-002
 const initial = {
   drawn: null,
   status: 'idle' as ReadingStatus,
@@ -38,6 +39,7 @@ const initial = {
 
 export const useReadingStore = create<ReadingState>((set, get) => ({
   ...initial,
+  // @implements REQ-057, REQ-001, REQ-005, REQ-048 / BR-004
   drawOne: async () => {
     set({ status: 'drawing', error: null })
     try {
@@ -49,6 +51,7 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
       }
       set({ drawn, status: 'drawn' })
     } catch (e) {
+      // @implements REQ-067
       set({
         status: 'error',
         error: e instanceof Error ? e.message : 'カードを引けませんでした',
@@ -56,5 +59,6 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
     }
   },
   setDeepContext: (deep) => set({ deep }),
+  // @implements BR-002
   reset: () => set({ ...initial }),
 }))

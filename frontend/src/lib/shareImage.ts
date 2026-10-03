@@ -48,6 +48,7 @@ function drawRoundedImage(
   ctx.closePath()
   ctx.clip()
 
+  // @implements BR-003
   if (reversed) {
     ctx.translate(x + w / 2, y + h / 2)
     ctx.rotate(Math.PI)
@@ -75,6 +76,7 @@ function drawRoundedImage(
   ctx.restore()
 }
 
+// @implements REQ-072
 export async function generateShareImage(drawn: DrawnCard): Promise<Blob> {
   const canvas = document.createElement('canvas')
   canvas.width = W
@@ -119,6 +121,7 @@ export async function generateShareImage(drawn: DrawnCard): Promise<Blob> {
       drawn.orientation === 'reversed',
     )
   } catch {
+    // @implements REQ-076
     // 画像読み込み失敗 → プレースホルダ
     ctx.fillStyle = 'rgba(245, 215, 110, 0.1)'
     ctx.fillRect(cardX, cardY, cardW, cardH)
@@ -158,6 +161,7 @@ export async function generateShareImage(drawn: DrawnCard): Promise<Blob> {
 }
 
 // 画像 Blob を共有 or ダウンロードする
+// @implements REQ-072, REQ-074
 export async function shareOrDownload(blob: Blob, filename: string, text: string): Promise<void> {
   const file = new File([blob], filename, { type: 'image/png' })
 
@@ -173,11 +177,14 @@ export async function shareOrDownload(blob: Blob, filename: string, text: string
         title: 'Tarot - 今日の一枚',
         text,
       })
+      // @implements REQ-077
       return
     } catch (e) {
       // ユーザーがキャンセル → 何もしない（落とさない）
+      // @implements REQ-078
       if (e instanceof Error && e.name === 'AbortError') return
       // 失敗 → ダウンロードへフォールバック
+      // @implements REQ-079
     }
   }
 

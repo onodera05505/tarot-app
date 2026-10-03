@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1] / 'public' / 'cards'
 SRC, DST = ROOT / 'major', ROOT / 'thumbs'
 WIDTH, QUALITY = 320, 82
 
+# @implements UC-011, REQ-096
 def main() -> None:
     DST.mkdir(exist_ok=True)
     before = after = 0

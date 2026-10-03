@@ -32,6 +32,7 @@ jobs:
         working-directory: frontend
         run: pnpm install --frozen-lockfile
       # 仕様と、仕様⇔コード⇔テストの対応（spec-gate.yml と同じ検査。落ちたらデプロイしない）
+      # @implements REQ-081
       - name: Fetch harness tools (apm.yml の版)
         run: |
           TAG=$(grep -o 'develop-core#v[0-9.]*' apm.yml | cut -d'#' -f2)
@@ -40,6 +41,7 @@ jobs:
         run: node .harness/tools/spec-lint/spec-lint.mjs validate --ignore-legacy-layout
       - name: Trace check (new violations fail)
         run: node .harness/tools/trace-check/trace-check.mjs
+      # @implements REQ-081
       - name: Run tests
         working-directory: frontend
         run: pnpm test
@@ -48,6 +50,7 @@ jobs:
         run: pnpm build
         env:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+      # @implements REQ-080
       - name: Deploy to Cloudflare Pages
         working-directory: frontend
         # wrangler は frontend の devDependencies に入れてある（backend/ は

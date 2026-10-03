@@ -182,6 +182,7 @@ function getStackDepth(phase: Phase): number {
 
 // === rank の更新ロジック ===
 
+// @implements REQ-060
 function ranksAfterStack3(pile3Order: Record<number, number>): number[] {
   const out = new Array<number>(N)
   // 各 rank の山の sizes を確定
@@ -204,6 +205,7 @@ function ranksAfterStack3(pile3Order: Record<number, number>): number[] {
   return out
 }
 
+// @implements REQ-062
 function ranksAfterStack2(currentRanks: number[], chosenPile2: 0 | 1): number[] {
   const out = [...currentRanks]
   const half = N / 2 // 11
@@ -272,6 +274,7 @@ export function ShufflePage() {
   const [phase, setPhase] = useState<Phase>('intent')
 
   const [subIdx, setSubIdx] = useState(0)
+  // @implements REQ-056
   useEffect(() => {
     if (phase !== 'shuffling') return
     const cur = SHUFFLE_SEQ[subIdx % SHUFFLE_SEQ.length]
@@ -289,6 +292,7 @@ export function ShufflePage() {
   const [chosenPile2, setChosenPile2] = useState<0 | 1 | null>(null)
   const [chosenSide, setChosenSide] = useState<'left' | 'right' | null>(null)
 
+  // @implements REQ-057, REQ-060, REQ-062, REQ-063
   useEffect(() => {
     let timer: number | undefined
     if (phase === 'merging') {
@@ -305,6 +309,7 @@ export function ShufflePage() {
     return () => window.clearTimeout(timer)
   }, [phase, navigate])
 
+  // @implements REQ-057, REQ-058 / BR-002
   const handleStop = () => {
     if (phase !== 'shuffling') return
     // ここで reset() を呼んではいけない: 詳しく占うの文脈（deep）が消え、
@@ -314,6 +319,7 @@ export function ShufflePage() {
     setPhase('merging')
   }
 
+  // @implements REQ-060
   const togglePile3 = (pileIdx: number) => {
     if (phase !== 'split3') return
     setPile3Order((current) => {
@@ -335,23 +341,27 @@ export function ShufflePage() {
     })
   }
 
+  // @implements REQ-062
   const togglePile2 = (pileIdx: 0 | 1) => {
     if (phase !== 'split2') return
     setChosenPile2((cur) => (cur === pileIdx ? null : pileIdx))
   }
 
+  // @implements REQ-059, REQ-060
   const handleStack3 = () => {
     if (!pile3Complete) return
     setCardRanks(ranksAfterStack3(pile3Order))
     setPhase('stacking3')
   }
 
+  // @implements REQ-061, REQ-062
   const handleStack2 = () => {
     if (chosenPile2 === null) return
     setCardRanks((curr) => ranksAfterStack2(curr, chosenPile2))
     setPhase('stacking2')
   }
 
+  // @implements REQ-063
   const handleOrient = (side: 'left' | 'right') => {
     if (phase !== 'orienting') return
     setChosenSide(side)
@@ -395,6 +405,7 @@ export function ShufflePage() {
   }
 
   // 占うことを思い浮かべる画面
+  // @implements REQ-056
   if (phase === 'intent') {
     return (
       <PageTransition className="page page-shuffle">
@@ -520,6 +531,7 @@ export function ShufflePage() {
           ストップ
         </button>
       )}
+      {/* @implements REQ-059 */}
       {phase === 'split3' && (
         <button
           type="button"
@@ -530,6 +542,7 @@ export function ShufflePage() {
           決定
         </button>
       )}
+      {/* @implements REQ-061 */}
       {phase === 'split2' && (
         <button
           type="button"

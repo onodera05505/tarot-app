@@ -14,6 +14,7 @@ function getTodayKey(): string {
 
 type Cached = { date: string; drawn: DrawnCard }
 
+// @implements REQ-022, REQ-023, REQ-024, REQ-025
 function loadCached(): DrawnCard | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -26,18 +27,22 @@ function loadCached(): DrawnCard | null {
   return null
 }
 
+// @implements REQ-018
 function saveCached(drawn: DrawnCard) {
   const payload: Cached = { date: getTodayKey(), drawn }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
 }
 
+// @implements UC-003
 export function TodaysCard() {
   const navigate = useNavigate()
   const [drawn, setDrawn] = useState<DrawnCard | null>(loadCached)
   const [flipping, setFlipping] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // @implements REQ-018, REQ-006 / BR-004
   const handleOpen = async () => {
+    // @implements REQ-019
     if (drawn || flipping) return
     setError(null)
     setFlipping(true)
@@ -48,6 +53,7 @@ export function TodaysCard() {
       setDrawn(result)
       // flipping は CardReveal の onFlipComplete で false に
     } catch (e) {
+      // @implements REQ-021
       setFlipping(false)
       setError(e instanceof Error ? e.message : '取得失敗')
     }
@@ -98,6 +104,7 @@ export function TodaysCard() {
     <button
       type="button"
       className="todays-card todays-card--revealed"
+      // @implements REQ-020
       onClick={() =>
         navigate(`/cards/${drawn.card.id}?orientation=${drawn.orientation}`)
       }
@@ -106,6 +113,7 @@ export function TodaysCard() {
         src={thumbUrl(drawn.card.imageUrl)}
         alt={drawn.card.nameJa}
         className="todays-card-image"
+        // @implements BR-003
         style={
           drawn.orientation === 'reversed'
             ? { transform: 'rotate(180deg)' }

@@ -43,6 +43,7 @@ export function judge(text: string, strict: boolean): string | null {
 }
 
 describe('history/ の還元行（ブレイン: …）', () => {
+  // 仕様外: history/ の還元行の門（作業記録の決まり）で、アプリの振る舞いではない
   it(`${SINCE} 以降の各日のファイルに還元行があり、${STRICT_SINCE} 以降は参照した型の証拠がある`, () => {
     const problems = datedFiles()
       .map((f) => [f, judge(readFileSync(join(HISTORY_DIR, f), 'utf8'), f.slice(0, 10) >= STRICT_SINCE)] as const)
@@ -51,6 +52,7 @@ describe('history/ の還元行（ブレイン: …）', () => {
     expect(problems).toEqual([])
   })
 
+  // 仕様外: 還元行の判定関数の文法の固定（作業記録の門の自己検査）で、アプリの振る舞いではない
   it('文法: 名前か 当たり無し（grep: 語）だけを索引を引いた証拠と認める', () => {
     expect(judge('ブレイン: 参照した型 `検査の層と門.md` / 追加 無し', true)).toBeNull()
     expect(judge('ブレイン: 参照した型 当たり無し（grep: 再開, ストア） / 追加 無し', true)).toBeNull()

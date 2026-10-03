@@ -43,7 +43,9 @@ afterEach(() => {
   cleanup()
 })
 
+// UC-010
 describe('カード解説一覧: 前提データ（仮定 B1）', () => {
+  // @covers REQ-092#card-number
   it('tarotCards は 22 枚で number が一意', () => {
     expect(tarotCards).toHaveLength(22)
     expect(new Set(tarotCards.map((c) => c.number)).size).toBe(22)
@@ -51,13 +53,16 @@ describe('カード解説一覧: 前提データ（仮定 B1）', () => {
   })
 })
 
+// UC-004
 describe('カード解説一覧: 見出しと読み込み中（§5.5）', () => {
+  // 仕様外: 画面の見出しの文言は要件にしない（本人決定: 文言は仕様から外す）
   it('見出し h1「大アルカナ 22枚」が表示される', async () => {
     mountList()
     expect(await screen.findByRole('heading', { level: 1, name: '大アルカナ 22枚' })).toBeTruthy()
     await waitForAllCards()
   })
 
+  // 仕様外: カードの内容はアプリに含まれ読み込みは境界を越えない（UC-004 contract の x-no-boundary）。読み込み中の表示は実装の非同期の都合で、要件に無い
   it('読み込み完了前は「読み込み中...」が出て、完了後は消える', async () => {
     mountList()
     // 仮定 B3
@@ -68,7 +73,9 @@ describe('カード解説一覧: 見出しと読み込み中（§5.5）', () => 
   })
 })
 
+// UC-004
 describe('カード解説一覧: 22 枚を番号順に表示（§5.5）', () => {
+  // @covers REQ-026#numbered-order
   it('h2 のカード名が DOM 順で tarotCards の number 昇順と一致する（22 件）', async () => {
     mountList()
     await waitForAllCards()
@@ -78,6 +85,7 @@ describe('カード解説一覧: 22 枚を番号順に表示（§5.5）', () => 
     expect(names).toEqual(sortedByNumber.map((c) => c.nameJa))
   })
 
+  // @covers REQ-026#card-shown
   it('各カードに alt=カード名の画像がある', async () => {
     mountList()
     await waitForAllCards()
@@ -87,6 +95,7 @@ describe('カード解説一覧: 22 枚を番号順に表示（§5.5）', () => 
     }
   })
 
+  // @covers REQ-026#numbered-order
   it('各カードは /cards/{id} へのリンクで、リンクの並びも番号順', async () => {
     mountList()
     await waitForAllCards()
@@ -98,6 +107,7 @@ describe('カード解説一覧: 22 枚を番号順に表示（§5.5）', () => 
     expect(hrefs).toEqual(sortedByNumber.map((c) => `/cards/${c.id}`))
   })
 
+  // @covers REQ-026#name-and-number
   it('各リンクの中にそのカードの画像・カード名・2 桁ゼロ埋めの番号が入っている', async () => {
     mountList()
     await waitForAllCards()
@@ -112,7 +122,9 @@ describe('カード解説一覧: 22 枚を番号順に表示（§5.5）', () => 
   })
 })
 
+// UC-004
 describe('カード解説一覧: タップで詳細へ（§5.5）', () => {
+  // @covers REQ-027#select-opens-detail
   it('カードのリンクを押すと /cards/{id} へ遷移する', async () => {
     mountList()
     await waitForAllCards()

@@ -52,7 +52,9 @@ afterEach(() => {
   cleanup()
 })
 
+// UC-005
 describe('フラグ有効時のトップ画面（§5.2）', () => {
+  // @covers REQ-035#entry-shown-when-enabled
   it('「詳しく占う」ボタンが出る（他 3 ボタンと合わせて 4 つ）', async () => {
     mountTop()
     await waitFor(() => {
@@ -64,7 +66,9 @@ describe('フラグ有効時のトップ画面（§5.2）', () => {
   })
 })
 
+// UC-005
 describe('フラグ有効時のルーティング（§5.1 / §5.7）', () => {
+  // @covers REQ-038#direct-reach
   it('/deep に直接到達するとリダイレクトされず、カテゴリ選択（§5.7 初期表示）が出る', async () => {
     mountApp('/deep')
     await waitFor(() => {

@@ -71,11 +71,13 @@ afterEach(() => {
   cleanup()
 })
 
+// UC-004
 describe('カード解説詳細: 実在する id の表示（§5.5「カード画像・名前・正逆それぞれのキーワードと解説文」）', () => {
   // 先頭と末尾の 2 枚で、カードごとに内容が切り替わることを確かめる
   const samples = [tarotCards[0], tarotCards[tarotCards.length - 1]]
 
   for (const card of samples) {
+    // @covers REQ-028#no-orientation
     it(`${card.nameJa}（id=${card.id}）: 名前(h1)・画像・「正位置」「逆位置」の節・両方のキーワードと解説文が出る`, async () => {
       mountDetail(`/cards/${card.id}`)
 
@@ -98,6 +100,7 @@ describe('カード解説詳細: 実在する id の表示（§5.5「カード�
     })
   }
 
+  // @covers REQ-028#no-orientation
   it('別のカードの解説文は表示されない（id に対応するカードだけを出す）', async () => {
     const card = tarotCards[3]
     const other = tarotCards[4]
@@ -111,6 +114,7 @@ describe('カード解説詳細: 実在する id の表示（§5.5「カード�
     expect(screen.queryByRole('heading', { level: 1, name: other.nameJa })).toBeNull()
   })
 
+  // 仕様外: カードの内容はアプリに含まれ読み込みは境界を越えない（UC-004 contract の x-no-boundary）。読み込み中の表示は実装の非同期の都合で、要件に無い
   it('読み込み完了前は「読み込み中...」が出て、完了後は消える', async () => {
     const card = tarotCards[5]
     mountDetail(`/cards/${card.id}`)
@@ -123,7 +127,9 @@ describe('カード解説詳細: 実在する id の表示（§5.5「カード�
   })
 })
 
+// UC-004
 describe('カード解説詳細: クエリ orientation（§5.1 / §5.5「クエリ orientation で初期表示の正逆を指定できる」）', () => {
+  // @covers REQ-029#reversed
   it('?orientation=reversed: 両節が出たうえで「逆位置」の節が先に来て、カード画像が 180° 回転している', async () => {
     const card = tarotCards[6]
     mountDetail(`/cards/${card.id}?orientation=reversed`)
@@ -137,6 +143,7 @@ describe('カード解説詳細: クエリ orientation（§5.1 / §5.5「クエ�
     await expectBodyToContain(card.descriptionUpright)
   })
 
+  // @covers REQ-029#upright
   it('?orientation=upright: 「正位置」の節が先で、カード画像は回転しない', async () => {
     const card = tarotCards[7]
     mountDetail(`/cards/${card.id}?orientation=upright`)
@@ -148,6 +155,7 @@ describe('カード解説詳細: クエリ orientation（§5.1 / §5.5「クエ�
     await expectBodyToContain(card.descriptionReversed)
   })
 
+  // @covers REQ-028#no-orientation
   it('orientation 未指定: 既定は正位置が先で、画像は回転しない', async () => {
     const card = tarotCards[8]
     mountDetail(`/cards/${card.id}`)
@@ -157,6 +165,7 @@ describe('カード解説詳細: クエリ orientation（§5.1 / §5.5「クエ�
     expect(rotatedImageCount(card.nameJa)).toBe(0)
   })
 
+  // @covers REQ-028#invalid-orientation
   it('orientation が不正値（?orientation=foo）: 正位置が先で、画像は回転しない', async () => {
     const card = tarotCards[9]
     mountDetail(`/cards/${card.id}?orientation=foo`)
@@ -169,7 +178,9 @@ describe('カード解説詳細: クエリ orientation（§5.1 / §5.5「クエ�
   })
 })
 
+// UC-004
 describe('カード解説詳細: 不正な id・存在しない id', () => {
+  // @covers REQ-031#malformed-without-orientation
   it('数値でない id では「カードIDが不正です」と「一覧へ戻る」が出て、カード名は出ない', async () => {
     mountDetail('/cards/abc')
 
@@ -180,6 +191,7 @@ describe('カード解説詳細: 不正な id・存在しない id', () => {
     }
   })
 
+  // @covers REQ-030#nonexistent-id
   it('存在しない id では「カードが見つかりませんでした」と「一覧へ戻る」が出て、カード名は出ない', async () => {
     mountDetail(`/cards/${missingId}`)
 
@@ -190,6 +202,7 @@ describe('カード解説詳細: 不正な id・存在しない id', () => {
     }
   })
 
+  // @covers REQ-032#from-invalid
   it('「一覧へ戻る」を押すと /cards へ遷移する（仮定 C2）', async () => {
     mountDetail('/cards/abc')
 

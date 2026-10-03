@@ -77,7 +77,9 @@ afterEach(() => {
   cleanup()
 })
 
+// UC-006
 describe('結果表示: 占い結果がない状態（§5.4「idle では / へリダイレクト」）', () => {
+  // @covers REQ-055#idle-redirects-home
   it('status が idle なら / へリダイレクトされ、結果画面の要素は出ない', async () => {
     mountResult()
     expect(await screen.findByText('HOME_STUB')).toBeTruthy()
@@ -86,7 +88,9 @@ describe('結果表示: 占い結果がない状態（§5.4「idle では / へ�
   })
 })
 
+// UC-006
 describe('結果表示: カード情報の表示（§5.4「カード名／正位置・逆位置／キーワード一覧／正逆に応じた詳細解説文」）', () => {
+  // @covers REQ-065#upright
   it('正位置: カード名（h2）・「正位置」・キーワード・descriptionUpright が出て、descriptionReversed は出ない', async () => {
     const card = tarotCards[0]
     const drawn = drawnOf(card, 'upright')
@@ -102,6 +106,7 @@ describe('結果表示: カード情報の表示（§5.4「カード名／正位
     expect(document.body.textContent).not.toContain(card.descriptionReversed)
   })
 
+  // @covers REQ-065#reversed
   it('逆位置: カード名（h2）・「逆位置」・キーワード・descriptionReversed が出て、descriptionUpright は出ない', async () => {
     // 正位置のケースと別のカードを使い、カード固有の文面で判定していることを担保する
     const card = tarotCards[tarotCards.length - 1]
@@ -118,6 +123,7 @@ describe('結果表示: カード情報の表示（§5.4「カード名／正位
     expect(document.body.textContent).not.toContain(card.descriptionUpright)
   })
 
+  // @covers REQ-065#card-face
   it('カード画像が alt=カード名で表示される', async () => {
     const card = tarotCards[1]
     setDrawn(drawnOf(card, 'upright'))
@@ -128,7 +134,9 @@ describe('結果表示: カード情報の表示（§5.4「カード名／正位
   })
 })
 
+// UC-006
 describe('結果表示: 画像タップで拡大モーダル（§5.4「カード画像（タップで拡大モーダル）」）', () => {
+  // @covers REQ-068#zoom-open-close
   it('「カードを拡大表示」でモーダルが開き（「閉じる」が現れ）、「閉じる」で閉じる', async () => {
     const card = tarotCards[2]
     setDrawn(drawnOf(card, 'upright'))
@@ -157,7 +165,9 @@ describe('結果表示: 画像タップで拡大モーダル（§5.4「カード
   })
 })
 
+// UC-006, UC-007
 describe('結果表示: ボタン（§5.4）', () => {
+  // @covers REQ-070#resets-and-restarts
   it('「もう一度占う」で占い状態がリセットされ /shuffle へ遷移する', async () => {
     setDrawn(drawnOf(tarotCards[3], 'upright'))
     mountResult()
@@ -173,6 +183,7 @@ describe('結果表示: ボタン（§5.4）', () => {
     expect(screen.queryByText('HOME_STUB')).toBeNull()
   })
 
+  // @covers REQ-071#from-drawn
   it('「トップへ戻る」で占い状態がリセットされ / へ遷移する', async () => {
     setDrawn(drawnOf(tarotCards[4], 'reversed'))
     mountResult()
@@ -186,6 +197,7 @@ describe('結果表示: ボタン（§5.4）', () => {
     expect(state.drawn).toBeNull()
   })
 
+  // @covers REQ-072#upright-share
   it('「この結果をシェア」で generateShareImage(drawn) → shareOrDownload(blob, …) の順に呼ばれる', async () => {
     const drawn = drawnOf(tarotCards[5], 'upright')
     setDrawn(drawn)
@@ -216,6 +228,7 @@ describe('結果表示: ボタン（§5.4）', () => {
     expect(text).toBe(`${drawn.card.nameJa}（正位置）`)
   })
 
+  // @covers REQ-072#reversed-share
   it('逆位置のシェアでは共有テキストが「{カード名}（逆位置）」になる', async () => {
     const drawn = drawnOf(tarotCards[7], 'reversed')
     setDrawn(drawn)
@@ -231,6 +244,7 @@ describe('結果表示: ボタン（§5.4）', () => {
     expect(text).toBe(`${drawn.card.nameJa}（逆位置）`)
   })
 
+  // @covers REQ-073#while-generating
   it('画像の生成中はボタン文言が「画像を作成中...」になる', async () => {
     // 解決しない Promise で「生成中」を固定する
     vi.mocked(generateShareImage).mockImplementationOnce(() => new Promise<Blob>(() => {}))
@@ -244,7 +258,9 @@ describe('結果表示: ボタン（§5.4）', () => {
   })
 })
 
+// UC-006
 describe('結果表示: status が drawing / error のとき', () => {
+  // @covers REQ-066#drawing-shows-progress
   it('drawing のとき「カードを引いています...」が出て、結果の要素は出ない', async () => {
     useReadingStore.setState({ status: 'drawing', drawn: null, error: null, deep: null })
     mountResult()
@@ -254,6 +270,7 @@ describe('結果表示: status が drawing / error のとき', () => {
     expect(screen.queryByText('HOME_STUB')).toBeNull()
   })
 
+  // @covers REQ-067#failure-shown
   it('error のときエラー文と「トップへ戻る」が出て、押すと状態が idle に戻り / へ遷移する', async () => {
     const message = 'テスト専用のエラー文'
     useReadingStore.setState({ status: 'error', drawn: null, error: message, deep: null })

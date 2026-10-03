@@ -16,10 +16,12 @@ import { FallbackUI } from './components/FallbackUI.tsx'
 // ネイティブ（Capacitor）内では登録しない（v3.3 §2）: アセットはアプリに同梱され
 // 更新はストア経由なので、SW の自動リロードが走ると二重更新の事故になる。
 // ネイティブ判定はこの isNativePlatform() だけに置き、他所に散らさないこと。
+// @implements UC-002, UC-008 / REQ-013, REQ-016, REQ-017, REQ-083 / BR-006
 if (!Capacitor.isNativePlatform()) registerSW({
   immediate: true,
   onRegisteredSW(_swUrl, registration) {
     if (!registration) return
+    // @implements REQ-082, REQ-084
     const check = () => {
       registration.update().catch(() => {
         // オフライン時などの失敗は無視（次の機会に再チェック）
@@ -33,6 +35,7 @@ if (!Capacitor.isNativePlatform()) registerSW({
 })
 
 // Sentry は本番環境のみで初期化する。dev のエラーは自分でコンソール確認するため。
+// @implements REQ-087, REQ-088
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -46,6 +49,7 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    {/* @implements UC-009 / REQ-086 */}
     <Sentry.ErrorBoundary fallback={<FallbackUI />}>
       <BrowserRouter>
         <App />

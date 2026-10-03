@@ -39,13 +39,16 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
+// UC-003
 describe('本日の一枚（仕様書 v3 §5.2 / §4.3 日付境界）', () => {
+  // @covers REQ-022#no-record
   it('未開封時は裏向き表示と「タップして開く」を出す', () => {
     mount()
     expect(screen.getByText('本日の一枚')).toBeTruthy()
     expect(screen.getByText('タップして開く')).toBeTruthy()
   })
 
+  // @covers REQ-018#records-today
   it('タップで 1 枚確定し、当日の日付キーでキャッシュされる', async () => {
     mount()
     await openTodaysCard()
@@ -60,6 +63,7 @@ describe('本日の一枚（仕様書 v3 §5.2 / §4.3 日付境界）', () => {
     expect(['upright', 'reversed']).toContain(cached.drawn.orientation)
   })
 
+  // @covers REQ-023#same-day-redisplay
   it('同日の再マウントではキャッシュ済みカードを開封済みで表示する（引き直さない）', async () => {
     mount()
     await openTodaysCard()
@@ -77,6 +81,7 @@ describe('本日の一枚（仕様書 v3 §5.2 / §4.3 日付境界）', () => {
     expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!)).toEqual(first)
   })
 
+  // @covers REQ-024#later-day
   it('日付が変わると未開封に戻る（前日キャッシュは無効）', async () => {
     mount()
     await openTodaysCard()

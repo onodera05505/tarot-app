@@ -24,11 +24,14 @@ beforeEach(() => {
   vi.stubGlobal('localStorage', makeStorageStub())
 })
 
+// UC-001
 describe('占い履歴（仕様書 v3 §4.3）', () => {
+  // @covers REQ-007#empty-message
   it('未保存なら空配列を返す', () => {
     expect(loadHistory()).toEqual([])
   })
 
+  // @covers REQ-001#prepend-to-existing
   it('追加すると新しい順（先頭が最新）で保存される', () => {
     addToHistory(drawnOf(0))
     addToHistory(drawnOf(1))
@@ -38,6 +41,7 @@ describe('占い履歴（仕様書 v3 §4.3）', () => {
     expect(list[1].card.id).toBe(tarotCards[0].id)
   })
 
+  // @covers REQ-002#evicts-oldest
   it('最大 100 件を超えると古い方から破棄される', () => {
     for (let i = 0; i < 105; i++) {
       addToHistory(drawnOf(i))
@@ -48,6 +52,7 @@ describe('占い履歴（仕様書 v3 §4.3）', () => {
     expect(list[0].card.id).toBe(tarotCards[104 % tarotCards.length].id)
   })
 
+  // @covers REQ-009#unreadable-content
   it('壊れた JSON や配列以外が入っていても空配列にフォールバックする', () => {
     localStorage.setItem('tarot:history', '{broken json')
     expect(loadHistory()).toEqual([])
@@ -55,6 +60,7 @@ describe('占い履歴（仕様書 v3 §4.3）', () => {
     expect(loadHistory()).toEqual([])
   })
 
+  // @covers REQ-011#accept-clears-all
   it('clearHistory で全削除される', () => {
     addToHistory(drawnOf(0))
     clearHistory()

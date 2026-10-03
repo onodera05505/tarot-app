@@ -21,6 +21,7 @@ function walk(dir: string, out: string[] = []): string[] {
 describe('機能フラグの集約（lib/features.ts）', () => {
   const files = walk(SRC).map((p) => [relative(SRC, p), readFileSync(p, 'utf8')] as const)
 
+  // 仕様外: 機能フラグの置き場を 1 箇所に保つリポジトリの門（docs/検査と門.md #7）。利用者に観測できる振る舞いではない
   it('*_ENABLED を宣言しているのは lib/features.ts だけ', () => {
     const offenders = files
       .filter(([rel, text]) => rel !== FEATURES && /\b(?:const|let|var)\s+[A-Z_]+_ENABLED\b/.test(text))
@@ -28,6 +29,7 @@ describe('機能フラグの集約（lib/features.ts）', () => {
     expect(offenders).toEqual([])
   })
 
+  // 仕様外: 機能フラグの置き場を 1 箇所に保つリポジトリの門（docs/検査と門.md #7）。利用者に観測できる振る舞いではない
   it('DEEP_READING_ENABLED を使う側は必ず lib/features から import している', () => {
     const offenders = files
       .filter(([rel, text]) => rel !== FEATURES && text.includes('DEEP_READING_ENABLED'))
@@ -36,6 +38,7 @@ describe('機能フラグの集約（lib/features.ts）', () => {
     expect(offenders).toEqual([])
   })
 
+  // 仕様外: 機能フラグの置き場を 1 箇所に保つリポジトリの門（docs/検査と門.md #7）。利用者に観測できる振る舞いではない
   it('features.ts が DEEP_READING_ENABLED を export している', () => {
     expect(readFileSync(join(SRC, FEATURES), 'utf8')).toMatch(/export const DEEP_READING_ENABLED\s*=/)
   })

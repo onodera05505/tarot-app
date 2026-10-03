@@ -53,6 +53,7 @@ function normalizeKeywords(raw) {
     .join(',')
 }
 
+// @implements REQ-093
 function parseCardBlock(block) {
   const lines = block.split('\n')
 
@@ -107,6 +108,7 @@ function parseCardBlock(block) {
   }
 }
 
+// @implements UC-010, REQ-090
 function build() {
   const md = readFileSync(MD_PATH, 'utf-8')
 
@@ -116,6 +118,7 @@ function build() {
     .map((b) => b.trim())
     .filter((b) => /^##\s+\d+/m.test(b))
 
+  // @implements REQ-095
   if (blocks.length !== 22) {
     console.warn(`⚠ Expected 22 cards, got ${blocks.length}`)
   }
@@ -125,6 +128,7 @@ function build() {
   const cards = parsed
     .map((p) => {
       const stat = STATIC[p.number]
+      // @implements REQ-093
       if (!stat) {
         throw new Error(`No STATIC entry for number ${p.number}`)
       }
@@ -144,6 +148,7 @@ function build() {
     .sort((a, b) => a.number - b.number)
 
   // バリデーション: 全フィールドが埋まっているか
+  // @implements REQ-095
   for (const c of cards) {
     const requiredText = ['nameJa', 'meaningUpright', 'meaningReversed', 'descriptionUpright', 'descriptionReversed']
     for (const k of requiredText) {

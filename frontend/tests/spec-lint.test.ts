@@ -20,6 +20,7 @@ function section(heading: RegExp): string {
 }
 
 describe('仕様書 v3 と実装の突き合わせ', () => {
+  // 仕様外: 仕様書 v3 の表と実装の突き合わせ（リポジトリの文書の門）で、アプリの振る舞いではない
   it('§5.1 ルーティング表と App.tsx の Route が一致する', () => {
     const table = section(/### 5\.1 /)
     const specPaths = [...table.matchAll(/^\| `([^`]+)` \|/gm)].map((m) => m[1]).sort()
@@ -27,6 +28,7 @@ describe('仕様書 v3 と実装の突き合わせ', () => {
     expect(appPaths).toEqual(specPaths)
   })
 
+  // 仕様外: 仕様書 v3 の表と実装の突き合わせ（リポジトリの文書の門）で、アプリの振る舞いではない
   it('§4.3 の localStorage キーが実装に存在する', () => {
     const table = section(/### 4\.3 /)
     const keys = [...table.matchAll(/^\| `([^`]+)` \|/gm)].map((m) => m[1])
@@ -38,6 +40,7 @@ describe('仕様書 v3 と実装の突き合わせ', () => {
     expect(missing).toEqual([])
   })
 
+  // 仕様外: 仕様書 v3 の既知差分の書式の門（リポジトリの文書の決まり）で、アプリの振る舞いではない
   it('§6 の差分は「既知の差分なし」か、各行に日付がある', () => {
     const sec = section(/## 6\. /)
     if (/現在、既知の差分なし/.test(sec)) return

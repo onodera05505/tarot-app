@@ -11,6 +11,7 @@ const DOC = join(ROOT, 'docs', '検査と門.md')
 const PATH_RE = /`((?:[\w.-]+\/)+[\w.-]+\.(?:ts|tsx|mjs|yml|md))`/g
 
 describe('docs/検査と門.md', () => {
+  // 仕様外: docs/検査と門.md が名指しするファイルの実在を見るリポジトリの文書の門で、アプリの振る舞いではない
   it('表が名指しするファイルが全て実在する', () => {
     const text = readFileSync(DOC, 'utf8')
     const paths = [...new Set([...text.matchAll(PATH_RE)].map((m) => m[1]))]

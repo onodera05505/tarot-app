@@ -34,6 +34,7 @@ export function ResultPage() {
       drawn: s.drawn,
       status: s.status,
       error: s.error,
+      // @implements REQ-037 / BR-005
       // 無料版では deep 文脈が残っていても通常表示にする（v3.3 §3.3「常に通常占いの表示」）
       deep: DEEP_READING_ENABLED ? s.deep : null,
       reset: s.reset,
@@ -43,6 +44,7 @@ export function ResultPage() {
   // 詳しく占うの場合、カテゴリデータを再取得する（動的 import はモジュール
   // キャッシュが効くため、/deep で読み込み済みなら即座に解決する）
   const [deepData, setDeepData] = useState<DeepCategoryData | null>(null)
+  // @implements REQ-049, REQ-050
   useEffect(() => {
     if (!deep) {
       setDeepData(null)
@@ -62,8 +64,10 @@ export function ResultPage() {
     }
   }, [deep])
 
+  // @implements REQ-055
   if (idleAtMount) return <Navigate to="/" replace />
 
+  // @implements REQ-066
   if (status === 'drawing') {
     return (
       <PageTransition className="page page-result">
@@ -72,11 +76,13 @@ export function ResultPage() {
     )
   }
 
+  // @implements REQ-067
   if (status === 'error' || !drawn) {
     return (
       <PageTransition className="page page-result">
         <p className="error">エラー: {error ?? 'カードを取得できませんでした'}</p>
         {/* §5.4「トップへ戻る」= 占い状態をリセットして / へ。エラー時も同じ */}
+        {/* @implements BR-002 */}
         <button type="button" className="btn-primary" onClick={() => { reset(); navigate('/') }}>
           トップへ戻る
         </button>
@@ -84,13 +90,16 @@ export function ResultPage() {
     )
   }
 
+  // @implements REQ-065
   const { card, orientation, keywords } = drawn
   const description =
     orientation === 'upright' ? card.descriptionUpright : card.descriptionReversed
 
+  // @implements REQ-049
   // 詳しく占うの合成（v3.1 §4.5）: ベース解釈 + 回答別補足 3 本
   const deepBase =
     deep && deepData ? (deepData.base[card.number]?.[orientation] ?? null) : null
+  // @implements REQ-051
   // 新構造(v3.2)はカード連動アドバイス、旧構造(v3.1)は選択肢の fragment に
   // フォールバック（§4.5）
   const deepFragments =
@@ -105,17 +114,20 @@ export function ResultPage() {
           .filter((f): f is string => Boolean(f))
       : []
 
+  // @implements REQ-071, REQ-052 / BR-002
   const handleHome = () => {
     reset()
     navigate('/')
   }
 
+  // @implements REQ-070, REQ-052 / BR-002
   // TopPage の「スタート」と同じ手順（reset → /shuffle）で揃える
   const handleRetry = () => {
     reset()
     navigate('/shuffle')
   }
 
+  // @implements UC-007 / REQ-072, REQ-073, REQ-075, REQ-077, REQ-053
   const handleShare = async () => {
     if (sharing) return
     setSharing(true)
@@ -132,6 +144,7 @@ export function ResultPage() {
 
   return (
     <PageTransition className="page page-result">
+      {/* @implements REQ-068, REQ-069 / BR-003 */}
       <button
         type="button"
         className="card-tap-button"
@@ -163,6 +176,7 @@ export function ResultPage() {
             <li key={k}>{k}</li>
           ))}
         </ul>
+        {/* @implements REQ-049, REQ-050, REQ-065 */}
         {deep && deepBase ? (
           <div className="result-deep">
             <span className="result-category">{deep.categoryLabel}</span>
@@ -179,6 +193,7 @@ export function ResultPage() {
           description && <p className="result-description">{description}</p>
         )}
         <div className="result-actions">
+          {/* @implements REQ-073 */}
           <button
             type="button"
             className="btn-primary"
@@ -196,6 +211,7 @@ export function ResultPage() {
         </div>
       </motion.div>
 
+      {/* @implements REQ-068 / BR-003 */}
       <AnimatePresence>
         {enlarged && (
           <motion.div

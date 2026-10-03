@@ -13,6 +13,7 @@ export type {
 
 export { deepCategories }
 
+// @implements REQ-039, REQ-049
 export async function loadDeepCategory(
   id: DeepCategoryId,
 ): Promise<DeepCategoryData> {

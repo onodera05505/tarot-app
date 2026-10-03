@@ -34,7 +34,9 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
+// UC-006
 describe('儀式フロー（仕様書 v3 §5.3 のフェーズ遷移順）', () => {
+  // @covers REQ-063#left-keeps-result
   it('intent → shuffling → split3 → split2 → orienting → /result の順に進む', async () => {
     mount()
 
@@ -86,6 +88,7 @@ describe('儀式フロー（仕様書 v3 §5.3 のフェーズ遷移順）', () 
     expect(useReadingStore.getState().drawn!.orientation).toBe(before)
   })
 
+  // @covers REQ-048#keep-context-through-stop
   it('詳しく占うの文脈（deep）はストップを押しても消えない（v3.1 §5.7 の回帰テスト）', async () => {
     // 2026-08-21 の不具合: handleStop の reset() が deep を消し、
     // 結果画面が通常表示に落ちていた
@@ -108,6 +111,7 @@ describe('儀式フロー（仕様書 v3 §5.3 のフェーズ遷移順）', () 
     })
   })
 
+  // @covers REQ-059#partially-specified
   it('決定は 3 山すべての順番を指定するまで押せない', async () => {
     mount()
     fireEvent.click(screen.getByRole('button', { name: 'シャッフルへ' }))

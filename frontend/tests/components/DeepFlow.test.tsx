@@ -65,7 +65,9 @@ afterEach(() => {
   cleanup()
 })
 
+// UC-005
 describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）', () => {
+  // @covers REQ-038#direct-reach
   it('初期表示でカテゴリ一覧が出る（「仕事」「友達・恋愛」がボタン表示される）', async () => {
     mountDeep()
     expect(await screen.findByRole('button', { name: '仕事' })).toBeTruthy()
@@ -76,6 +78,7 @@ describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）',
     }
   })
 
+  // @covers REQ-039#first-question
   it('カテゴリ選択で 1 問目の質問文（work の実データ）が表示される', async () => {
     const work = await loadDeepCategory('work')
     mountDeep()
@@ -90,6 +93,7 @@ describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）',
     }
   })
 
+  // @covers REQ-045#keep-answers-into-ritual
   it('3 問に順に答えると /shuffle へ遷移し、store.deep に categoryId と回答 3 件が入る', async () => {
     const work = await loadDeepCategory('work')
     mountDeep()
@@ -116,6 +120,7 @@ describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）',
     expect(deep!.answers).toEqual(picked.map((c) => c.id))
   })
 
+  // @covers REQ-046#back-and-replace
   it('「戻る」で前の問に戻り、選び直した回答で上書きされる（回答は 3 件のまま）', async () => {
     const work = await loadDeepCategory('work')
     mountDeep()
@@ -155,7 +160,9 @@ describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）',
   })
 })
 
+// UC-005
 describe('詳しく占う: 結果画面（§5.7 4）', () => {
+  // @covers REQ-049#reversed-base
   it('work（逆位置）: カテゴリ名・ベース解釈・advice[選択肢id] の 3 本を表示し、通常の解説文は出さない', async () => {
     // v3.2 §4.5: fragment フォールバックは「旧構造カテゴリが存在する場合」の
     // 防御的挙動として仕様に残るが、現在は全カテゴリ新構造で実データが無いため
@@ -207,6 +214,7 @@ describe('詳しく占う: 結果画面（§5.7 4）', () => {
     expect(document.body.textContent).not.toContain(card.descriptionUpright)
   })
 
+  // @covers REQ-049#upright-base
   it('新構造カテゴリ（love）: 回答別アドバイスは base[card.number].advice[選択肢id] の 3 本が表示される', async () => {
     const love = await loadDeepCategory('love')
     // advice を持つ base エントリに対応するカードを選ぶ（カード別に文章が変わる新構造）
@@ -256,6 +264,7 @@ describe('詳しく占う: 結果画面（§5.7 4）', () => {
     expect(document.body.textContent).not.toContain(card.descriptionReversed)
   })
 
+  // @covers REQ-065#upright
   it('deep が null なら従来通りの解説文（descriptionUpright）を表示する', async () => {
     const card = tarotCards[0]
 
@@ -275,7 +284,9 @@ describe('詳しく占う: 結果画面（§5.7 4）', () => {
   })
 })
 
+// UC-005
 describe('詳しく占う: 状態の初期化（§5.7「質問と回答は占いのたびに初期化」）', () => {
+  // @covers REQ-052#discard-category-and-answers
   it('reset() で deep が null に戻る（前回の回答を引き継がない）', async () => {
     const work = await loadDeepCategory('work')
 

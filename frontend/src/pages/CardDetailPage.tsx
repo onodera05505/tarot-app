@@ -4,6 +4,7 @@ import { PageTransition } from '../components/animations/PageTransition'
 import { fetchCard } from '../lib/api'
 import type { Orientation, TarotCard } from '../lib/types'
 
+// @implements REQ-028, REQ-029
 const isOrientation = (v: string | null): v is Orientation =>
   v === 'upright' || v === 'reversed'
 
@@ -12,6 +13,7 @@ export function CardDetailPage() {
   const { id } = useParams<{ id: string }>()
   const [searchParams] = useSearchParams()
   const numericId = Number(id)
+  // @implements REQ-031
   const isInvalidId = !Number.isFinite(numericId)
 
   // ?orientation=upright|reversed は「初期表示の正逆」の指定（v3 §5.5）。両面とも表示し、
@@ -38,6 +40,7 @@ export function CardDetailPage() {
       .finally(() => setLoading(false))
   }, [numericId, isInvalidId])
 
+  // @implements REQ-031, REQ-032
   if (isInvalidId) {
     return (
       <PageTransition className="page page-card-detail">
@@ -57,6 +60,7 @@ export function CardDetailPage() {
     )
   }
 
+  // @implements REQ-030, REQ-032
   if (error || !card) {
     return (
       <PageTransition className="page page-card-detail">
@@ -92,6 +96,7 @@ export function CardDetailPage() {
         </div>
       </header>
 
+      {/* @implements REQ-028, REQ-029 / BR-003 */}
       <img
         src={card.imageUrl}
         alt={card.nameJa}
@@ -103,6 +108,7 @@ export function CardDetailPage() {
         }
       />
 
+      {/* @implements REQ-028, REQ-029 */}
       {(reversedFirst ? ['reversed', 'upright'] : ['upright', 'reversed']).map((o) =>
         o === 'upright' ? (
           <section key="upright" className="detail-section">

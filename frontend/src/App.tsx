@@ -36,6 +36,7 @@ export function App() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<TopPage />} />
+        {/* @implements REQ-036 / BR-005 */}
         {/* 無料版では /deep をトップへ戻す（v3.3 §3.3）。DeepPage 自体は温存 */}
         <Route
           path="/deep"
@@ -46,6 +47,7 @@ export function App() {
         <Route path="/cards" element={<CardListPage />} />
         <Route path="/cards/:id" element={<CardDetailPage />} />
         <Route path="/history" element={<HistoryPage />} />
+        {/* @implements REQ-099 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

@@ -56,30 +56,37 @@ const isFullyNew = (data: DeepCategoryData) =>
 const isFullyOld = (data: DeepCategoryData) =>
   allChoices(data).every(({ choice }) => choice.fragment !== undefined)
 
+// UC-010
 describe('deepCategories（カテゴリ一覧）', () => {
+  // @covers REQ-100#category-nonempty
   it('1 つ以上のカテゴリが載っている', () => {
     expect(deepCategories.length).toBeGreaterThan(0)
   })
 
+  // @covers REQ-100#category-in-set
   it('最大でも 5 カテゴリまでしか載らない', () => {
     expect(deepCategories.length).toBeLessThanOrEqual(VALID_CATEGORY_IDS.length)
   })
 
+  // @covers REQ-100#category-in-set
   it('全カテゴリの id が仕様の 5 カテゴリのいずれかである', () => {
     for (const cat of deepCategories) {
       expect(VALID_CATEGORY_IDS).toContain(cat.id)
     }
   })
 
+  // @covers REQ-092#category-duplicate
   it('カテゴリ id が一覧内で重複しない', () => {
     const ids = deepCategories.map((c) => c.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
 
+  // 仕様外: 段階リリースの現時点のデータの値（どのカテゴリが載っているか）の固定で、要件はカテゴリが集合に属することだけを求める
   it('work（仕事）が含まれる（段階リリースの現時点で実データが存在するカテゴリ）', () => {
     expect(deepCategories.map((c) => c.id)).toContain('work')
   })
 
+  // @covers REQ-092#deep-required-text
   it('全カテゴリの label がカテゴリ名として空でない', () => {
     for (const cat of deepCategories) {
       expect(typeof cat.label).toBe('string')
@@ -90,9 +97,11 @@ describe('deepCategories（カテゴリ一覧）', () => {
 
 // v3.2 のサンプル要件: love が一覧に載っている場合、love は新構造でなければならない。
 // work は旧構造でも新構造でも可（暫定カテゴリとして併存を許す）
+// UC-010
 describe('段階導入の固定要件（v3.2）', () => {
   const loveListed = deepCategories.some((c) => c.id === 'love')
 
+  // 仕様外: 現在のデータの値（love の形）の固定。要件（REQ-101）はどのカテゴリにも 2 つの形のどちらかを許し、カテゴリごとの形を定めない
   it.runIf(loveListed)('love（友達・恋愛）は新構造である', async () => {
     const data = await loadDeepCategory('love')
     expect(isFullyNew(data), 'love の全 22 カードに advice が必要').toBe(true)
@@ -101,6 +110,7 @@ describe('段階導入の固定要件（v3.2）', () => {
 
 // deepCategories に載っている全カテゴリについて本体データを検証する。
 // カテゴリが増えれば describe.each の対象が自動的に増える。
+// UC-010
 describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
   'loadDeepCategory("%s")（カテゴリ本体データ: %s）',
   (categoryId) => {
@@ -111,16 +121,19 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
       return dataPromise
     }
 
+    // 仕様外: 一覧と本体の id の一致は生成物の内部構造（一覧と本体を同じ編集元から書き出すことの固定）で、外から観測する振る舞いではない
     it('Promise で DeepCategoryData を返し、id が一覧と一致する', async () => {
       const data = await load()
       expect(data.id).toBe(categoryId)
     })
 
+    // @covers REQ-092#deep-required-text
     it('label が空でない', async () => {
       const data = await load()
       expect(data.label.length).toBeGreaterThan(0)
     })
 
+    // 仕様外: 同じ値を 2 箇所に書かない内部の門（共通ルール 3-1）。生成物の内部構造で、要件の振る舞いではない
     it('一覧側の label と本体の label が一致する（同じものを 2 箇所に書かない）', async () => {
       const data = await load()
       const listed = deepCategories.find((c) => c.id === categoryId)
@@ -128,11 +141,13 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
     })
 
     describe('質問（仕様 §4.4: カテゴリごとに 3 問、各 3 択）', () => {
+      // @covers REQ-092#question-choice-count
       it('質問がちょうど 3 問ある', async () => {
         const data = await load()
         expect(data.questions).toHaveLength(3)
       })
 
+      // @covers REQ-092#question-choice-count
       it('各質問がちょうど 3 択を持つ', async () => {
         const data = await load()
         for (const q of data.questions) {
@@ -140,6 +155,7 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
         }
       })
 
+      // @covers REQ-100#question-id
       it('質問 id がカテゴリ内で重複せず、空でない', async () => {
         const data = await load()
         const ids = data.questions.map((q) => q.id)
@@ -149,6 +165,7 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
         expect(new Set(ids).size).toBe(ids.length)
       })
 
+      // @covers REQ-100#choice-id
       it('選択肢 id がカテゴリ内で重複せず、空でない（計 9 個）', async () => {
         const data = await load()
         const ids = allChoices(data).map(({ choice }) => choice.id)
@@ -159,6 +176,7 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
         expect(ids).toHaveLength(9) // 3 問 × 3 択
       })
 
+      // @covers REQ-092#deep-required-text
       it('質問文・選択肢ラベルが空でない', async () => {
         const data = await load()
         for (const q of data.questions) {
@@ -171,6 +189,7 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
     })
 
     describe('ベース解釈（仕様 §4.4: 22 枚 × 正逆 = 44 本、各 150〜250 字）', () => {
+      // @covers REQ-092#deep-card-number
       it('カード number 0〜21 の全エントリが存在し、余分なキーがない', async () => {
         const data = await load()
         for (const n of CARD_NUMBERS) {
@@ -180,6 +199,7 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
         expect(Object.keys(data.base)).toHaveLength(22)
       })
 
+      // @covers REQ-092#deep-required-text
       it('全 44 本（22 枚 × 正逆）の本文が存在し空でない', async () => {
         const data = await load()
         let count = 0
@@ -192,6 +212,7 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
         expect(count).toBe(44)
       })
 
+      // @covers REQ-092#base-length
       it('各本文が 150〜250 字（±30 字許容: 120〜280 字）', async () => {
         const data = await load()
         for (const n of CARD_NUMBERS) {
@@ -215,6 +236,7 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
     })
 
     describe('回答別アドバイス（仕様 v3.2 §4.4: 新旧いずれか一方の構造に完全統一）', () => {
+      // @covers REQ-101#neither-form
       it('「完全に新構造」か「完全に旧構造」のどちらか一方である（歯抜け・混在は不可）', async () => {
         const data = await load()
         const fullyNew = isFullyNew(data)
@@ -244,6 +266,7 @@ describe.each(deepCategories.map((c) => [c.id, c.label] as const))(
         }
       })
 
+      // @covers REQ-092#advice-length
       it('新構造: advice 22 × 9 = 198 本、キー集合は選択肢 id と完全一致、各 60〜140 字（±30 字許容: 30〜170 字）／旧構造: fragment 各 60〜120 字（±30 字許容: 30〜150 字）', async () => {
         const data = await load()
         if (isFullyNew(data)) {

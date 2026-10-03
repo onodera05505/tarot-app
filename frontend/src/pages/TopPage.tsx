@@ -5,10 +5,12 @@ import { TodaysCard } from '../components/TodaysCard'
 import { useReadingStore } from '../store/useReadingStore'
 import { DEEP_READING_ENABLED } from '../lib/features'
 
+// @implements UC-006
 export function TopPage() {
   const navigate = useNavigate()
   const reset = useReadingStore((s) => s.reset)
 
+  // @implements REQ-054 / BR-002
   const handleStart = () => {
     reset()
     navigate('/shuffle')
@@ -20,10 +22,12 @@ export function TopPage() {
       <h1 className="title">Tarot</h1>
       <p className="subtitle">あなたの「いま」を1枚に映す。</p>
       <TodaysCard />
+      {/* @implements REQ-098 */}
       <div className="top-actions">
         <button type="button" className="btn-primary" onClick={handleStart}>
           スタート
         </button>
+        {/* @implements REQ-035 / BR-002, BR-005 */}
         {DEEP_READING_ENABLED && (
           <button
             type="button"
@@ -43,6 +47,7 @@ export function TopPage() {
           占い履歴を見る
         </button>
       </div>
+      {/* @implements REQ-085 */}
       <p className="app-version">v{__APP_VERSION__}</p>
     </PageTransition>
   )
