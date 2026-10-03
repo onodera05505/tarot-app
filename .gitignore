@@ -39,3 +39,8 @@ backend/src/generated/prisma/
 
 # tsbuildinfo
 *.tsbuildinfo
+
+# harness（原本の tools / templates の別 checkout と APM の生成物。apm install で再生成する）
+.harness/
+apm_modules/
+.agents/

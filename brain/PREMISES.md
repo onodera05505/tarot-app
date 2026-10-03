@@ -20,6 +20,9 @@
 
 - 小さく描く画像（一覧・履歴・本日の一枚・山札）は 320px 幅のサムネイル `public/cards/thumbs/` を配信（23 枚 9.3MB → 1.1MB。2026-09-14）。結果・詳細・シェアは原本。対応は `lib/api.ts` の `thumbUrl()`
 
+- **トレーサビリティの導入（2026-10-03 本人決定）**: 入れ方は**原本 harness（APM）**（q: trace-origin。写しではなく原本）。既存コードは**全部タグ付けして通す**（台帳で段階導入はしない。q: trace-baseline）。範囲は **frontend/src と生成スクリプト（gen-cards / gen-deep / gen-thumbs）を最初から含める**、テストは vitest と生成物の検査（q: trace-scope・trace-tests）。`backend/` は参照用残骸で対象外。→ 反映: `CLAUDE.md`（完了条件）、導入後の設定ファイル
+- **CLAUDE.md は経路表に絞る（2026-10-03 本人決定）**: 場面ごとの「読む・読まない」と完了条件だけ残し、共通ルールの「なぜ」と経緯は docs へ外す。→ 反映: `CLAUDE.md`、`docs/作業ルール.md`
+
 ## 環境の癖（日付）
 - Node 24 必須（jsdom 30 が Node 20 に無い API を使う。CI も 24。中央 `reports/74`）。Capacitor は Node ≥ 22
 - テストは `frontend/tests/` に分離し `tsconfig.test.json`（`src/` は vite/client 型のため Node API を使うテストと同居できない）。App を描画するテストがあるので `vite/client` 型と `src/app-env.d.ts` を include に含める。外すと `pnpm build` の `tsc -b` が落ちる（2026-09-02）
@@ -29,9 +32,9 @@
 - `.claude/` は gitignore 済み。`settings.local.json` は 2026-09-02 に 25 件へ整理（キーチェーン・ssh・pkill の一時許可は削除済み。再び足したら作業後に消す）
 
 ## 未決（日付・誰が決めるか）
+- **harness の導入（docs-migrate）**: Phase 0 完了（2026-10-03）。次は本人が APM を入れて `apm install`（`OPEN-QUESTIONS.md` OQ-01）→ Phase 1。各 Phase の末尾で本人の承認が要る。未回答は OQ-02・06・07・08・09・10
 - Android Studio 導入 → APK ビルド → 実機確認（本人。2026-09-03〜）。実機で見る項目: BrowserRouter の直接パス、Web Audio、セーフエリア・ステータスバー色
 - 実機確認後にストア申請の順序を決める（本人）。Apple Developer は iPhone 未所持のため保留
-- 「予告表示」の文言定義が仕様に無い（テストは 準備中/近日/coming soon/開放予定/有料 を予告とみなす）。トップにこれらの語を置くなら先に仕様で定義する（2026-09-02）
 - deploy.yml の新経路（frontend から wrangler 実行）は 2026-09-02 の push 以降の CI で緑を確認すること（未確認なら次の push で見る）
 
 ## 開始時の質疑応答（中央 `開始時の質疑応答.md` に対する、このプロジェクトの回答状況。2026-09-14 初回）
@@ -66,3 +69,4 @@
 | Webアプリをストアへ出す着手前確認 | 済 | 要件は原文で確認し上の決定欄に（2026-09-14）。予告表示は仕様 §3.3 で定義。実機で見る項目（Web Audio・直接パス・セーフエリア）は未決欄の工程として残す（決定済み・実施待ち） |
 | 画面と印刷物を一致させる | 該当せず | 印刷・PDF 無し（シェア画像は別物） |
 | 担当エージェントに分担させる | 済 | 分担の値は詳しく占うのアプローチに |
+| 文書の経路と予算 | 済 | 経路表に絞ると決定（2026-10-03）。実施は harness 導入と同じ区切りで |

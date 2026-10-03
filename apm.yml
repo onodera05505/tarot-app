@@ -1,0 +1,10 @@
+# harness（tsay-dev/harness）の取り込み。原本をそのまま使う（2026-10-03 本人決定）。
+# 選ぶのは develop-core だけ（Vite + React 用の rules パッケージは原本に無い。OPEN-QUESTIONS OQ-02）。
+# tools / templates は APM の外なので .harness/ に同じタグを別 checkout する（gitignore）。
+# 生成物（.claude/agents・.agents/skills・apm_modules/）は手で直さない。
+name: tarot-app
+version: 1.0.0
+targets: [claude]
+dependencies:
+  apm:
+    - tsay-dev/harness/packages/develop-core#v4.1.1
