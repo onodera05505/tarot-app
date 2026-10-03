@@ -1,6 +1,6 @@
 ---
 id: INVENTORY
-status: working
+status: living
 ---
 
 # ドキュメント棚卸し（Phase 0 成果物、2026-10-03）
@@ -68,3 +68,22 @@ status: working
 | 3 | 通常の占い結果のシェア画像に「今日の一枚」と出る。仕様の「本日の一枚」は別機能（1 日 1 回・履歴に含めない） | `shareImage.ts` L101・L173、仕様 §5.2（OQ-06） |
 | 4 | 仕様 §5.5「クエリで初期表示の正逆を指定」の判別方法（指定側を先・画像の回転）が仕様に無く、テストの契約にだけある | 仕様 §5.5、`CardDetailPage.test.tsx`（OQ-05） |
 | 5 | `brain/PREMISES.md` の未決欄に、2026-09-14 に解決済みの「予告表示の定義が無い」が残っていた | Phase 0 と同じコミットで削除（ブレイン側の記録で、移行対象の文書ではない） |
+
+## 移行の結果（Phase 7、2026-10-03）
+
+上の表の各行が、最終的にどこへ落ち着いたか。
+
+| パス | 結果 |
+| --- | --- |
+| `docs/タロットアプリ_要件定義書_v3.md` | attic（`docs/attic/`）。元の場所に墓標 1 行。中身は vision・用語集・GOAL 8・UC 11・REQ 125（うち取り下げ 3）・BR 6・契約 11・ADR 9 へ抽出済み。構成・型・保存キー・文言と秒数は仕様から外し、ADR・契約・コードの定数が正本（OQ-08） |
+| `backend/docs/` の v2 と PDF | attic（`docs/attic/backend-docs/`）。元の場所に墓標 1 行 |
+| `docs/検査と門.md` | 参照（維持）。要件に現れないリポジトリの門と検査の層の表として残し、根拠を要件・規則の ID に張り替えた。自前の仕様 lint（`frontend/tests/spec-lint.test.ts`）は v3 の退避と同時に退役（OQ-09） |
+| `docs/AppStore公開手順書.md`・`docs/引き継ぎ_ストア登録作業.md` | 参照（維持）。運用手順。ストア申請は保留中 |
+| `CLAUDE.md` | SSOT（経路表）に書き直し。旧版は attic（`docs/attic/CLAUDE_作業ルール_2026-10-03まで.md`） |
+| `README.md`・`frontend/README.md`・`backend/README.md` | 参照（維持）。旧パスの参照を張り替えた |
+| `history/`・`brain/` | SSOT（記録）。harness の対象外 |
+| `frontend/data/cards.md`・`frontend/data/deep/*.md` | SSOT（データ）。生成の要件は UC-010 |
+| `frontend/src/data/**` | 生成物 |
+| `frontend/public/cards/README.md` | SSOT（素材の権利）。サムネイルの判断は ADR-0007 |
+| `.github/workflows/deploy.yml` | SSOT（運用）。配る前の検査は 4 段（REQ-080・081）。`spec-gate.yml` を追加 |
+| コード内の仕様的記述 | 要件・規則・ADR に抽出し、コード側は `@implements` で指す。値はコードの定数が正本 |

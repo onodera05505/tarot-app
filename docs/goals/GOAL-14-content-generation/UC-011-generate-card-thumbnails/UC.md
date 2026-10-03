@@ -4,7 +4,7 @@ title: カード画像の原本を差し替えてサムネイルを生成する
 actor: ACT-02
 goal: GOAL-14
 status: active          # draft | active | withdrawn (active = approved by a human)
-phase: 定義            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
+phase: 完了            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
 ---
 
 # UC-011 カード画像の原本を差し替えてサムネイルを生成する

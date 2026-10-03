@@ -20,8 +20,10 @@
 
 - 小さく描く画像（一覧・履歴・本日の一枚・山札）は 320px 幅のサムネイル `public/cards/thumbs/` を配信（23 枚 9.3MB → 1.1MB。2026-09-14）。結果・詳細・シェアは原本。対応は `lib/api.ts` の `thumbUrl()`
 
-- **トレーサビリティの導入（2026-10-03 本人決定）**: 入れ方は**原本 harness（APM）**（q: trace-origin。写しではなく原本）。既存コードは**全部タグ付けして通す**（台帳で段階導入はしない。q: trace-baseline）。範囲は **frontend/src と生成スクリプト（gen-cards / gen-deep / gen-thumbs）を最初から含める**、テストは vitest と生成物の検査（q: trace-scope・trace-tests）。`backend/` は参照用残骸で対象外。→ 反映: `CLAUDE.md`（完了条件）、導入後の設定ファイル
-- **CLAUDE.md は経路表に絞る（2026-10-03 本人決定）**: 場面ごとの「読む・読まない」と完了条件だけ残し、共通ルールの「なぜ」と経緯は docs へ外す。→ 反映: `CLAUDE.md`、`docs/作業ルール.md`
+- **トレーサビリティの導入（2026-10-03 本人決定）**: 入れ方は**原本 harness（APM）**（q: trace-origin。写しではなく原本）。既存コードは**全部タグ付けして通す**（台帳で段階導入はしない。q: trace-baseline）。範囲は **frontend/src と生成スクリプト（gen-cards / gen-deep / gen-thumbs）を最初から含める**、テストは vitest と生成物の検査（q: trace-scope・trace-tests）。`backend/` は参照用残骸で対象外。→ 反映: `CLAUDE.md`（完了条件）、`traceconfig.json`、`apm.yml`
+- **CLAUDE.md は経路表に絞る（2026-10-03 本人決定）**: 場面ごとの「読む・読まない」と完了条件だけ残し、共通ルールの「なぜ」と経緯は docs へ外す。→ 反映: `CLAUDE.md`（2026-10-03 実施）。旧版は `docs/attic/CLAUDE_作業ルール_2026-10-03まで.md`
+- **harness への移行を完了（2026-10-03）**: 仕様の正本は `docs/`（ビジョン frozen、用語集・アクター living、ゴール 8・ユースケース 11・要件 122・業務規則 6 が active、契約 11 が fixed、決定の記録 9）。旧仕様 v3 と backend の旧文書は `docs/attic/`。挙動を変える作業は `/develop`。台帳 `.trace-baseline.json` は 156 件が上限で、縮むだけ。返す順番は `docs/verification/REPAYMENT.md`。本人の裁定は `OPEN-QUESTIONS.md` 冒頭の表（価値観による一括の裁定）と OQ-34
+- **門（2026-10-03 設置）**: 着手ゲート（ユースケースの `phase:` が 実装 か 検証 でないと `frontend/src`・`frontend/scripts` に書けない。生成物 `frontend/src/data` は除く）と停止ゲート（spec-lint・trace-check・型・Lint・テストが落ちたまま終われない）を `.claude/settings.local.json` の hooks に置いた。全ユースケースは `phase: 完了`。実装に入るときは親が対象のユースケースの `phase:` を進める
 
 ## 環境の癖（日付）
 - Node 24 必須（jsdom 30 が Node 20 に無い API を使う。CI も 24。中央 `reports/74`）。Capacitor は Node ≥ 22
@@ -32,7 +34,8 @@
 - `.claude/` は gitignore 済み。`settings.local.json` は 2026-09-02 に 25 件へ整理（キーチェーン・ssh・pkill の一時許可は削除済み。再び足したら作業後に消す）
 
 ## 未決（日付・誰が決めるか）
-- **harness の導入（docs-migrate）**: Phase 0〜5 と Phase 6 の注釈まで完了（2026-10-03。作業ブランチ `docs/harness-migrate`、Phase ごとに 1 コミット）。**残りは本人の承認待ち**: 用語、ユースケースの粒度、要件 98 件と業務規則 6 本、決定の記録 9 本、契約 11 本（`OPEN-QUESTIONS.md` の OQ-12〜33）。承認の後に、要件と規則の有効化（台帳の 2 回目の増加）→ Phase 7（返済計画、v3 の退避、CLAUDE.md を経路表に絞る、停止ゲートと着手ゲートの設置）
+- **エラーの報告に利用者の情報を送る設定を続けるか**（本人。2026-10-03〜。現行は有効で、REQ-123 がそのまま要件にしている。プライバシーの説明とストアの申告に関わる。`OPEN-QUESTIONS.md` OQ-34 の 1）
+- **返済**（`docs/verification/REPAYMENT.md` の順。最優先は時間の境界のフィクスチャと契約アダプタ、次に仕様と食い違う欠陥 12 件。1 件ずつ `/develop` で）
 - Android Studio 導入 → APK ビルド → 実機確認（本人。2026-09-03〜）。実機で見る項目: BrowserRouter の直接パス、Web Audio、セーフエリア・ステータスバー色
 - 実機確認後にストア申請の順序を決める（本人）。Apple Developer は iPhone 未所持のため保留
 - deploy.yml の新経路（frontend から wrangler 実行）は 2026-09-02 の push 以降の CI で緑を確認すること（未確認なら次の push で見る）

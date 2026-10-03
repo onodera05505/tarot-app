@@ -39,7 +39,7 @@ jobs:
           git clone --branch "$TAG" --depth 1 https://github.com/tsay-dev/harness.git .harness
       # @implements REQ-081
       - name: Validate docs SSOT
-        run: node .harness/tools/spec-lint/spec-lint.mjs validate --ignore-legacy-layout
+        run: node .harness/tools/spec-lint/spec-lint.mjs validate
       # @implements REQ-081
       - name: Trace check (new violations fail)
         run: node .harness/tools/trace-check/trace-check.mjs

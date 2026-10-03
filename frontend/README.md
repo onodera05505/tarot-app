@@ -2,7 +2,7 @@
 
 React 19 + Vite + PWA。カードデータと鑑定テキストをアプリ内に同梱した
 ローカル完結構成（バックエンド通信なし）。一次資料は
-`../docs/タロットアプリ_要件定義書_v3.md`、作業ルールは `../CLAUDE.md`。
+`../docs/`（`00-vision.md`・`01-glossary.md`・`goals/`・`rules/`・`adr/`）、作業ルールは `../CLAUDE.md`。
 
 ## コマンド
 

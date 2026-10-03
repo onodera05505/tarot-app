@@ -4,7 +4,7 @@ title: ホーム画面から開いて通信なしで占う
 actor: ACT-01
 goal: GOAL-06
 status: active          # draft | active | withdrawn (active = approved by a human)
-phase: 定義            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
+phase: 完了            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
 ---
 
 # UC-002 ホーム画面から開いて通信なしで占う

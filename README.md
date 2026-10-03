@@ -73,7 +73,7 @@ frontend/
   data/             Markdown の編集元
   tests/            Vitest
   android/          Capacitor が生成した Android プロジェクト
-docs/               要件定義書 v3、ストア公開手順
+docs/               仕様（ビジョン・用語集・ゴール/ユースケース/要件・業務規則・決定の記録）、ストア公開手順
 history/            作業記録
 brain/              不具合の報告書と索引
 ```

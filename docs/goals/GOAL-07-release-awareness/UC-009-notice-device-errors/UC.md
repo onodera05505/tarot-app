@@ -4,7 +4,7 @@ title: 端末で起きたエラーを知る
 actor: ACT-02
 goal: GOAL-07
 status: active          # draft | active | withdrawn (active = approved by a human)
-phase: 定義            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
+phase: 完了            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
 ---
 
 # UC-009 端末で起きたエラーを知る

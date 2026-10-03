@@ -4,7 +4,7 @@ title: 詳しく占う
 actor: ACT-01
 goal: GOAL-02
 status: active
-phase: 定義
+phase: 完了
 ---
 
 # UC-005 詳しく占う
