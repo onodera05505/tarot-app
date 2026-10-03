@@ -68,7 +68,7 @@ describe('フラグ有効時のトップ画面（§5.2）', () => {
 
 // UC-005
 describe('フラグ有効時のルーティング（§5.1 / §5.7）', () => {
-  // @covers REQ-038#direct-reach
+  // @covers REQ-108#direct-reach
   it('/deep に直接到達するとリダイレクトされず、カテゴリ選択（§5.7 初期表示）が出る', async () => {
     mountApp('/deep')
     await waitFor(() => {

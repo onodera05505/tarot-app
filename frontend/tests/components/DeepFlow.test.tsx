@@ -67,7 +67,7 @@ afterEach(() => {
 
 // UC-005
 describe('詳しく占う: カテゴリ選択と質問フロー（§5.7 1-2）', () => {
-  // @covers REQ-038#direct-reach
+  // @covers REQ-108#direct-reach
   it('初期表示でカテゴリ一覧が出る（「仕事」「友達・恋愛」がボタン表示される）', async () => {
     mountDeep()
     expect(await screen.findByRole('button', { name: '仕事' })).toBeTruthy()

@@ -114,7 +114,7 @@ describe('カード解説詳細: 実在する id の表示（§5.5「カード�
     expect(screen.queryByRole('heading', { level: 1, name: other.nameJa })).toBeNull()
   })
 
-  // 仕様外: カードの内容はアプリに含まれ読み込みは境界を越えない（UC-004 contract の x-no-boundary）。読み込み中の表示は実装の非同期の都合で、要件に無い
+  // @covers REQ-107#detail-loading
   it('読み込み完了前は「読み込み中...」が出て、完了後は消える', async () => {
     const card = tarotCards[5]
     mountDetail(`/cards/${card.id}`)
