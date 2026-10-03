@@ -28,6 +28,7 @@ export function TopPage() {
           スタート
         </button>
         {/* @implements REQ-035 / BR-002, BR-005 */}
+        {/* @implements REQ-038 */}
         {DEEP_READING_ENABLED && (
           <button
             type="button"

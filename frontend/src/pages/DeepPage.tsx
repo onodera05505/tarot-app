@@ -17,6 +17,7 @@ export function DeepPage() {
   const [data, setData] = useState<DeepCategoryData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // @implements REQ-108
   // 0 = カテゴリ選択、1〜3 = 質問
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<string[]>([])

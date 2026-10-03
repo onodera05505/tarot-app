@@ -161,6 +161,7 @@ export function ResultPage() {
         />
       </button>
 
+      {/* @implements REQ-117 */}
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={cardSettled ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
@@ -177,6 +178,7 @@ export function ResultPage() {
           ))}
         </ul>
         {/* @implements REQ-049, REQ-050, REQ-065 */}
+        {/* @implements REQ-042 */}
         {deep && deepBase ? (
           <div className="result-deep">
             <span className="result-category">{deep.categoryLabel}</span>

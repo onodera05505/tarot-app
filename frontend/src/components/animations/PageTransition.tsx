@@ -5,6 +5,7 @@ type Props = Omit<HTMLMotionProps<'main'>, 'initial' | 'animate' | 'exit' | 'tra
 
 // 全ページ共通のフェード遷移ラッパー。
 // AnimatePresence (App.tsx) 配下で mode="wait" → 退場完了後に入場するクロスフェード。
+// @implements REQ-120
 export function PageTransition(props: Props) {
   return (
     <motion.main

@@ -249,6 +249,7 @@ function stackDelay2(currentRanks: number[], i: number, chosenPile2: 0 | 1 | nul
   return inSelected ? 0.55 : 0
 }
 
+// @implements REQ-110
 const PROMPTS: Record<Phase, string> = {
   intent: '',
   shuffling: 'シャッフルを止めてください',
@@ -310,6 +311,7 @@ export function ShufflePage() {
   }, [phase, navigate])
 
   // @implements REQ-057, REQ-058 / BR-002
+  // @implements REQ-113
   const handleStop = () => {
     if (phase !== 'shuffling') return
     // ここで reset() を呼んではいけない: 詳しく占うの文脈（deep）が消え、
@@ -320,6 +322,7 @@ export function ShufflePage() {
   }
 
   // @implements REQ-060
+  // @implements REQ-109
   const togglePile3 = (pileIdx: number) => {
     if (phase !== 'split3') return
     setPile3Order((current) => {
@@ -342,6 +345,7 @@ export function ShufflePage() {
   }
 
   // @implements REQ-062
+  // @implements REQ-109
   const togglePile2 = (pileIdx: 0 | 1) => {
     if (phase !== 'split2') return
     setChosenPile2((cur) => (cur === pileIdx ? null : pileIdx))
@@ -418,6 +422,7 @@ export function ShufflePage() {
             transition={{ duration: 0.7, delay: 0.15 }}
           >
             <span className="intent-divider" aria-hidden>✦</span>
+            {/* @implements REQ-110 */}
             <p className="intent-text">
               占うことを<br />思い浮かべてください
             </p>
@@ -440,6 +445,7 @@ export function ShufflePage() {
 
   return (
     <PageTransition className="page page-shuffle">
+      {/* @implements REQ-110 */}
       <p className="prompt">{PROMPTS[phase] || ' '}</p>
 
       <div className="shuffle-stage shuffle-stage--3d">
@@ -458,6 +464,7 @@ export function ShufflePage() {
               <motion.div
                 key={i}
                 className="shuffle-pile-card"
+                // @implements REQ-119
                 animate={{
                   x: target.x,
                   y: target.y,
@@ -472,6 +479,7 @@ export function ShufflePage() {
                 }}
                 style={{ zIndex: cardRanks[i] }}
               >
+                {/* @implements REQ-118 */}
                 <img
                   className="shuffle-pile-card-face"
                   src={CARD_BACK_THUMB_URL}
@@ -485,6 +493,7 @@ export function ShufflePage() {
           })}
         </motion.div>
 
+        {/* @implements REQ-111 */}
         {phase === 'split3' && (
           <div className="pile-selectors">
             {[0, 1, 2].map((idx) => {
@@ -505,6 +514,7 @@ export function ShufflePage() {
           </div>
         )}
 
+        {/* @implements REQ-111 */}
         {phase === 'split2' && (
           <div className="pile-selectors">
             {[0, 1].map((idx) => {
@@ -572,6 +582,7 @@ export function ShufflePage() {
         </div>
       )}
 
+      {/* @implements REQ-112 */}
       {drawn === null && phase === 'orienting' && (
         <p className="step-label" style={{ opacity: 0.5 }}>
           カードを引いています…

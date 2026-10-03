@@ -24,11 +24,13 @@ export function CardListPage() {
     <PageTransition className="page page-cards">
       <header className="cards-header">
         <h1 className="cards-title">大アルカナ 22枚</h1>
+        {/* @implements REQ-105 */}
         <button type="button" className="btn-ghost" onClick={() => navigate('/')}>
           トップへ戻る
         </button>
       </header>
 
+      {/* @implements REQ-107 */}
       {loading && <p className="step-label">読み込み中...</p>}
       {error && <p className="error">取得エラー: {error}</p>}
 

@@ -20,6 +20,7 @@ export function HistoryPage() {
   const navigate = useNavigate()
   // 遅延初期化でマウント時に一度だけ読む（effect 内 setState だと余計な再レンダーが走る）
   // @implements REQ-008, REQ-009
+  // @implements REQ-102
   const [entries, setEntries] = useState<HistoryEntry[]>(() => loadHistory())
 
   // @implements REQ-011, REQ-012
@@ -33,6 +34,7 @@ export function HistoryPage() {
     <PageTransition className="page page-history">
       <header className="cards-header">
         <h1 className="cards-title">占い履歴</h1>
+        {/* @implements REQ-103 */}
         <button type="button" className="btn-ghost" onClick={() => navigate('/')}>
           トップへ戻る
         </button>

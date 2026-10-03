@@ -28,6 +28,7 @@ function loadCached(): DrawnCard | null {
 }
 
 // @implements REQ-018
+// @implements REQ-104
 function saveCached(drawn: DrawnCard) {
   const payload: Cached = { date: getTodayKey(), drawn }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
@@ -71,6 +72,7 @@ export function TodaysCard() {
         <img src={CARD_BACK_THUMB_URL} alt="" className="todays-card-back" aria-hidden />
         <div className="todays-card-meta">
           <span className="todays-card-label">本日の一枚</span>
+          {/* @implements REQ-124 */}
           <span className="todays-card-hint">
             {flipping ? '読み込み中…' : 'タップして開く'}
           </span>

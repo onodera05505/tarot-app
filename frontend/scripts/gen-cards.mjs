@@ -53,7 +53,7 @@ function normalizeKeywords(raw) {
     .join(',')
 }
 
-// @implements REQ-093
+// @implements REQ-121
 function parseCardBlock(block) {
   const lines = block.split('\n')
 
@@ -128,7 +128,7 @@ function build() {
   const cards = parsed
     .map((p) => {
       const stat = STATIC[p.number]
-      // @implements REQ-093
+      // @implements REQ-121
       if (!stat) {
         throw new Error(`No STATIC entry for number ${p.number}`)
       }

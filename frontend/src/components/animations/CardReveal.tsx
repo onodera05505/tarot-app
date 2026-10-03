@@ -26,6 +26,7 @@ export function CardReveal({
   const flipDuration = 0.9
   const height = Math.round(width * 1.5)
 
+  // @implements REQ-115, REQ-116
   // めくり開始のタイミングで効果音を鳴らす
   useEffect(() => {
     const t = window.setTimeout(() => playFlip(), delayMs)
@@ -46,6 +47,7 @@ export function CardReveal({
       transition={{ duration: 0.55, ease: 'easeInOut' }}
       style={{ perspective: '1200px', flexShrink: 0 }}
     >
+      {/* @implements REQ-117 */}
       <motion.div
         style={{ width: '100%', height: '100%', position: 'relative', transformStyle: 'preserve-3d' }}
         initial={{ rotateY: 0 }}

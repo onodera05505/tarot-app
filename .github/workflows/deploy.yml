@@ -37,14 +37,17 @@ jobs:
         run: |
           TAG=$(grep -o 'develop-core#v[0-9.]*' apm.yml | cut -d'#' -f2)
           git clone --branch "$TAG" --depth 1 https://github.com/tsay-dev/harness.git .harness
+      # @implements REQ-081
       - name: Validate docs SSOT
         run: node .harness/tools/spec-lint/spec-lint.mjs validate --ignore-legacy-layout
+      # @implements REQ-081
       - name: Trace check (new violations fail)
         run: node .harness/tools/trace-check/trace-check.mjs
       # @implements REQ-081
       - name: Run tests
         working-directory: frontend
         run: pnpm test
+      # @implements REQ-081
       - name: Build frontend
         working-directory: frontend
         run: pnpm build

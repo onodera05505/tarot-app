@@ -46,6 +46,7 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
       const cards = await drawCards(1)
       const drawn = cards[0] ?? null
       if (drawn) {
+        // @implements REQ-114
         // 詳しく占うの場合はカテゴリ名を添えて記録する（v3.1 §5.6）
         addToHistory(drawn, get().deep?.categoryLabel)
       }

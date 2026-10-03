@@ -52,6 +52,7 @@ export function CardDetailPage() {
     )
   }
 
+  // @implements REQ-107
   if (loading) {
     return (
       <PageTransition className="page page-card-detail">
@@ -86,6 +87,7 @@ export function CardDetailPage() {
   return (
     <PageTransition className="page page-card-detail">
       <header className="detail-header">
+        {/* @implements REQ-106 */}
         <button type="button" className="btn-ghost" onClick={() => navigate(-1)}>
           ← 戻る
         </button>
@@ -133,6 +135,7 @@ export function CardDetailPage() {
         ),
       )}
 
+      {/* @implements REQ-105 */}
       <button type="button" className="btn-ghost" onClick={() => navigate('/')}>
         トップへ戻る
       </button>
