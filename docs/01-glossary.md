@@ -31,8 +31,14 @@ status: draft          # draft | living (the orchestrator marks it living on hum
 | もう一度占う | 占い結果を見たあと、続けて次の占いを始めること。 | — | — |
 | シェア | 占い結果を画像にして、端末の共有機能へ渡すこと。 | `generateShareImage` / `shareOrDownload` | 共有 |
 | 今日の一枚（シェア画像の見出し） | 占い結果のシェア画像の見出しと、シェア時のタイトルに出る語。本日の一枚とは別物。 | `generateShareImage`（見出し）/ `shareOrDownload`（タイトル） | — |
+| シェア画像 | シェアのために作る、カード画像・カード名・正逆・キーワードを載せた 1 枚の画像。 | `generateShareImage` | — |
+| 端末への保存 | 端末の共有機能が使えないとき、シェア画像をファイルとして端末に保存させること。 | `shareOrDownload`（共有機能が使えないときの分岐） | ダウンロード |
+| カード画像の拡大 | 占い結果でカード画像を選び、大きく示すこと。 | `enlarged`（`ResultPage`） | 拡大モーダル |
 | 本日の一枚 | 1 日 1 回だけ開ける、その日のカード 1 枚と正逆。占い履歴には含めない。 | `TodaysCard` | — |
 | 開封 | 本日の一枚をその日に初めて開くこと。開封済みの日は同じカードを表示する。 | `TodaysCard` の保存値 `{ date, drawn }` | — |
+| 本日の一枚: 未開封 | その日の本日の一枚をまだ開封していない状態。 | `drawn === null`（`TodaysCard`） | — |
+| 本日の一枚: 開封中 | 本日の一枚を選んでから、カードがめくれて示し終わるまでの状態。 | `flipping`（`TodaysCard`） | めくり中 |
+| 本日の一枚: 開封済み | その日の本日の一枚のカードと正逆が決まり、それを示している状態。 | `drawn !== null` かつ `!flipping`（`TodaysCard`） | — |
 | 占い履歴 | 占い結果が確定するたびに端末へ記録される、過去の占い結果の一覧。 | `HistoryEntry` / `loadHistory` / `addToHistory` | — |
 | 全削除 | 占い履歴をすべて消すこと。 | `clearHistory` | — |
 
@@ -94,6 +100,13 @@ status: draft          # draft | living (the orchestrator marks it living on hum
 | 予告表示 | 未提供の機能をほのめかす語を、トップ・結果・履歴の画面に置くこと。無料版では行わない。 | — | — |
 | ビルド識別子 | 稼働中の版を特定するために画面に出す、ビルドごとの識別子。 | `__APP_VERSION__` | 版表示 |
 | 自動更新 | 新しい版があるとき、占う人の操作なしにアプリが入れ替わること。ホーム画面・ブラウザで動くときだけ行う。 | `registerSW` | — |
+| 問い合わせ | アプリが Web 配信元に新しい版の有無を尋ねること。 | `registration.update()`（`main.tsx`） | 更新チェック |
+| 保持（端末への） | 一度開いたアプリの全体を、通信なしでも開けるように端末に取り置くこと。 | `registerSW` / `workbox.globPatterns`（`vite.config.ts`） | キャッシュ（これを指して） |
+| ホーム画面に追加 | ブラウザで開いたアプリを、アプリ名とアイコンで端末のホーム画面に置くこと。 | `manifest`（`vite.config.ts`） | — |
+| ネイティブのアプリ | ストアを通して配り、同梱の内容で動く形のアプリ。 | `Capacitor.isNativePlatform()` | — |
+| 検査 | 仕様の書式、仕様とコードとテストの対応、テストを機械で確かめ、すべて通ったかを示すこと。 | `pnpm test` / `spec-lint` / `trace-check`（`.github/workflows/deploy.yml`） | — |
+| 本番の版 | 配信するためにビルドした版で、開発中の版ではないもの。 | `import.meta.env.PROD` | — |
+| 報告先 | 本番の版がエラーの報告を送る、エラー監視サービスの宛先として版に設定する値。 | `VITE_SENTRY_DSN` | — |
 
 ## 内容の編集と生成
 
