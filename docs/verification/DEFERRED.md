@@ -36,3 +36,4 @@ reviewer の指摘のうち、機械検査（spec-lint / trace-check / contract-
 | DEF-018 | 2026-10-03 | reviewer | docs/goals/GOAL-07-release-awareness/UC-009-notice-device-errors/UC.md | 表の行が排他でない（「エラーの表示中」は報告先のあり・なしと直交する） | 報告先なしの版で、エラーの表示中に、通信なしで描画の外のエラーが起きる。1 行は「報告しない」、別の行は未決 | 未定 |
 | DEF-019 | 2026-10-03 | test-author | docs/goals/GOAL-01-ritual-reading/UC-006-draw-and-read/REQ-116.md | 効果音を鳴らせない端末で、占い結果は示されるが捕まえていない例外が出る。クラス `#no-sound-still-shows-result` が未被覆 | 仕様から書いたテストは赤になる。移行中は挙動を変えないので、テストを置けない | test |
 | DEF-020 | 2026-10-03 | test-author | docs/goals/GOAL-07-release-awareness/UC-008-release-new-version/REQ-082.md | アプリの入口を起動するテストが書けず、REQ-013・082・083・122・123 の 9 クラスが未被覆 | テストの設定が保持の仕組みのプラグインを外していて、入口の読み込みで止まる | test |
+| DEF-021 | 2026-10-03 | implementer | docs/goals/GOAL-07-release-awareness/UC-008-release-new-version/REQ-082.md | REQ-082・084 の条件「入れ替わっている最中でないとき」を判定するコードが無い（文は表の未決のセルを覆わないための絞り込み） | 入れ替わっている最中に前面へ戻すと、最中かどうかを見ずに問い合わせる。そのときの振る舞いは実ブラウザでしか分からない | 未定 |

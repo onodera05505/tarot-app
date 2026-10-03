@@ -91,6 +91,7 @@ export function CardDetailPage() {
         <button type="button" className="btn-ghost" onClick={() => navigate(-1)}>
           ← 戻る
         </button>
+        {/* @implements REQ-028, REQ-029 */}
         <div className="detail-title">
           <span className="detail-number">{String(card.number).padStart(2, '0')}</span>
           <h1>{card.nameJa}</h1>

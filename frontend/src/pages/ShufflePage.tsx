@@ -263,6 +263,7 @@ const PROMPTS: Record<Phase, string> = {
   transitioning: '',
 }
 
+// @implements REQ-125
 export function ShufflePage() {
   const navigate = useNavigate()
   const { drawn, drawOne } = useReadingStore(
