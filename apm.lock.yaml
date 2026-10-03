@@ -1,0 +1,200 @@
+lockfile_version: '1'
+apm_version: 0.32.0
+dependencies:
+- repo_url: tsay-dev/harness
+  name: develop-core
+  host: github.com
+  resolved_commit: 01554517d8d0db5e352246c53d7f871c76219441
+  resolved_ref: v4.1.1
+  version: 1.0.0
+  virtual_path: packages/develop-core
+  is_virtual: true
+  package_type: apm_package
+  deployed_files:
+  - .claude/agents/attacker.md
+  - .claude/agents/implementer.md
+  - .claude/agents/reviewer.md
+  - .claude/agents/spec-author.md
+  - .claude/agents/test-author.md
+  - .claude/rules/comments.md
+  - .claude/rules/docs.md
+  - .claude/skills/attack
+  - .claude/skills/attack/SKILL.md
+  - .claude/skills/develop
+  - .claude/skills/develop/SKILL.md
+  - .claude/skills/develop/references/adr.md
+  - .claude/skills/develop/references/bundles.md
+  - .claude/skills/develop/references/commit.md
+  - .claude/skills/develop/references/playbook.md
+  - .claude/skills/docs-migrate
+  - .claude/skills/docs-migrate/SKILL.md
+  deployed_file_hashes:
+    .claude/agents/attacker.md: sha256:b05529f5a986bc81d54af1d61a41d4fea319284effca4b903a227aa3e671a227
+    .claude/agents/implementer.md: sha256:611f9dba36c98f8c08ffa057d136d1fa7af9587edcaa76850cd9b19822d45bec
+    .claude/agents/reviewer.md: sha256:ca8ff0535f68ff680e986fcc5a4a6aed8243651f186f8e777304a82f1796bf89
+    .claude/agents/spec-author.md: sha256:6ce296e7d69fb74441b3eb5888fa50951df5d389ef28d6cefb0969632b90fb76
+    .claude/agents/test-author.md: sha256:150bd5de6fd5210237f49c2bdd303797ff7b47234a28750817ec524c29123f45
+    .claude/rules/comments.md: sha256:dc12255097fafab9b5ffb52e74a68919ec4ef0a7448680c572ee471d9a80b892
+    .claude/rules/docs.md: sha256:a8c436a3ed7a169c5c4c59cde11e2b7242969a9aa2d135a7ac408ed08672089c
+    .claude/skills/attack/SKILL.md: sha256:3ea63dcdd2e390b10bd209a7ca7b5af01c91669d7593c92ebe0fc61f16215cd5
+    .claude/skills/develop/SKILL.md: sha256:f76c8862bc8a5729a6c285b87faa29c6cb020d8097e77c2fe7051a4e3803fea5
+    .claude/skills/develop/references/adr.md: sha256:2ebd59d74b91cdea56f7dc90479097dc1baeeb710615187c6ad41be57e608cac
+    .claude/skills/develop/references/bundles.md: sha256:f4cd321d3c04590184b9480620627119b03d8f2a1e55df6dfc663ef3d61897d2
+    .claude/skills/develop/references/commit.md: sha256:6352002b12bf26ead21d98587c0a0b80208f2db21348a6c7d197f7e8a84d8813
+    .claude/skills/develop/references/playbook.md: sha256:2138d38126f2733d70f0ff727d2a51c42b37b0ecf3b62e737d06e2aa2bab3312
+    .claude/skills/docs-migrate/SKILL.md: sha256:e9049739eaeb8ed247b48858678ef8cabeac21391d3f34370f5c8c43246ebe80
+  content_hash: sha256:10df489444dd601c862128fa695d748b95fb830c413f9b2e1e9ff07a45cb9838
+deployments:
+- kind: project-relative
+  target: claude
+  value: .claude/agents/attacker.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:b05529f5a986bc81d54af1d61a41d4fea319284effca4b903a227aa3e671a227
+- kind: project-relative
+  target: claude
+  value: .claude/agents/implementer.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:611f9dba36c98f8c08ffa057d136d1fa7af9587edcaa76850cd9b19822d45bec
+- kind: project-relative
+  target: claude
+  value: .claude/agents/reviewer.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:ca8ff0535f68ff680e986fcc5a4a6aed8243651f186f8e777304a82f1796bf89
+- kind: project-relative
+  target: claude
+  value: .claude/agents/spec-author.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:6ce296e7d69fb74441b3eb5888fa50951df5d389ef28d6cefb0969632b90fb76
+- kind: project-relative
+  target: claude
+  value: .claude/agents/test-author.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:150bd5de6fd5210237f49c2bdd303797ff7b47234a28750817ec524c29123f45
+- kind: project-relative
+  target: claude
+  value: .claude/rules/comments.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:dc12255097fafab9b5ffb52e74a68919ec4ef0a7448680c572ee471d9a80b892
+- kind: project-relative
+  target: claude
+  value: .claude/rules/docs.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:a8c436a3ed7a169c5c4c59cde11e2b7242969a9aa2d135a7ac408ed08672089c
+- kind: project-relative
+  target: claude
+  value: .claude/skills/attack
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/attack/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:3ea63dcdd2e390b10bd209a7ca7b5af01c91669d7593c92ebe0fc61f16215cd5
+- kind: project-relative
+  target: claude
+  value: .claude/skills/develop
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/develop/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:f76c8862bc8a5729a6c285b87faa29c6cb020d8097e77c2fe7051a4e3803fea5
+- kind: project-relative
+  target: claude
+  value: .claude/skills/develop/references/adr.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:2ebd59d74b91cdea56f7dc90479097dc1baeeb710615187c6ad41be57e608cac
+- kind: project-relative
+  target: claude
+  value: .claude/skills/develop/references/bundles.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:f4cd321d3c04590184b9480620627119b03d8f2a1e55df6dfc663ef3d61897d2
+- kind: project-relative
+  target: claude
+  value: .claude/skills/develop/references/commit.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:6352002b12bf26ead21d98587c0a0b80208f2db21348a6c7d197f7e8a84d8813
+- kind: project-relative
+  target: claude
+  value: .claude/skills/develop/references/playbook.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:2138d38126f2733d70f0ff727d2a51c42b37b0ecf3b62e737d06e2aa2bab3312
+- kind: project-relative
+  target: claude
+  value: .claude/skills/docs-migrate
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: null
+- kind: project-relative
+  target: claude
+  value: .claude/skills/docs-migrate/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - tsay-dev/harness/packages/develop-core
+  active_owner: tsay-dev/harness/packages/develop-core
+  content_hash: sha256:e9049739eaeb8ed247b48858678ef8cabeac21391d3f34370f5c8c43246ebe80

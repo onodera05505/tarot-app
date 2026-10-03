@@ -1,0 +1,82 @@
+{
+  "_comment": "tarot-app の traceconfig（原本 harness v4.1.1 のテンプレートから作成、2026-10-03）。ホストのルートはリポジトリ直下。source はアプリ本体（frontend/src）と生成スクリプト（frontend/scripts）。backend/ は参照用残骸で対象外。schema は置かない（DB を持たない。端末の localStorage は時間の境界として契約とフィクスチャで守る）。contract は置かない（エラーコードの単一の出所が無いので C7 は skip）。tests.system は未設定（ブラウザの通しテストが無い。OPEN-QUESTIONS OQ-10 が決まるまで C15 は skip）。キーの意味は .harness/templates/develop/traceconfig.json の _comment を見る。",
+  "id_patterns": {
+    "goal": "\\bGOAL-\\d{2}\\b",
+    "uc": "\\bUC-\\d{3}\\b",
+    "req": "\\bREQ-\\d{3}\\b",
+    "br": "\\bBR-\\d{3}\\b",
+    "nfr": "\\bNFR-\\d{3}\\b",
+    "adr": "\\bADR-\\d{4}\\b"
+  },
+  "covers_pattern": "@covers\\s+(REQ-\\d{3})(?:#([\\w-]+))?",
+  "scenario_pattern": "@scenario\\s+(UC-\\d{3})",
+  "implements_pattern": "@implements\\s+((?:REQ|BR|UC)-\\d{3}(?:\\s*[,/]\\s*(?:REQ|BR|UC)-\\d{3})*)",
+  "docs": {
+    "goals_dir": "docs/goals",
+    "goals_backlog": "docs/goals-backlog.md",
+    "rules_dir": "docs/rules",
+    "nfr_dir": "docs/nfr",
+    "adr_dir": "docs/adr",
+    "verification_global": "docs/verification/GLOBAL.md",
+    "verification_deferred": "docs/verification/DEFERRED.md",
+    "shared": "docs/_shared/components.yaml",
+    "actors": "docs/02-actors.md"
+  },
+  "commands": {
+    "_comment": "stop-gate が typecheck → lint → test の順に回す。contract_adapter と system は未宣言（宣言していない検査は skip と報告される）。",
+    "typecheck": "pnpm --dir frontend exec tsc -b",
+    "lint": "pnpm --dir frontend lint",
+    "test": "pnpm --dir frontend test"
+  },
+  "source": {
+    "dirs": [
+      "frontend/src",
+      "frontend/scripts"
+    ],
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".mjs",
+      ".py"
+    ]
+  },
+  "tests": {
+    "dirs": [
+      "frontend/tests"
+    ],
+    "extensions": [
+      ".ts",
+      ".tsx"
+    ],
+    "test_pattern": "^\\s*(?:it|test)\\(\\s*[\"'`](.+?)[\"'`]",
+    "covers_placement": "before",
+    "exempt_pattern": "//\\s*仕様外:"
+  },
+  "layering": {
+    "root": "frontend/src",
+    "layer_pattern": "{layer}",
+    "forbidden": {
+      "lib": [
+        "pages",
+        "components",
+        "store"
+      ],
+      "data": [
+        "pages",
+        "components",
+        "store"
+      ],
+      "store": [
+        "pages",
+        "components"
+      ],
+      "components": [
+        "pages"
+      ]
+    },
+    "import_patterns": [
+      "^\\s*import\\s.*from\\s+['\"][^'\"]*/{layer}(/|['\"])"
+    ]
+  },
+  "baseline_file": ".trace-baseline.json"
+}

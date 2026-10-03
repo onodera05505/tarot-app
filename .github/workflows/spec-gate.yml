@@ -1,0 +1,28 @@
+name: spec-gate
+
+# 仕様（docs/）と、仕様⇔コード⇔テストの対応を機械で見る（原本 harness の spec-lint と trace-check）。
+# フックは回避できるので、回避できない層としてここで回す。新規違反が 1 件でもあれば落ちる
+# （既存の違反は .trace-baseline.json / .spec-baseline.json に記録してあり、減る方向だけを許す）。
+# harness の版は apm.yml の 1 箇所で決める（ここと deploy.yml は apm.yml から読む）。
+# 移行中（docs-migrate の Phase 7 まで）は --ignore-legacy-layout を付ける。Phase 7 で外す。
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  spec-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Fetch harness tools (apm.yml の版)
+        run: |
+          TAG=$(grep -o 'develop-core#v[0-9.]*' apm.yml | cut -d'#' -f2)
+          git clone --branch "$TAG" --depth 1 https://github.com/tsay-dev/harness.git .harness
+      - name: Validate docs SSOT
+        run: node .harness/tools/spec-lint/spec-lint.mjs validate --ignore-legacy-layout
+      - name: Trace check (new violations fail)
+        run: node .harness/tools/trace-check/trace-check.mjs

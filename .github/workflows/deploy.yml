@@ -31,6 +31,15 @@ jobs:
       - name: Install frontend dependencies
         working-directory: frontend
         run: pnpm install --frozen-lockfile
+      # 仕様と、仕様⇔コード⇔テストの対応（spec-gate.yml と同じ検査。落ちたらデプロイしない）
+      - name: Fetch harness tools (apm.yml の版)
+        run: |
+          TAG=$(grep -o 'develop-core#v[0-9.]*' apm.yml | cut -d'#' -f2)
+          git clone --branch "$TAG" --depth 1 https://github.com/tsay-dev/harness.git .harness
+      - name: Validate docs SSOT
+        run: node .harness/tools/spec-lint/spec-lint.mjs validate --ignore-legacy-layout
+      - name: Trace check (new violations fail)
+        run: node .harness/tools/trace-check/trace-check.mjs
       - name: Run tests
         working-directory: frontend
         run: pnpm test

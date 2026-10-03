@@ -44,3 +44,5 @@ backend/src/generated/prisma/
 .harness/
 apm_modules/
 .agents/
+.trace-reservations.json
+.harness-gate/
