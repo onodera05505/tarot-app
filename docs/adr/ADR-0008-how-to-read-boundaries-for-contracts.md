@@ -1,7 +1,7 @@
 ---
 id: ADR-0008
 title: 契約に書く境界の読み方を 1 つに決める
-status: proposed
+status: accepted
 date: 2026-10-03
 ---
 

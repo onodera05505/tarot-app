@@ -2,7 +2,7 @@
 id: GOAL-02
 actor: ACT-01
 origin: KPI-02
-status: draft          # draft | active | withdrawn (active = approved by a human)
+status: active          # draft | active | withdrawn (active = approved by a human)
 ---
 
 # GOAL-02

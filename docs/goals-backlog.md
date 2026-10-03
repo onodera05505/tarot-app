@@ -1,6 +1,6 @@
 ---
 id: GOALS_BACKLOG
-status: draft          # draft | living
+status: living          # draft | living
 ---
 
 # ゴール・バックログ（未着手）

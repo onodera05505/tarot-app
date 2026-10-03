@@ -1,7 +1,7 @@
 # UC-009 の境界の形（ADR-0008）
 # 第三者の SDK（エラー監視サービス）だけを写す。報告先の値はビルド時の環境変数で渡り、CI の設定が正本（R-1203）
 x-uc: UC-009
-x-status: draft
+x-status: fixed
 x-spec: ./UC.md
 x-updated: 2026-10-03
 

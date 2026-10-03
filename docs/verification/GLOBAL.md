@@ -1,6 +1,6 @@
 ---
 id: VERIFICATION_GLOBAL
-status: draft          # draft | living
+status: living          # draft | living
 ---
 
 # 検証方針（全体）

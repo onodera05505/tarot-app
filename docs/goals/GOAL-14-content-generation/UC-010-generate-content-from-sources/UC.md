@@ -3,7 +3,7 @@ id: UC-010
 title: 編集元を直して内容を生成する
 actor: ACT-02
 goal: GOAL-14
-status: draft          # draft | active | withdrawn (active = approved by a human)
+status: active          # draft | active | withdrawn (active = approved by a human)
 phase: 定義            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
 ---
 

@@ -1,6 +1,6 @@
 ---
 id: GLOSSARY
-status: draft          # draft | living (the orchestrator marks it living on human approval)
+status: living          # draft | living (the orchestrator marks it living on human approval)
 ---
 
 # 用語集（ユビキタス言語）

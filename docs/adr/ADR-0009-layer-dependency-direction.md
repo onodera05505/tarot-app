@@ -1,7 +1,7 @@
 ---
 id: ADR-0009
 title: ソースの層は画面から下へ向かってだけ参照する
-status: proposed
+status: accepted
 date: 2026-10-03
 ---
 

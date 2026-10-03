@@ -3,7 +3,7 @@ id: UC-001
 title: 占い履歴を振り返る
 actor: ACT-01
 goal: GOAL-05
-status: draft          # draft | active | withdrawn (active = approved by a human)
+status: active          # draft | active | withdrawn (active = approved by a human)
 phase: 定義            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
 ---
 

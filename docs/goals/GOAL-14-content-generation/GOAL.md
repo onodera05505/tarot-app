@@ -2,7 +2,7 @@
 id: GOAL-14
 actor: ACT-02
 origin: 未設定
-status: draft          # draft | active | withdrawn (active = approved by a human)
+status: active          # draft | active | withdrawn (active = approved by a human)
 ---
 
 # GOAL-14

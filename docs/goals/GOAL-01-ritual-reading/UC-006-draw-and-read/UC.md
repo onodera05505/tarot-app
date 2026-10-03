@@ -3,7 +3,7 @@ id: UC-006
 title: 儀式を進めて 1 枚を引き、占い結果を読む
 actor: ACT-01
 goal: GOAL-01
-status: draft          # draft | active | withdrawn (active = approved by a human)
+status: active          # draft | active | withdrawn (active = approved by a human)
 phase: 定義            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
 ---
 

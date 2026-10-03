@@ -2,7 +2,7 @@
 # 第三者の SDK（新しい版の問い合わせ・入れ替え）だけを写す。配る手順（.github/workflows/deploy.yml）と
 # PWA の設定（vite.config.ts）、ビルド識別子の注入はそれ自体が機械可読な正本なので写さない（R-1203）
 x-uc: UC-008
-x-status: draft
+x-status: fixed
 x-spec: ./UC.md
 x-updated: 2026-10-03
 

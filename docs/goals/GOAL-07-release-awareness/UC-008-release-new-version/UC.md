@@ -3,7 +3,7 @@ id: UC-008
 title: 新しい版を配って端末に届いたことを確かめる
 actor: ACT-02
 goal: GOAL-07
-status: draft          # draft | active | withdrawn (active = approved by a human)
+status: active          # draft | active | withdrawn (active = approved by a human)
 phase: 定義            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
 ---
 

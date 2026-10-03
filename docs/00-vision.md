@@ -1,6 +1,6 @@
 ---
 id: VISION
-status: draft          # draft | frozen (the orchestrator marks it frozen on human approval)
+status: frozen          # draft | frozen (the orchestrator marks it frozen on human approval)
 ---
 
 # Vision
