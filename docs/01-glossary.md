@@ -136,7 +136,7 @@ status: living          # draft | living (the orchestrator marks it living on hu
 | 性能の計測 | アプリの動作にかかった時間を計り、エラー監視サービスへ送ること。 | `tracesSampleRate`（`main.tsx`） | — |
 | 操作の記録 | 占う人が画面で行った操作を、後から再生できる形で採ってエラー監視サービスへ送ること。端末への記録とも、占い履歴に記録することとも別のもの。 | `replaysSessionSampleRate` / `replaysOnErrorSampleRate`（`main.tsx`） | — |
 | 利用者 | エラー監視サービスと運営者の側から呼ぶときの占う人（ACT-01）。 | — | — |
-| 利用者の情報 | エラー監視サービスがエラーの報告に添えて既定で集める、利用者を見分ける手がかりになる情報。 | `sendDefaultPii`（`main.tsx`） | — |
+| 利用者の情報 | 既定で送る設定を有効にしたときに限り、エラー監視サービスがエラーの報告に添えて集める、利用者を見分ける手がかりになる情報。 | `sendDefaultPii`（`main.tsx`） | — |
 
 ## 内容の編集と生成
 

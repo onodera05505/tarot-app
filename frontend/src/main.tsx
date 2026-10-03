@@ -40,7 +40,8 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     // @implements REQ-123
-    sendDefaultPii: true,
+    // ストアのプライバシーの申告で「利用者を特定する情報を集めない」と言える状態を保つため無効にする
+    sendDefaultPii: false,
     // @implements REQ-122
     // 個人開発の MVP 段階では Performance / Replay は無効にして無料枠を温存
     tracesSampleRate: 0,

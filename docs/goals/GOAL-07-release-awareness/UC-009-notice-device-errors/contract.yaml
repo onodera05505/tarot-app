@@ -22,7 +22,7 @@ operations:
           minLength: 1
         sendDefaultPii:
           type: boolean
-          const: true
+          const: false
         tracesSampleRate:
           type: number
           const: 0
@@ -37,7 +37,7 @@ operations:
       ok:
         request:
           dsn: "https://examplePublicKey@o0.ingest.sentry.io/0"
-          sendDefaultPii: true
+          sendDefaultPii: false
           tracesSampleRate: 0
           replaysSessionSampleRate: 0
           replaysOnErrorSampleRate: 0
