@@ -32,7 +32,7 @@
 - `.claude/` は gitignore 済み。`settings.local.json` は 2026-09-02 に 25 件へ整理（キーチェーン・ssh・pkill の一時許可は削除済み。再び足したら作業後に消す）
 
 ## 未決（日付・誰が決めるか）
-- **harness の導入（docs-migrate）**: Phase 0 完了（2026-10-03）。次は本人が APM を入れて `apm install`（`OPEN-QUESTIONS.md` OQ-01）→ Phase 1。各 Phase の末尾で本人の承認が要る。未回答は OQ-02・06・07・08・09・10
+- **harness の導入（docs-migrate）**: Phase 0〜5 と Phase 6 の注釈まで完了（2026-10-03。作業ブランチ `docs/harness-migrate`、Phase ごとに 1 コミット）。**残りは本人の承認待ち**: 用語、ユースケースの粒度、要件 98 件と業務規則 6 本、決定の記録 9 本、契約 11 本（`OPEN-QUESTIONS.md` の OQ-12〜33）。承認の後に、要件と規則の有効化（台帳の 2 回目の増加）→ Phase 7（返済計画、v3 の退避、CLAUDE.md を経路表に絞る、停止ゲートと着手ゲートの設置）
 - Android Studio 導入 → APK ビルド → 実機確認（本人。2026-09-03〜）。実機で見る項目: BrowserRouter の直接パス、Web Audio、セーフエリア・ステータスバー色
 - 実機確認後にストア申請の順序を決める（本人）。Apple Developer は iPhone 未所持のため保留
 - deploy.yml の新経路（frontend から wrangler 実行）は 2026-09-02 の push 以降の CI で緑を確認すること（未確認なら次の push で見る）
