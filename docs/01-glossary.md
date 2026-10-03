@@ -14,6 +14,7 @@ status: draft          # draft | living (the orchestrator marks it living on hum
 | 用語 | 定義 | コード識別子 | 禁止同義語 |
 | --- | --- | --- | --- |
 | 占い | 占う人がカードを 1 枚引き、その正逆と意味を受け取る一回分の行為。 | `useReadingStore` | リーディング |
+| トップ | アプリを開いて最初に示す画面で、本日の一枚と、占い・カード解説・占い履歴への入口を置く。 | `TopPage`（`/`） | — |
 | 通常占い | 詳しく占うを経ずに始める占い。 | `deep === null`（`useReadingStore`） | — |
 | カード | 大アルカナ 22 枚のうちの 1 枚。 | `TarotCard` | — |
 | 大アルカナ | このアプリが扱うカードの種別（22 枚）。 | `arcanaType` | — |
@@ -40,6 +41,7 @@ status: draft          # draft | living (the orchestrator marks it living on hum
 | 本日の一枚: 開封中 | 本日の一枚を選んでから、カードがめくれて示し終わるまでの状態。 | `flipping`（`TodaysCard`） | めくり中 |
 | 本日の一枚: 開封済み | その日の本日の一枚のカードと正逆が決まり、それを示している状態。 | `drawn !== null` かつ `!flipping`（`TodaysCard`） | — |
 | 占い履歴 | 占い結果が確定するたびに端末へ記録される、過去の占い結果の一覧。 | `HistoryEntry` / `loadHistory` / `addToHistory` | — |
+| 端末への記録 | 占い履歴や本日の一枚を、アプリを閉じても残るよう端末の記憶領域に書き込むこと。 | `localStorage.setItem`（`'tarot:history'` / `'tarot:todaysCard'`） | 端末への保存（記憶領域を指して） |
 | 全削除 | 占い履歴をすべて消すこと。 | `clearHistory` | — |
 
 ## 占い状態（一回の占いの進み具合）
