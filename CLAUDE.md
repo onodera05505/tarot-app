@@ -46,6 +46,7 @@
 | 仕様⇔コード⇔テストの対応 | `node .harness/tools/trace-check/trace-check.mjs`（全体の地図は `--index`） |
 | 型・Lint・テスト | `pnpm --dir frontend exec tsc -b` / `pnpm --dir frontend lint` / `pnpm --dir frontend test` |
 | 本番ビルド | `pnpm --dir frontend build` |
+| 通しテスト | `cd frontend && pnpm exec playwright test`（初回は `pnpm exec playwright install chromium`。`--list` で一覧だけ） |
 | 生成 | `pnpm --dir frontend gen:cards` / `gen:deep`（編集元は `frontend/data/`。生成物は手で直さない） |
 | harness の入れ直し | `apm install`（`.claude/` の担当・規約・skill と `.harness/` は生成物でコミットしない） |
 
@@ -53,5 +54,6 @@
 
 - `frontend/`（React 19 + Vite + PWA、zustand、framer-motion、Sentry、Capacitor の Android プロジェクト）。端末だけで完結し、サーバーとの通信は無い（ADR-0001）。`backend/` は参照用の残骸で、対象外。
 - テストは `frontend/tests/`（vitest + jsdom）。各テストは直前の行に `// @covers REQ-nnn#class` か `// 仕様外: 理由` を持つ。実装は `@implements` で要件を指す。
+- 通し（シナリオ）テストは `frontend/e2e/`（Playwright、`frontend/playwright.config.ts`。`tests.system`）。ユースケースごとに 1 本、主シナリオの手順と成功時の事後条件だけ。`test(` の直前の行に `// @scenario UC-nnn`。ロケータは用語集の語と契約の識別子から導き、実装を読んで取らない。実ブラウザで未確認のものは `test.fixme` の保留で置く（2026-10-17 時点で 11 本すべて保留。外す順は `docs/verification/REPAYMENT.md`）。儀式の操作は 1 か所のヘルパーに集約する（UC-005〜007 で同じ手順を繰り返している）。
 - ネイティブは `pnpm build` → `pnpm exec cap sync android` → `pnpm exec cap open android`。ストア申請と Android の実機確認は本人の判断で保留中。
 - push は main へ確認なしでよい（2026-09-02）。挙動を変える作業は作業ブランチで行い、検査が通ってから main に入れる。

@@ -46,3 +46,8 @@ apm_modules/
 .agents/
 .trace-reservations.json
 .harness-gate/
+
+# Playwright（通しテスト）の実行結果
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/

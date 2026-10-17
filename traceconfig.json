@@ -52,7 +52,15 @@
     ],
     "test_pattern": "^\\s*(?:it|test)(?:\\.\\w+\\([^)]*\\))?\\(\\s*[\"'`](.+?)[\"'`]",
     "covers_placement": "before",
-    "exempt_pattern": "//\\s*仕様外:"
+    "exempt_pattern": "//\\s*仕様外:",
+    "system": {
+      "dirs": [
+        "frontend/e2e"
+      ],
+      "extensions": [
+        ".ts"
+      ]
+    }
   },
   "layering": {
     "root": "frontend/src",
