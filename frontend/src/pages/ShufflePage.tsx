@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useShallow } from 'zustand/react/shallow'
@@ -266,12 +266,23 @@ const PROMPTS: Record<Phase, string> = {
 // @implements REQ-125
 export function ShufflePage() {
   const navigate = useNavigate()
-  const { drawn, drawOne } = useReadingStore(
+  const { status, drawOne, enterRitual } = useReadingStore(
     useShallow((s) => ({
-      drawn: s.drawn,
+      status: s.status,
       drawOne: s.drawOne,
+      enterRitual: s.enterRitual,
     })),
   )
+
+  // @implements REQ-132 / BR-002
+  // 到達は 1 回だけ判定する。StrictMode は mount の effect を 2 度回すが、印は 1 度目で消えているので
+  // ref で 2 度目を止めないと持ち込みが直接到達と誤判定される
+  const entered = useRef(false)
+  useEffect(() => {
+    if (entered.current) return
+    entered.current = true
+    enterRitual()
+  }, [enterRitual])
 
   const [phase, setPhase] = useState<Phase>('intent')
 
@@ -315,8 +326,9 @@ export function ShufflePage() {
   // @implements REQ-113
   const handleStop = () => {
     if (phase !== 'shuffling') return
-    // ここで reset() を呼んではいけない: 詳しく占うの文脈（deep）が消え、
-    // 結果画面が通常表示に落ちる（2026-08-21 の不具合）。前回の drawn/status は
+    // ここで reset() を呼んではいけない: 持ち込んだカテゴリと回答（deep）が消え、
+    // 占い結果が通常占いの表示に落ちる。初期化は儀式への到達時（enterRitual。スタートと
+    // 持ち込む操作からの到達では初期化しない）に済んでおり、前回の drawn/status は
     // drawOne() が上書きするので個別のクリアも不要
     drawOne()
     setPhase('merging')
@@ -584,7 +596,8 @@ export function ShufflePage() {
       )}
 
       {/* @implements REQ-112 */}
-      {drawn === null && phase === 'orienting' && (
+      {/* 示すのは占い状態が drawing の間だけ。error（抽選に失敗）でも drawn は null なので、drawn では判定しない */}
+      {status === 'drawing' && phase === 'orienting' && (
         <p className="step-label" style={{ opacity: 0.5 }}>
           カードを引いています…
         </p>

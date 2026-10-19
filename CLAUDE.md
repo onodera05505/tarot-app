@@ -47,7 +47,7 @@
 | 型・Lint・テスト | `pnpm --dir frontend exec tsc -b` / `pnpm --dir frontend lint` / `pnpm --dir frontend test` |
 | 本番ビルド | `pnpm --dir frontend build` |
 | 通しテスト | `cd frontend && pnpm exec playwright test`（初回は `pnpm exec playwright install chromium`。`--list` で一覧だけ） |
-| 生成 | `pnpm --dir frontend gen:cards` / `gen:deep`（編集元は `frontend/data/`。生成物は手で直さない） |
+| 生成 | `pnpm --dir frontend gen:cards` / `gen:deep` / `gen:thumbs`（編集元は `frontend/data/`、原本は `frontend/public/cards/`。生成物は手で直さない）。テストから呼ぶときは環境変数 `GEN_SOURCE_DIR`（編集元・原本の置き場）と `GEN_OUT_DIR`（書き出し先）で実物から切り離す（2026-10-19 決定。未指定なら実物。`GEN_SOURCE_DIR` の直下に `cards.md`（gen-cards）・`deep/*.md`（gen-deep）・原本の `*.webp`（gen-thumbs）を置き、`GEN_OUT_DIR` の直下に書き出す）。失敗は終了コード 0 以外と標準エラー出力の理由で示す |
 | harness の入れ直し | `apm install`（`.claude/` の担当・規約・skill と `.harness/` は生成物でコミットしない） |
 
 ## このプロジェクトの形

@@ -22,10 +22,20 @@ type ReadingState = {
   status: ReadingStatus
   error: string | null
   deep: DeepContext | null
+  /**
+   * スタートまたは持ち込む操作から儀式へ進む途中であることの印（BR-002）。
+   * `start` と `setDeepContext` が立て、儀式が到達時に `enterRitual` で消す。
+   * 印の無い到達（アドレスの指定・ブラウザの戻る/進む）は直接到達として扱う
+   */
+  ritualEntry: boolean
   // 正逆は drawOne 時のランダム値で確定。儀式中のユーザー操作で上書きしない
   // （旧 setOrientation はユーザー要望で撤回済み。経緯はコミット 24efef6 と仕様書 v3 §4.2）
   drawOne: () => Promise<void>
   setDeepContext: (deep: DeepContext) => void
+  /** 占い状態を初期化し、儀式へ進む印を立てる（スタート・もう一度占う） */
+  start: () => void
+  /** 儀式への到達。印があれば消して引き継ぎ、無ければ直接到達として初期化する */
+  enterRitual: () => void
   reset: () => void
 }
 
@@ -35,6 +45,7 @@ const initial = {
   status: 'idle' as ReadingStatus,
   error: null,
   deep: null,
+  ritualEntry: false,
 }
 
 export const useReadingStore = create<ReadingState>((set, get) => ({
@@ -59,7 +70,18 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
       })
     }
   },
-  setDeepContext: (deep) => set({ deep }),
+  // @implements REQ-045 / BR-002
+  setDeepContext: (deep) => set({ deep, ritualEntry: true }),
+  // @implements REQ-054, REQ-070 / BR-002
+  start: () => set({ ...initial, ritualEntry: true }),
+  // @implements REQ-132 / BR-002
+  enterRitual: () => {
+    if (get().ritualEntry) {
+      set({ ritualEntry: false })
+      return
+    }
+    set({ ...initial })
+  },
   // @implements BR-002
   reset: () => set({ ...initial }),
 }))

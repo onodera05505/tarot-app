@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { PageTransition } from '../components/animations/PageTransition'
@@ -13,6 +13,14 @@ import { useReadingStore } from '../store/useReadingStore'
 export function DeepPage() {
   const navigate = useNavigate()
   const setDeepContext = useReadingStore((s) => s.setDeepContext)
+  const reset = useReadingStore((s) => s.reset)
+
+  // @implements REQ-108 / BR-002
+  // 到達の仕方（トップの入口・アドレスの指定・ブラウザの戻る/進む）によらず、詳しく占うに着いた時点で
+  // 前の占い結果と持ち込んだカテゴリと回答を捨てる。トップの入口も reset してから遷移するが、二重でも害は無い
+  useEffect(() => {
+    reset()
+  }, [reset])
 
   const [data, setData] = useState<DeepCategoryData | null>(null)
   const [loading, setLoading] = useState(false)
@@ -85,7 +93,7 @@ export function DeepPage() {
           transition={{ duration: 0.5 }}
         >
           <h1 className="deep-title">詳しく占う</h1>
-          <p className="step-label">占いたいテーマを選んでください</p>
+          <p className="step-label">占いたいカテゴリを選んでください</p>
           <div className="deep-options">
             {deepCategories.map((cat) => (
               <button

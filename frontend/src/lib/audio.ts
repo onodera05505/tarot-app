@@ -6,14 +6,22 @@ type WindowWithWebkit = Window & { webkitAudioContext?: typeof AudioContext }
 let ctx: AudioContext | null = null
 let masterGain: GainNode | null = null
 
-function getCtx(): AudioContext {
-  if (!ctx) {
-    const w = window as WindowWithWebkit
-    const Ctor = window.AudioContext ?? w.webkitAudioContext
-    ctx = new Ctor()
-    masterGain = ctx.createGain()
+// @implements REQ-116
+// 端末が効果音を鳴らせない（Web Audio が無い・作れない）場合は null を返し、
+// 呼び出し側は音を鳴らさないまま進む。例外を外へ出さない
+function getCtx(): AudioContext | null {
+  if (ctx) return ctx
+  const w = window as WindowWithWebkit
+  const Ctor = window.AudioContext ?? w.webkitAudioContext
+  if (typeof Ctor !== 'function') return null
+  try {
+    const created = new Ctor()
+    masterGain = created.createGain()
     masterGain.gain.value = 1.0
-    masterGain.connect(ctx.destination)
+    masterGain.connect(created.destination)
+    ctx = created
+  } catch {
+    return null
   }
   return ctx
 }
@@ -23,6 +31,7 @@ function getCtx(): AudioContext {
 // 同期的に resume() を呼ぶ + 無音バッファを再生して iOS Safari 対策も入れる。
 export function unlockAudio(): void {
   const c = getCtx()
+  if (!c) return
   if (c.state === 'suspended') void c.resume()
   // iOS Safari は無音バッファを1回再生しないと永遠に suspended 扱いになる場合がある
   const buf = c.createBuffer(1, 1, 22050)
@@ -32,14 +41,16 @@ export function unlockAudio(): void {
   src.start(0)
 }
 
-function unlock(): AudioContext {
+function unlock(): AudioContext | null {
   unlockAudio()
   return getCtx()
 }
 
 // めくれ: 短いノイズに band-pass フィルター掃引で「フワッ」とした空気感
+// @implements REQ-115, REQ-116
 export function playFlip(): void {
   const c = unlock()
+  if (!c) return
   const now = c.currentTime
   const dur = 0.55
 

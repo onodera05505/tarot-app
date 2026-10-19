@@ -29,7 +29,11 @@ export function ResultPage() {
   const [sharing, setSharing] = useState(false)
   const widths = useMemo(calcWidths, [])
 
-  const { drawn, status, error, deep, reset } = useReadingStore(
+  // @implements REQ-075
+  // シェア画像を作れなかったことの表示。次にシェアを選んだ時点で消す
+  const [shareError, setShareError] = useState<string | null>(null)
+
+  const { drawn, status, error, deep, reset, start } = useReadingStore(
     useShallow((s) => ({
       drawn: s.drawn,
       status: s.status,
@@ -38,6 +42,7 @@ export function ResultPage() {
       // 無料版では deep 文脈が残っていても通常表示にする（v3.3 §3.3「常に通常占いの表示」）
       deep: DEEP_READING_ENABLED ? s.deep : null,
       reset: s.reset,
+      start: s.start,
     })),
   )
 
@@ -121,9 +126,9 @@ export function ResultPage() {
   }
 
   // @implements REQ-070, REQ-052 / BR-002
-  // TopPage の「スタート」と同じ手順（reset → /shuffle）で揃える
+  // TopPage の「スタート」と同じ手順（start → /shuffle）で揃える
   const handleRetry = () => {
-    reset()
+    start()
     navigate('/shuffle')
   }
 
@@ -131,8 +136,19 @@ export function ResultPage() {
   const handleShare = async () => {
     if (sharing) return
     setSharing(true)
+    setShareError(null)
+    let blob: Blob
     try {
-      const blob = await generateShareImage(drawn)
+      blob = await generateShareImage(drawn)
+    } catch (e) {
+      // @implements REQ-075
+      // シェア画像を作れなければ端末の共有機能にも端末への保存にも渡さず、作れなかったことだけ示す
+      console.error('Share image generation failed:', e)
+      setShareError('シェア画像を作れませんでした')
+      setSharing(false)
+      return
+    }
+    try {
       const text = `${card.nameJa}（${orientation === 'upright' ? '正位置' : '逆位置'}）`
       await shareOrDownload(blob, `tarot-${card.id}.png`, text)
     } catch (e) {
@@ -204,6 +220,12 @@ export function ResultPage() {
           >
             {sharing ? '画像を作成中...' : 'この結果をシェア'}
           </button>
+          {/* @implements REQ-075 */}
+          {shareError && (
+            <p className="error" role="status">
+              {shareError}
+            </p>
+          )}
           <button type="button" className="btn-ghost" onClick={handleRetry}>
             もう一度占う
           </button>

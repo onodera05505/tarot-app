@@ -4,6 +4,7 @@ import { PageTransition } from '../components/animations/PageTransition'
 import { thumbUrl } from '../lib/api'
 import { clearHistory, loadHistory } from '../lib/history'
 import type { HistoryEntry } from '../lib/history'
+import { useReadingStore } from '../store/useReadingStore'
 
 // @implements REQ-008
 function formatDate(epochMs: number): string {
@@ -18,16 +19,35 @@ function formatDate(epochMs: number): string {
 // @implements UC-001
 export function HistoryPage() {
   const navigate = useNavigate()
+  const reset = useReadingStore((s) => s.reset)
   // 遅延初期化でマウント時に一度だけ読む（effect 内 setState だと余計な再レンダーが走る）
   // @implements REQ-008, REQ-009
   // @implements REQ-102
   const [entries, setEntries] = useState<HistoryEntry[]>(() => loadHistory())
+  // 全削除を承諾したのに端末から消せなかったときの表示。次に消せたら消す
+  const [clearError, setClearError] = useState<string | null>(null)
 
   // @implements REQ-011, REQ-012
   const handleClear = () => {
     if (!window.confirm('占いの履歴をすべて削除します。よろしいですか？')) return
-    clearHistory()
+    try {
+      clearHistory()
+    } catch {
+      // @implements REQ-126
+      // 端末から消せなかった: 一覧も端末の占い履歴も承諾の前のままにし、消せなかったことだけを示す
+      setClearError('履歴を削除できませんでした')
+      return
+    }
+    setClearError(null)
     setEntries([])
+  }
+
+  // 履歴なしの表示から始める占いは通常占い。儀式（/shuffle）は到達だけでは初期化しないので、
+  // トップのスタートと同じく始める時点で reset() を通し、前の占い結果と持ち込んだカテゴリと回答を捨てる
+  // @implements REQ-007 / BR-002
+  const handleStart = () => {
+    reset()
+    navigate('/shuffle')
   }
 
   return (
@@ -44,11 +64,7 @@ export function HistoryPage() {
       {entries.length === 0 ? (
         <div className="history-empty">
           <p className="step-label">まだ占いの履歴はありません</p>
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => navigate('/shuffle')}
-          >
+          <button type="button" className="btn-primary" onClick={handleStart}>
             占いを始める
           </button>
         </div>
@@ -101,6 +117,12 @@ export function HistoryPage() {
           >
             履歴をすべて削除
           </button>
+          {/* @implements REQ-126 */}
+          {clearError && (
+            <p className="error" role="alert">
+              {clearError}
+            </p>
+          )}
         </>
       )}
     </PageTransition>

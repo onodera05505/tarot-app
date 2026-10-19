@@ -1,7 +1,7 @@
 ---
 id: ADR-0003
 title: 新しい版は自動で入れ替え、占う人に手動の更新をさせない
-status: accepted
+status: superseded
 date: 2026-08-21
 ---
 

@@ -1,7 +1,7 @@
 x-uc: UC-001
 x-status: fixed
 x-spec: ./UC.md
-x-updated: 2026-10-03
+x-updated: 2026-10-19
 
 operations:
   addToHistory:
@@ -71,10 +71,14 @@ operations:
     direction: outbound
     owned: true
     auth: none
-    summary: 端末（localStorage キー tarot:history）から占い履歴をすべて消す
-    errors: []
+    summary: 端末（localStorage キー tarot:history）から占い履歴をすべて消す。消せなかったときは失敗を外に出す
+    errors:
+      - code: STORAGE_WRITE_FAILED
+        when: 端末から消せない
     examples:
       ok: {}
+      removeRejected:
+        error: STORAGE_WRITE_FAILED
 
 schemas:
   HistoryEntry:

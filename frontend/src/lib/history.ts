@@ -54,11 +54,9 @@ export function addToHistory(
   return entry
 }
 
-// @implements REQ-011
+// 端末から消せないときは失敗をそのまま外に出す（契約 clearHistory の STORAGE_WRITE_FAILED）。
+// ここで握りつぶすと、呼び出し側が「消せた」と誤認して一覧を空にしてしまう。
+// @implements REQ-011, REQ-126
 export function clearHistory(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEY)
-  } catch {
-    // 無視
-  }
+  localStorage.removeItem(STORAGE_KEY)
 }

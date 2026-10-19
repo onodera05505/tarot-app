@@ -4,7 +4,7 @@ title: 占い結果をシェアする
 actor: ACT-01
 goal: GOAL-01
 status: active          # draft | active | withdrawn (active = approved by a human)
-phase: 完了            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
+phase: 実装            # 定義 | 構造 | 実装 | 検証 | 完了 — the progress ledger. Only the orchestrator advances it
 ---
 
 # UC-007 占い結果をシェアする
@@ -46,4 +46,4 @@ phase: 完了            # 定義 | 構造 | 実装 | 検証 | 完了 — the pr
 ## 事後条件
 
 - 成功時: シェア画像が、占う人が選んだ先に届いているか、端末への保存で占う人に渡っており、占い結果は表示されたままで、再びシェアを選べる。
-- 失敗時: シェア画像を作れなかったとき、または占う人が取り消したときは、シェア画像はどこにも渡っておらず、占い結果は表示されたままで、再びシェアを選べる。どの経路でも占い状態と占い履歴は変わらない。
+- 失敗時: シェア画像を作れなかったとき、または占う人が取り消したときは、シェア画像はどこにも渡っておらず、占い結果は表示されたままで、再びシェアを選べる。作れなかったときは、そのことが占う人に示されている。どの経路でも占い状態と占い履歴は変わらない。

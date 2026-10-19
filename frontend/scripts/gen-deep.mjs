@@ -14,15 +14,19 @@
 //     （Q<問番号><選択肢 a/b/c> = カード × 選択肢のアドバイス）
 //   - 質問 id / 選択肢 id は出現順から自動採番（q1, q1a, q1b, ...）。
 //     並べ替えると id が変わるため、既存カテゴリの並べ替えはしない
+//   - 環境変数: GEN_SOURCE_DIR（編集元の置き場。直下の deep/*.md を読む。未指定なら data/）・
+//     GEN_OUT_DIR（書き出し先。直下の deep/ に書く。未指定なら src/data/）
+//   - 失敗: 見出し・必須の行・区切り・質問と選択肢の数・枚数・第一文のジャンル語のいずれかが崩れていれば
+//     終了コード 1 と標準エラー出力の理由で止め、生成物は書き換えない（全カテゴリを読み終えてから書き出す）
 
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, basename } from 'node:path'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
-const MD_DIR = join(ROOT, 'data/deep')
-const OUT_DIR = join(ROOT, 'src/data/deep')
+const MD_DIR = join(process.env.GEN_SOURCE_DIR || join(ROOT, 'data'), 'deep')
+const OUT_DIR = join(process.env.GEN_OUT_DIR || join(ROOT, 'src/data'), 'deep')
 
 const VALID_IDS = ['work', 'love', 'study', 'money', 'health']
 // 表示順（仕様書 v3.1 §5.7 のカテゴリ順）
@@ -41,7 +45,7 @@ function parseCategory(file, raw) {
   if (!labelMatch) fail(file, '**label**: 行がありません')
   const id = idMatch[1].trim()
   const label = labelMatch[1].trim()
-  // ベース解釈の第一文に必ずジャンル語を含める（v3.2 §4.4、2026-08-22 追加）。
+  // ベース解釈の第一文に必ずジャンル語を含める（v3.2 §4.4）。
   // 判定語は md 側で宣言する。冒頭だけ読むと汎用解説に見える文が混ざる退行を防ぐ
   const kwMatch = raw.match(/^\*\*冒頭判定語\*\*:\s*(.+)$/m)
   if (!kwMatch) fail(file, '**冒頭判定語**: 行がありません（第一文チェック用）')
@@ -137,6 +141,7 @@ categories.sort((a, b) => DISPLAY_ORDER.indexOf(a.id) - DISPLAY_ORDER.indexOf(b.
 
 const HEADER = '// このファイルは scripts/gen-deep.mjs による自動生成。直接編集しない。\n// 編集は data/deep/*.md を変更して `pnpm gen:deep` を実行する。\n'
 
+mkdirSync(OUT_DIR, { recursive: true })
 for (const cat of categories) {
   const ts =
     `${HEADER}import type { DeepCategoryData } from './types'\n\n` +

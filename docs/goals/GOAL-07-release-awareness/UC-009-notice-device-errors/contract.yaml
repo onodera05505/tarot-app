@@ -3,23 +3,36 @@
 x-uc: UC-009
 x-status: fixed
 x-spec: ./UC.md
-x-updated: 2026-10-03
+x-updated: 2026-10-19
 
 operations:
   init:
     transport: sdk
     direction: outbound
     owned: false
-    source: "@sentry/react 10.50.0（Sentry.init(options: BrowserOptions)）"
+    source: "@sentry/react 10.50.0（Sentry.init(options: BrowserOptions)。integrations は @sentry/browser 10.50.0 の getDefaultIntegrations と browserSessionIntegration）"
     auth: none
-    summary: エラー監視サービスへの報告を、報告先を渡して始める
+    summary: エラー監視サービスへの報告を、報告先と稼働中の版を渡して始める
     request:
       type: object
-      required: [dsn, sendDefaultPii, tracesSampleRate, replaysSessionSampleRate, replaysOnErrorSampleRate]
+      required: [dsn, release, sendDefaultPii, tracesSampleRate, replaysSessionSampleRate, replaysOnErrorSampleRate, integrations]
       properties:
         dsn:
           type: string
           minLength: 1
+        release:
+          type: string
+          minLength: 1
+        integrations:
+          type: array
+          description: 既定の一覧に関数で手を入れる形で渡すときは、その関数を既定の一覧に適用した結果の一覧
+          items:
+            type: object
+            required: [name]
+            properties:
+              name:
+                type: string
+                not: { const: BrowserSession }
         sendDefaultPii:
           type: boolean
           const: false
@@ -37,6 +50,18 @@ operations:
       ok:
         request:
           dsn: "https://examplePublicKey@o0.ingest.sentry.io/0"
+          release: "1019.abc1234"
+          integrations:
+            - { name: InboundFilters }
+            - { name: FunctionToString }
+            - { name: ConversationId }
+            - { name: BrowserApiErrors }
+            - { name: Breadcrumbs }
+            - { name: GlobalHandlers }
+            - { name: LinkedErrors }
+            - { name: Dedupe }
+            - { name: HttpContext }
+            - { name: CultureContext }
           sendDefaultPii: false
           tracesSampleRate: 0
           replaysSessionSampleRate: 0

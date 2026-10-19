@@ -25,7 +25,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // 新しい版が届いても勝手に入れ替えず、onNeedRefresh を呼んでアプリの側（main.tsx）に時機を委ねる。
+      // 'autoUpdate' にすると占いの途中でも画面が読み込み直され、途中の占いが消える（REQ-128・ADR-0011）
+      registerType: 'prompt',
       includeAssets: [
         'favicon.svg',
         'favicon.ico',

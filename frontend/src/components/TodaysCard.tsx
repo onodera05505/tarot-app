@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CardReveal } from './animations/CardReveal'
 import { CARD_BACK_THUMB_URL, drawCards, thumbUrl } from '../lib/api'
@@ -40,6 +40,20 @@ export function TodaysCard() {
   const [drawn, setDrawn] = useState<DrawnCard | null>(loadCached)
   const [flipping, setFlipping] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // アプリを前面に戻したとき、開封済みを示したまま端末の現地時刻の日付が変わっていれば未開封に戻す。
+  // 抽選はやり直さず記録も書かない（新しい日の開封は、占う人が選んだときに初めて記録する）。
+  // 開封中（抽選の途中）は進行中の抽選を捨てないため何もしない。未開封のときも何もしない。
+  // @implements REQ-127
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') return
+      if (!drawn || flipping) return
+      if (loadCached() === null) setDrawn(null)
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [drawn, flipping])
 
   // @implements REQ-018, REQ-006 / BR-004
   const handleOpen = async () => {

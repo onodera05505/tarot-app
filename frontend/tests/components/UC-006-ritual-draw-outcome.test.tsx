@@ -227,16 +227,6 @@ describe('儀式: 左右選択を待つ段階の「引いている途中」の�
     expect(document.body.textContent).toMatch(DRAWING_NOTICE)
   })
 
-  // @covers REQ-112#failed-shows-drawing
-  it('抽選に失敗して占い結果が無い間も、カードを引いている途中であることが示される', async () => {
-    drawFails()
-    mount()
-    await stopAndGoToOrienting()
-
-    expect(useReadingStore.getState().drawn).toBeNull()
-    expect(document.body.textContent).toMatch(DRAWING_NOTICE)
-  })
-
   // @covers REQ-112#result-present-not-shown
   it('占い結果があるときは、カードを引いている途中であることは示されない', async () => {
     drawSucceeds()

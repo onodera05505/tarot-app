@@ -19,8 +19,8 @@ vi.mock('../../src/lib/audio', () => ({
   playFlip: vi.fn(),
 }))
 
-/** §3.3「準備中」等の予告表示をしない — 予告とみなす文言 */
-const TEASER_PATTERNS = [/準備中/, /近日/, /coming soon/i, /開放予定/, /有料/]
+/** 予告表示とみなす文言（BR-005 の機械可読な置き場。語を足すときはここだけに足す） */
+const TEASER_PATTERNS = [/準備中/, /近日/, /coming soon/i, /開放予定/, /有料/, /アップグレード/]
 
 function mountTop() {
   return render(

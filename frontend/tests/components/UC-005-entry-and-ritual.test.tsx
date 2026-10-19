@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // UC-005（詳しく占う）の、始め方・直接到達・質問の途中で儀式へ移った占い・回答に左右されない抽選のテスト。
-// 要件の文（REQ-038・042・048・108）と用語集・業務規則（BR-001・BR-002）だけを根拠に設計している
+// 要件の文（REQ-038・042・048）と用語集・業務規則（BR-001・BR-002）だけを根拠に設計している
+// （REQ-108 の直接到達は UC-005-direct-reach-reset.test.tsx が持つ）
 // （実装コードは参照していない）。期待値は公開データ（loadDeepCategory / tarotCards）から実行時に導出する。
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, RouterProvider, createMemoryRouter } from 'react-router-dom'
@@ -101,23 +102,6 @@ describe('詳しく占う: トップの入口から始める', () => {
     expect(state.status).toBe('idle')
     expect(state.drawn).toBeNull()
     expect(state.deep).toBeNull()
-  })
-})
-
-// UC-005
-describe('詳しく占う: トップの入口を経ない直接到達', () => {
-  // @covers REQ-108#keeps-previous-state
-  it('直接到達では、その時点の占い状態・前の占い結果・前に持ち込んだカテゴリと回答が変わらない', async () => {
-    const previous = await leavePreviousReading()
-    mountApp('/deep')
-    await waitFor(() => {
-      expect(queryControl(deepCategories[0].label)).not.toBeNull()
-    })
-
-    const state = useReadingStore.getState()
-    expect(state.status).toBe('drawn')
-    expect(state.drawn).toEqual(previous.drawn)
-    expect(state.deep).toEqual(previous.deep)
   })
 })
 

@@ -9,10 +9,12 @@ import { DEEP_READING_ENABLED } from '../lib/features'
 export function TopPage() {
   const navigate = useNavigate()
   const reset = useReadingStore((s) => s.reset)
+  const start = useReadingStore((s) => s.start)
 
   // @implements REQ-054 / BR-002
+  // start は初期化に加えて儀式へ進む印を立てる（印の無い到達は儀式の側で直接到達として初期化される）
   const handleStart = () => {
-    reset()
+    start()
     navigate('/shuffle')
   }
 

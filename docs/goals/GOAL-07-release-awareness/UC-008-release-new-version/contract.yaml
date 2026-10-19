@@ -4,7 +4,7 @@
 x-uc: UC-008
 x-status: fixed
 x-spec: ./UC.md
-x-updated: 2026-10-03
+x-updated: 2026-10-19
 
 operations:
   isNativePlatform:
@@ -41,6 +41,28 @@ operations:
     examples:
       ok:
         request: { immediate: true }
+
+  onNeedRefresh:
+    transport: sdk
+    direction: inbound
+    owned: false
+    source: "vite-plugin-pwa 1.2.0（RegisterSWOptions.onNeedRefresh()）"
+    auth: none
+    summary: 新しい版が端末に届き、入れ替えられる状態になったことを受け取る
+    errors: []
+    examples:
+      ok: {}
+
+  updateSW:
+    transport: sdk
+    direction: outbound
+    owned: false
+    source: "vite-plugin-pwa 1.2.0（registerSW が返す updateSW(): Promise<void>。reloadPage 引数は 0.13.2 以降使われない）"
+    auth: none
+    summary: 届いている新しい版へ入れ替える
+    errors: []
+    examples:
+      ok: {}
 
   onRegisteredSW:
     transport: sdk
