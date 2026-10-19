@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:deep": "VITE_DEEP_READING_ENABLED=true vite build --outDir dist-deep",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -13,6 +14,7 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/icon.svg",
     "gen:cards": "node scripts/gen-cards.mjs",
     "gen:deep": "node scripts/gen-deep.mjs",
+    "check:gen": "node scripts/check-gen.mjs",
     "gen:thumbs": "python3 scripts/gen-thumbs.py"
   },
   "dependencies": {

@@ -5,6 +5,8 @@ node_modules/
 # Builds
 dist/
 dist-ssr/
+# 機能フラグ有効の版（frontend の `pnpm build:deep`。通しテストの chromium-deep-reading が配る）
+dist-deep/
 .wrangler/
 
 # 環境変数 / 機密情報（GitHub Secrets で管理する）

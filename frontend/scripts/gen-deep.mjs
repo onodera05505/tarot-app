@@ -29,7 +29,7 @@ const MD_DIR = join(process.env.GEN_SOURCE_DIR || join(ROOT, 'data'), 'deep')
 const OUT_DIR = join(process.env.GEN_OUT_DIR || join(ROOT, 'src/data'), 'deep')
 
 const VALID_IDS = ['work', 'love', 'study', 'money', 'health']
-// 表示順（仕様書 v3.1 §5.7 のカテゴリ順）
+// 詳しく占うでカテゴリを示す順。生成物 registry.ts の deepCategories の並びがそのまま画面の並びになる
 const DISPLAY_ORDER = ['work', 'love', 'study', 'money', 'health']
 
 function fail(file, msg) {
@@ -45,7 +45,7 @@ function parseCategory(file, raw) {
   if (!labelMatch) fail(file, '**label**: 行がありません')
   const id = idMatch[1].trim()
   const label = labelMatch[1].trim()
-  // ベース解釈の第一文に必ずジャンル語を含める（v3.2 §4.4）。
+  // ベース解釈の第一文に必ずジャンル語を含める（REQ-094）。
   // 判定語は md 側で宣言する。冒頭だけ読むと汎用解説に見える文が混ざる退行を防ぐ
   const kwMatch = raw.match(/^\*\*冒頭判定語\*\*:\s*(.+)$/m)
   if (!kwMatch) fail(file, '**冒頭判定語**: 行がありません（第一文チェック用）')

@@ -47,13 +47,14 @@
 | 型・Lint・テスト | `pnpm --dir frontend exec tsc -b` / `pnpm --dir frontend lint` / `pnpm --dir frontend test` |
 | 本番ビルド | `pnpm --dir frontend build` |
 | 通しテスト | `cd frontend && pnpm exec playwright test`（初回は `pnpm exec playwright install chromium`。`--list` で一覧だけ） |
-| 生成 | `pnpm --dir frontend gen:cards` / `gen:deep` / `gen:thumbs`（編集元は `frontend/data/`、原本は `frontend/public/cards/`。生成物は手で直さない）。テストから呼ぶときは環境変数 `GEN_SOURCE_DIR`（編集元・原本の置き場）と `GEN_OUT_DIR`（書き出し先）で実物から切り離す（2026-10-19 決定。未指定なら実物。`GEN_SOURCE_DIR` の直下に `cards.md`（gen-cards）・`deep/*.md`（gen-deep）・原本の `*.webp`（gen-thumbs）を置き、`GEN_OUT_DIR` の直下に書き出す）。失敗は終了コード 0 以外と標準エラー出力の理由で示す |
+| 生成 | `pnpm --dir frontend gen:cards` / `gen:deep` / `gen:thumbs`（編集元は `frontend/data/`、原本は `frontend/public/cards/`。生成物は手で直さない）。テストから呼ぶときは環境変数 `GEN_SOURCE_DIR`（編集元・原本の置き場）と `GEN_OUT_DIR`（書き出し先）で実物から切り離す（2026-10-19 決定。未指定なら実物。`GEN_SOURCE_DIR` の直下に `cards.md`（gen-cards）・`deep/*.md`（gen-deep）・原本の `*.webp`（gen-thumbs）を置き、`GEN_OUT_DIR` の直下に書き出す。gen-deep だけは実物の形に合わせて `GEN_OUT_DIR/deep/` に書く）。失敗は終了コード 0 以外と標準エラー出力の理由で示す |
+| 生成物の同期の検査 | `pnpm --dir frontend check:gen`（`frontend/scripts/check-gen.mjs`。編集元から一時ディレクトリへ生成し直し、配信に含める生成物と比べて、違うファイルと箇所を標準エラー出力に示して 0 以外で終わる。配信に含める生成物は手で書き換えない。同じ環境変数 `GEN_SOURCE_DIR`（編集元）と `GEN_OUT_DIR`（比べる先の生成物）で実物から切り離せる。CI ではテストの段の一部として単体テストの前に回す（2026-10-19 決定） |
 | harness の入れ直し | `apm install`（`.claude/` の担当・規約・skill と `.harness/` は生成物でコミットしない） |
 
 ## このプロジェクトの形
 
 - `frontend/`（React 19 + Vite + PWA、zustand、framer-motion、Sentry、Capacitor の Android プロジェクト）。端末だけで完結し、サーバーとの通信は無い（ADR-0001）。`backend/` は参照用の残骸で、対象外。
 - テストは `frontend/tests/`（vitest + jsdom）。各テストは直前の行に `// @covers REQ-nnn#class` か `// 仕様外: 理由` を持つ。実装は `@implements` で要件を指す。
-- 通し（シナリオ）テストは `frontend/e2e/`（Playwright、`frontend/playwright.config.ts`。`tests.system`）。ユースケースごとに 1 本、主シナリオの手順と成功時の事後条件だけ。`test(` の直前の行に `// @scenario UC-nnn`。ロケータは用語集の語と契約の識別子から導き、実装を読んで取らない。実ブラウザで未確認のものは `test.fixme` の保留で置く（2026-10-17 時点で 11 本すべて保留。外す順は `docs/verification/REPAYMENT.md`）。儀式の操作は 1 か所のヘルパーに集約する（UC-005〜007 で同じ手順を繰り返している）。
+- 通し（シナリオ）テストは `frontend/e2e/`（Playwright、`frontend/playwright.config.ts`。`tests.system`）。ユースケースごとに 1 本、主シナリオの手順と成功時の事後条件だけ。`test(` の直前の行に `// @scenario UC-nnn`。ロケータは用語集の語と契約の識別子から導き、実装を読んで取らない。実ブラウザで未確認のものは `test.fixme` の保留で置く（2026-10-19 時点で UC-001〜008 の 8 本が緑、UC-009〜011 は保留。理由は `OPEN-QUESTIONS.md` の OQ-35）。儀式の操作は `frontend/e2e/helpers/ritual.ts` に集約してある。UC-005 は機能フラグ有効の版（`pnpm build:deep` → `dist-deep/`）で別 project として走る。
 - ネイティブは `pnpm build` → `pnpm exec cap sync android` → `pnpm exec cap open android`。ストア申請と Android の実機確認は本人の判断で保留中。
 - push は main へ確認なしでよい（2026-09-02）。挙動を変える作業は作業ブランチで行い、検査が通ってから main に入れる。

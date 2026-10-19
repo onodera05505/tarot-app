@@ -6,8 +6,8 @@ import { deepCategories, loadDeepCategory } from '../data/deep'
 import type { DeepCategoryData, DeepCategoryId } from '../data/deep'
 import { useReadingStore } from '../store/useReadingStore'
 
-// 詳しく占う（仕様書 v3.1 §5.7）: カテゴリ選択 → 質問 3 問 → /shuffle へ。
-// 回答はカードの抽選に影響しない（表示する解釈テキストの選択にのみ使う）。
+// 詳しく占う: カテゴリ選択 → 質問 3 問 → /shuffle へ。
+// 回答はカードの抽選に影響しない（示す文章の選択にのみ使う。BR-001）。
 
 // @implements UC-005 / REQ-038
 export function DeepPage() {

@@ -1,8 +1,11 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
+import { drawOnceFromTop } from './helpers/ritual'
+import { loadHistory } from './helpers/history'
 
 // UC-007 占い結果をシェアする — 主シナリオの通しテスト（1 UC 1 本、成功経路のみ）。
 // 手順と事後条件の SSOT は docs/goals/GOAL-01-ritual-reading/UC-007-share-result/UC.md。
-// ロケータは docs/01-glossary.md の語（シェア・正位置・逆位置）から導く。
+// ロケータは docs/01-glossary.md の語（シェア: 「この結果をシェア」button。正位置・逆位置）から導く。
+// 事前条件「占い結果が表示されている」は UC-006 の主シナリオ（helpers/ritual.ts）で作る。
 // 端末の共有機能（ACT-03、navigator.share / navigator.canShare）は外部のアクターなので、受け取ったものを記録する
 // 差し替えを置いて観測する。受け取る形の SSOT は同 UC の契約 shareOrDownload（blob は image/png、
 // filename は ^tarot-[0-9]+\.png$、text は ^.+（(正位置|逆位置)）$）。
@@ -14,33 +17,6 @@ declare global {
   interface Window {
     __shareCalls?: ShareCall[]
   }
-}
-
-/** 端末への記録（localStorage キー tarot:history）から占い履歴を新しい順に読む（UC-001 契約 loadHistory の形） */
-async function loadHistory(page: Page): Promise<unknown[]> {
-  return page.evaluate(() => JSON.parse(window.localStorage.getItem('tarot:history') ?? '[]'))
-}
-
-/**
- * 事前条件「占い状態が drawn の占い結果が表示されている」を作る。
- * UC-006 の主シナリオ（スタート → シャッフルへ進む → ストップ → 山の順を決定 → 山の選択を確定 → 左右選択）を
- * そのまま行うだけで、この UC の手順ではない。手順の SSOT は UC-006 の UC.md（文言の導出も同じ）。
- */
-async function reachDrawnResult(page: Page): Promise<void> {
-  await page.goto('/')
-  await page.getByRole('button', { name: 'スタート' }).click()
-  await page.getByRole('button', { name: /シャッフル/ }).click()
-  await page.getByRole('button', { name: 'ストップ' }).click()
-  const piles3 = page.getByRole('button', { name: /山/ })
-  await expect(piles3).toHaveCount(3)
-  for (let i = 0; i < 3; i++) await piles3.nth(i).click()
-  await page.getByRole('button', { name: '決定' }).click()
-  const piles2 = page.getByRole('button', { name: /山/ })
-  await expect(piles2).toHaveCount(2)
-  await piles2.first().click()
-  await page.getByRole('button', { name: '確定' }).click()
-  await page.getByRole('button', { name: /左/ }).click()
-  await expect(page.getByText(/正位置|逆位置/).first()).toBeVisible()
 }
 
 test.describe('UC-007 占い結果をシェアする', () => {
@@ -62,13 +38,12 @@ test.describe('UC-007 占い結果をシェアする', () => {
     })
   })
 
-  // 保留: 実装の配線（用語どおりの文言）と実ブラウザでの確認がまだ。配線が済んだら fixme を外す
   // @scenario UC-007
-  test.fixme('UC-007: 占い結果でシェアを選ぶと、シェア画像がカード名と正逆を添えて端末の共有機能に渡り、再びシェアを選べる', async ({ page }) => {
+  test('UC-007: 占い結果でシェアを選ぶと、シェア画像がカード名と正逆を添えて端末の共有機能に渡り、再びシェアを選べる', { tag: '@UC-007' }, async ({ page }) => {
     // 事前条件: 占い状態が drawn の占い結果が表示されている
-    await reachDrawnResult(page)
+    await drawOnceFromTop(page)
     const historyBefore = await loadHistory(page)
-    const share = page.getByRole('button', { name: 'シェア' })
+    const share = page.getByRole('button', { name: 'この結果をシェア', exact: true })
 
     // 1. 占う人が占い結果のシェアを選ぶ
     await share.click()
@@ -83,7 +58,7 @@ test.describe('UC-007 占い結果をシェアする', () => {
 
     // 5. システムが、再びシェアを選べる状態に戻る
     // 事後条件（成功時）: 占い結果は表示されたままで、再びシェアを選べる。占い状態と占い履歴は変わらない
-    await expect(page.getByText(/正位置|逆位置/).first()).toBeVisible()
+    await expect(page.getByText(/^(正位置|逆位置)$/).first()).toBeVisible()
     await expect(share).toBeEnabled()
     expect(await loadHistory(page)).toEqual(historyBefore)
   })

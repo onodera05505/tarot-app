@@ -43,6 +43,13 @@ jobs:
       # @implements REQ-081
       - name: Trace check (new violations fail)
         run: node .harness/tools/trace-check/trace-check.mjs
+      - name: Install Pillow (gen-thumbs のテストを skip させない)
+        run: python3 -m pip install --quiet pillow
+      # 生成物が編集元から生成し直した結果と一致しているか（テストの段の一部。違えば配らない）
+      # @implements REQ-133
+      - name: Check generated content is in sync with sources
+        working-directory: frontend
+        run: pnpm check:gen
       # @implements REQ-081
       - name: Run tests
         working-directory: frontend

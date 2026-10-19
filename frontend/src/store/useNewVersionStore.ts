@@ -1,5 +1,16 @@
+import { matchPath } from 'react-router-dom'
 import { create } from 'zustand'
 import type { ReadingStatus } from './useReadingStore'
+
+/**
+ * 画面の経路が App.tsx の Route と同じ一致の仕方で当たるか。
+ * 文字列の完全一致にしないこと: ルーターは末尾のスラッシュ（/shuffle/）や大文字小文字の違いでも
+ * 同じ画面を出すので、ここだけ完全一致だと儀式の画面を出しているのに「途中でない」と判定し、
+ * 新しい版がその場で入れ替わって途中の占いが消える。
+ */
+function isAtRoute(routePath: string, pathname: string): boolean {
+  return matchPath(routePath, pathname) !== null
+}
 
 /**
  * 占う人が「占いの途中」かどうか。定義は UC-008 の状態表の前書き:
@@ -9,9 +20,9 @@ import type { ReadingStatus } from './useReadingStore'
  * @implements REQ-083, REQ-128
  */
 export function isReadingInProgress(pathname: string, status: ReadingStatus): boolean {
-  if (pathname === '/shuffle') return true
+  if (isAtRoute('/shuffle', pathname)) return true
   if (status === 'drawing') return true
-  return status === 'drawn' && pathname === '/result'
+  return status === 'drawn' && isAtRoute('/result', pathname)
 }
 
 type NewVersionState = {

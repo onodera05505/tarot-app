@@ -20,10 +20,9 @@ function calcWidths() {
 export function ResultPage() {
   const navigate = useNavigate()
   const [cardSettled, setCardSettled] = useState(false)
-  // 「占い結果がない状態（idle）では / へ」（v3 §5.4）はマウント時点で判定する。
+  // 占い状態が idle ならトップへ移す（REQ-055）判定は、マウント時点で行う。
   // 毎描画で判定すると、「もう一度占う」「トップへ戻る」の reset() が先に idle を作り、
-  // この Navigate('/') が navigate('/shuffle') と競走して行き先が / に化ける
-  // （独立テスト設計で検出、2026-09-14）。
+  // この Navigate('/') が navigate('/shuffle') と競走して行き先が / に化ける。
   const [idleAtMount] = useState(() => useReadingStore.getState().status === 'idle')
   const [enlarged, setEnlarged] = useState(false)
   const [sharing, setSharing] = useState(false)
@@ -39,7 +38,7 @@ export function ResultPage() {
       status: s.status,
       error: s.error,
       // @implements REQ-037 / BR-005
-      // 無料版では deep 文脈が残っていても通常表示にする（v3.3 §3.3「常に通常占いの表示」）
+      // 無料版では持ち込んだカテゴリと回答が残っていても通常占いの表示にする
       deep: DEEP_READING_ENABLED ? s.deep : null,
       reset: s.reset,
       start: s.start,
@@ -86,7 +85,7 @@ export function ResultPage() {
     return (
       <PageTransition className="page page-result">
         <p className="error">エラー: {error ?? 'カードを取得できませんでした'}</p>
-        {/* §5.4「トップへ戻る」= 占い状態をリセットして / へ。エラー時も同じ */}
+        {/* 「トップへ戻る」は占い状態を初期化してトップへ。エラー時も同じ */}
         {/* @implements BR-002 */}
         <button type="button" className="btn-primary" onClick={() => { reset(); navigate('/') }}>
           トップへ戻る
@@ -101,12 +100,12 @@ export function ResultPage() {
     orientation === 'upright' ? card.descriptionUpright : card.descriptionReversed
 
   // @implements REQ-049
-  // 詳しく占うの合成（v3.1 §4.5）: ベース解釈 + 回答別補足 3 本
+  // 詳しく占うの表示: カード・正逆・カテゴリで決まるベース解釈 + 回答ごとの文章 3 本
   const deepBase =
     deep && deepData ? (deepData.base[card.number]?.[orientation] ?? null) : null
   // @implements REQ-051
-  // 新構造(v3.2)はカード連動アドバイス、旧構造(v3.1)は選択肢の fragment に
-  // フォールバック（§4.5）
+  // 回答ごとに、選んだ選択肢と引いたカードの組に回答別アドバイス（advice）があればそれを、
+  // 無ければその選択肢の回答別補足（fragment）を示す
   const deepFragments =
     deep && deepData
       ? deep.answers

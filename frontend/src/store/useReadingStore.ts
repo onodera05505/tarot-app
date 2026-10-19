@@ -6,7 +6,7 @@ import type { DrawnCard } from '../lib/types'
 
 export type ReadingStatus = 'idle' | 'drawing' | 'drawn' | 'error'
 
-/** 詳しく占う（v3.1 §5.7）の文脈。質問完了時のみセットされ、reset で消える */
+/** 詳しく占うで持ち込むカテゴリと回答。最後の質問に答えた時点でのみセットされ、reset で消える */
 export type DeepContext = {
   categoryId: DeepCategoryId
   categoryLabel: string
@@ -28,8 +28,8 @@ type ReadingState = {
    * 印の無い到達（アドレスの指定・ブラウザの戻る/進む）は直接到達として扱う
    */
   ritualEntry: boolean
-  // 正逆は drawOne 時のランダム値で確定。儀式中のユーザー操作で上書きしない
-  // （旧 setOrientation はユーザー要望で撤回済み。経緯はコミット 24efef6 と仕様書 v3 §4.2）
+  // 正逆は drawOne 時のランダム値で確定し、儀式中の占う人の操作で上書きしない（BR-001）。
+  // 正逆を書き換える操作をこのストアに足さないこと
   drawOne: () => Promise<void>
   setDeepContext: (deep: DeepContext) => void
   /** 占い状態を初期化し、儀式へ進む印を立てる（スタート・もう一度占う） */
@@ -58,7 +58,7 @@ export const useReadingStore = create<ReadingState>((set, get) => ({
       const drawn = cards[0] ?? null
       if (drawn) {
         // @implements REQ-114
-        // 詳しく占うの場合はカテゴリ名を添えて記録する（v3.1 §5.6）
+        // 詳しく占うの場合はカテゴリ名を添えて記録する
         addToHistory(drawn, get().deep?.categoryLabel)
       }
       set({ drawn, status: 'drawn' })
